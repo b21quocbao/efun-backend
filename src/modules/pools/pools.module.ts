@@ -4,6 +4,6 @@ import { PoolsController } from './pools.controller';
 
 @Module({
   controllers: [PoolsController],
-  providers: [PoolsService]
+  providers: [PoolsService],
 })
 export class PoolsModule {}
