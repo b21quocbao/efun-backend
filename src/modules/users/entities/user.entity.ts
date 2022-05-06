@@ -9,6 +9,8 @@ import {
   UpdateDateColumn,
   Column,
   OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 @Entity('users')
@@ -45,6 +47,10 @@ export class UserEntity {
 
   @Column({ nullable: true })
   ip?: string;
+
+  @ManyToMany(() => UserEntity)
+  @JoinTable()
+  followers: UserEntity[];
 
   @CreateDateColumn()
   createdAt: Date;
