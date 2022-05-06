@@ -10,7 +10,9 @@ import {
 import { PoolsService } from './pools.service';
 import { CreatePoolDto } from './dto/create-pool.dto';
 import { UpdatePoolDto } from './dto/update-pool.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Pools')
 @Controller('pools')
 export class PoolsController {
   constructor(private readonly poolsService: PoolsService) {}

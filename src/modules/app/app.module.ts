@@ -1,6 +1,15 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CategoriesModule } from '../categories/categories.module';
+import { EventsModule } from '../events/events.module';
+import { LatestBlockModule } from '../latest-block/latest-block.module';
+import { NotificationsModule } from '../notifications/notifications.module';
+import { PoolsModule } from '../pools/pools.module';
+import { PredictionsModule } from '../predictions/predictions.module';
+import { ReportsModule } from '../reports/reports.module';
+import { TransactionsModule } from '../transactions/transactions.module';
+import { UsersModule } from '../users/users.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -30,6 +39,15 @@ import { AppService } from './app.service';
       }),
       inject: [ConfigService],
     }),
+    CategoriesModule,
+    EventsModule,
+    LatestBlockModule,
+    NotificationsModule,
+    PoolsModule,
+    PredictionsModule,
+    ReportsModule,
+    TransactionsModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

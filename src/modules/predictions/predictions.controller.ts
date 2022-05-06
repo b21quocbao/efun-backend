@@ -10,7 +10,9 @@ import {
 import { PredictionsService } from './predictions.service';
 import { CreatePredictionDto } from './dto/create-prediction.dto';
 import { UpdatePredictionDto } from './dto/update-prediction.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Predictions')
 @Controller('predictions')
 export class PredictionsController {
   constructor(private readonly predictionsService: PredictionsService) {}
