@@ -1,7 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ResponseUserDto } from './dto/response-user.dto';
-import { VerifyAddress } from './helper/verify-address';
 import { lookup } from 'geoip-lite';
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
