@@ -18,22 +18,22 @@ export class PredictionsController {
   constructor(private readonly predictionsService: PredictionsService) {}
 
   @Post()
-  create(@Body() createPredictionDto: CreatePredictionDto) {
+  async create(@Body() createPredictionDto: CreatePredictionDto) {
     return this.predictionsService.create(createPredictionDto);
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.predictionsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.predictionsService.findOne(+id);
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updatePredictionDto: UpdatePredictionDto,
   ) {
@@ -41,7 +41,7 @@ export class PredictionsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.predictionsService.remove(+id);
   }
 }

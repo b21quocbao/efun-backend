@@ -18,22 +18,22 @@ export class PredictPoolsController {
   constructor(private readonly predictPoolsService: PredictPoolsService) {}
 
   @Post()
-  create(@Body() createPredictPoolDto: CreatePredictPoolDto) {
+  async create(@Body() createPredictPoolDto: CreatePredictPoolDto) {
     return this.predictPoolsService.create(createPredictPoolDto);
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.predictPoolsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.predictPoolsService.findOne(+id);
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updatePredictPoolDto: UpdatePredictPoolDto,
   ) {
@@ -41,7 +41,7 @@ export class PredictPoolsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.predictPoolsService.remove(+id);
   }
 }

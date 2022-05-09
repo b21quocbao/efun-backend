@@ -1,11 +1,13 @@
+import { EventEntity } from 'src/modules/events/entities/event.entity';
 import { TransactionEntity } from 'src/modules/transactions/entities/transaction.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  Column,
   OneToMany,
+  ManyToOne,
+  PrimaryColumn,
 } from 'typeorm';
 
 @Entity('predictPools')
@@ -13,10 +15,16 @@ export class PredictPoolEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ManyToOne(() => EventEntity, (event) => event.predictPools)
+  event: EventEntity;
+
+  @PrimaryColumn()
+  eventId: number;
+
   @OneToMany(() => TransactionEntity, (transaction) => transaction.predictPool)
   transactions: TransactionEntity[];
 
-  @Column()
+  @PrimaryColumn()
   currency: string;
 
   @CreateDateColumn()

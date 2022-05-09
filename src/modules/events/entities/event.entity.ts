@@ -1,5 +1,6 @@
 import { CategoryEntity } from 'src/modules/categories/entities/category.entity';
 import { PoolEntity } from 'src/modules/pools/entities/pool.entity';
+import { PredictPoolEntity } from 'src/modules/predict-pools/entities/predict-pool.entity';
 import { PredictionEntity } from 'src/modules/predictions/entities/prediction.entity';
 import { UserEntity } from 'src/modules/users/entities/user.entity';
 import {
@@ -38,6 +39,9 @@ export class EventEntity {
 
   @OneToMany(() => PoolEntity, (pool) => pool.event)
   pools: PoolEntity[];
+
+  @OneToMany(() => PredictPoolEntity, (predictPool) => predictPool.event)
+  predictPools: PredictPoolEntity[];
 
   @Column()
   deadline: Date;

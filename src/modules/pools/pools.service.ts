@@ -4,23 +4,23 @@ import { UpdatePoolDto } from './dto/update-pool.dto';
 
 @Injectable()
 export class PoolsService {
-  create(createPoolDto: CreatePoolDto) {
+  async create(createPoolDto: CreatePoolDto) {
     return 'This action adds a new pool';
   }
 
-  findAll() {
+  async findAll() {
     return `This action returns all pools`;
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
     return `This action returns a #${id} pool`;
   }
 
-  update(id: number, updatePoolDto: UpdatePoolDto) {
+  async update(id: number, updatePoolDto: UpdatePoolDto) {
     return `This action updates a #${id} pool`;
   }
 
-  remove(id: number) {
+  async remove(id: number) {
     return `This action removes a #${id} pool`;
   }
 }

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConsoleModule } from 'nestjs-console';
 import { CategoriesModule } from '../categories/categories.module';
 import { CategoryEntity } from '../categories/entities/category.entity';
 import { EventEntity } from '../events/entities/event.entity';
@@ -61,6 +62,7 @@ import { AppService } from './app.service';
       }),
       inject: [ConfigService],
     }),
+    ConsoleModule,
     CategoriesModule,
     EventsModule,
     LatestBlockModule,

@@ -4,23 +4,23 @@ import { UpdatePredictionDto } from './dto/update-prediction.dto';
 
 @Injectable()
 export class PredictionsService {
-  create(createPredictionDto: CreatePredictionDto) {
+  async create(createPredictionDto: CreatePredictionDto) {
     return 'This action adds a new prediction';
   }
 
-  findAll() {
+  async findAll() {
     return `This action returns all predictions`;
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
     return `This action returns a #${id} prediction`;
   }
 
-  update(id: number, updatePredictionDto: UpdatePredictionDto) {
+  async update(id: number, updatePredictionDto: UpdatePredictionDto) {
     return `This action updates a #${id} prediction`;
   }
 
-  remove(id: number) {
+  async remove(id: number) {
     return `This action removes a #${id} prediction`;
   }
 }

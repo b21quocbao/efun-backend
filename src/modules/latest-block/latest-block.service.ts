@@ -4,23 +4,23 @@ import { UpdateLatestBlockDto } from './dto/update-latest-block.dto';
 
 @Injectable()
 export class LatestBlockService {
-  create(createLatestBlockDto: CreateLatestBlockDto) {
+  async create(createLatestBlockDto: CreateLatestBlockDto) {
     return 'This action adds a new latestBlock';
   }
 
-  findAll() {
+  async findAll() {
     return `This action returns all latestBlock`;
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
     return `This action returns a #${id} latestBlock`;
   }
 
-  update(id: number, updateLatestBlockDto: UpdateLatestBlockDto) {
+  async update(id: number, updateLatestBlockDto: UpdateLatestBlockDto) {
     return `This action updates a #${id} latestBlock`;
   }
 
-  remove(id: number) {
+  async remove(id: number) {
     return `This action removes a #${id} latestBlock`;
   }
 }

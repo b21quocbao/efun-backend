@@ -18,27 +18,27 @@ export class PoolsController {
   constructor(private readonly poolsService: PoolsService) {}
 
   @Post()
-  create(@Body() createPoolDto: CreatePoolDto) {
+  async create(@Body() createPoolDto: CreatePoolDto) {
     return this.poolsService.create(createPoolDto);
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.poolsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.poolsService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePoolDto: UpdatePoolDto) {
+  async update(@Param('id') id: string, @Body() updatePoolDto: UpdatePoolDto) {
     return this.poolsService.update(+id, updatePoolDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.poolsService.remove(+id);
   }
 }

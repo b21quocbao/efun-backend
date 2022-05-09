@@ -1,1 +1,4 @@
-export class CreatePoolDto {}
+export class CreatePoolDto {
+  eventId: number;
+  amount: string;
+}
