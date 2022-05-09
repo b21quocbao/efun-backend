@@ -11,6 +11,8 @@ import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { Response } from 'src/shares/interceptors/response.interceptor';
+import { TransactionEntity } from './entities/transaction.entity';
 
 @ApiTags('Transactions')
 @Controller('transactions')
@@ -18,17 +20,19 @@ export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
   @Post()
-  async create(@Body() createTransactionDto: CreateTransactionDto) {
+  async create(
+    @Body() createTransactionDto: CreateTransactionDto,
+  ): Promise<TransactionEntity> {
     return this.transactionsService.create(createTransactionDto);
   }
 
   @Get()
-  async findAll() {
+  async findAll(): Promise<Response<TransactionEntity[]>> {
     return this.transactionsService.findAll();
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<TransactionEntity> {
     return this.transactionsService.findOne(+id);
   }
 
@@ -41,7 +45,7 @@ export class TransactionsController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string): Promise<void> {
     return this.transactionsService.remove(+id);
   }
 }

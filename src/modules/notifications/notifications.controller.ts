@@ -11,6 +11,8 @@ import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { Response } from 'src/shares/interceptors/response.interceptor';
+import { NotificationEntity } from './entities/notification.entity';
 
 @ApiTags('Notifications')
 @Controller('notifications')
@@ -18,17 +20,19 @@ export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
   @Post()
-  async create(@Body() createNotificationDto: CreateNotificationDto) {
+  async create(
+    @Body() createNotificationDto: CreateNotificationDto,
+  ): Promise<NotificationEntity> {
     return this.notificationsService.create(createNotificationDto);
   }
 
   @Get()
-  async findAll() {
+  async findAll(): Promise<Response<NotificationEntity[]>> {
     return this.notificationsService.findAll();
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<NotificationEntity> {
     return this.notificationsService.findOne(+id);
   }
 
@@ -41,7 +45,7 @@ export class NotificationsController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string): Promise<void> {
     return this.notificationsService.remove(+id);
   }
 }

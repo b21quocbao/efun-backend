@@ -1,26 +1,51 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePoolDto } from './dto/create-pool.dto';
 import { UpdatePoolDto } from './dto/update-pool.dto';
+import { Response } from 'src/shares/interceptors/response.interceptor';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { PoolEntity } from './entities/pool.entity';
 
 @Injectable()
 export class PoolsService {
-  async create(createPoolDto: CreatePoolDto) {
-    return 'This action adds a new pool';
+  constructor(
+    @InjectRepository(PoolEntity)
+    private poolRepository: Repository<PoolEntity>,
+  ) {}
+
+  async create(createPoolDto: CreatePoolDto): Promise<PoolEntity> {
+    return this.poolRepository.save(createPoolDto);
   }
 
-  async findAll() {
-    return `This action returns all pools`;
+  async findAll(
+    pageNumber?: number,
+    pageSize?: number,
+  ): Promise<Response<PoolEntity[]>> {
+    const qb = this.poolRepository.createQueryBuilder('pools');
+
+    if (pageSize && pageNumber) {
+      qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
+    }
+
+    const [rs, total] = await Promise.all([qb.getMany(), qb.getCount()]);
+    return {
+      data: rs,
+      pageNumber: Number(pageNumber),
+      pageSize: Number(pageSize),
+      total: total,
+    };
   }
 
-  async findOne(id: number) {
-    return `This action returns a #${id} pool`;
+  async findOne(id: number): Promise<PoolEntity> {
+    return this.poolRepository.findOne(id);
   }
 
-  async update(id: number, updatePoolDto: UpdatePoolDto) {
-    return `This action updates a #${id} pool`;
+  async update(id: number, updatePoolDto: UpdatePoolDto): Promise<PoolEntity> {
+    await this.poolRepository.update(id, updatePoolDto);
+    return this.poolRepository.findOne(id);
   }
 
-  async remove(id: number) {
-    return `This action removes a #${id} pool`;
+  async remove(id: number): Promise<void> {
+    await this.poolRepository.delete(id);
   }
 }

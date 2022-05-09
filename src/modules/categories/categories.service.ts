@@ -1,26 +1,54 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { Response } from 'src/shares/interceptors/response.interceptor';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CategoryEntity } from './entities/category.entity';
 
 @Injectable()
 export class CategoriesService {
-  async create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
+  constructor(
+    @InjectRepository(CategoryEntity)
+    private categoryRepository: Repository<CategoryEntity>,
+  ) {}
+
+  async create(createCategoryDto: CreateCategoryDto): Promise<CategoryEntity> {
+    return this.categoryRepository.save(createCategoryDto);
   }
 
-  async findAll() {
-    return `This action returns all categories`;
+  async findAll(
+    pageNumber?: number,
+    pageSize?: number,
+  ): Promise<Response<CategoryEntity[]>> {
+    const qb = this.categoryRepository.createQueryBuilder('categories');
+
+    if (pageSize && pageNumber) {
+      qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
+    }
+
+    const [rs, total] = await Promise.all([qb.getMany(), qb.getCount()]);
+    return {
+      data: rs,
+      pageNumber: Number(pageNumber),
+      pageSize: Number(pageSize),
+      total: total,
+    };
   }
 
-  async findOne(id: number) {
-    return `This action returns a #${id} category`;
+  async findOne(id: number): Promise<CategoryEntity> {
+    return this.categoryRepository.findOne(id);
   }
 
-  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+  async update(
+    id: number,
+    updateCategoryDto: UpdateCategoryDto,
+  ): Promise<CategoryEntity> {
+    await this.categoryRepository.update(id, updateCategoryDto);
+    return this.categoryRepository.findOne(id);
   }
 
-  async remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: number): Promise<void> {
+    await this.categoryRepository.delete(id);
   }
 }

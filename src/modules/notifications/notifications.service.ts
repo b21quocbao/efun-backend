@@ -1,26 +1,56 @@
 import { Injectable } from '@nestjs/common';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
+import { Response } from 'src/shares/interceptors/response.interceptor';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { NotificationEntity } from './entities/notification.entity';
 
 @Injectable()
 export class NotificationsService {
-  async create(createNotificationDto: CreateNotificationDto) {
-    return 'This action adds a new notification';
+  constructor(
+    @InjectRepository(NotificationEntity)
+    private notificationRepository: Repository<NotificationEntity>,
+  ) {}
+
+  async create(
+    createNotificationDto: CreateNotificationDto,
+  ): Promise<NotificationEntity> {
+    return this.notificationRepository.save(createNotificationDto);
   }
 
-  async findAll() {
-    return `This action returns all notifications`;
+  async findAll(
+    pageNumber?: number,
+    pageSize?: number,
+  ): Promise<Response<NotificationEntity[]>> {
+    const qb = this.notificationRepository.createQueryBuilder('notifications');
+
+    if (pageSize && pageNumber) {
+      qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
+    }
+
+    const [rs, total] = await Promise.all([qb.getMany(), qb.getCount()]);
+    return {
+      data: rs,
+      pageNumber: Number(pageNumber),
+      pageSize: Number(pageSize),
+      total: total,
+    };
   }
 
-  async findOne(id: number) {
-    return `This action returns a #${id} notification`;
+  async findOne(id: number): Promise<NotificationEntity> {
+    return this.notificationRepository.findOne(id);
   }
 
-  async update(id: number, updateNotificationDto: UpdateNotificationDto) {
-    return `This action updates a #${id} notification`;
+  async update(
+    id: number,
+    updateNotificationDto: UpdateNotificationDto,
+  ): Promise<NotificationEntity> {
+    await this.notificationRepository.update(id, updateNotificationDto);
+    return this.notificationRepository.findOne(id);
   }
 
-  async remove(id: number) {
-    return `This action removes a #${id} notification`;
+  async remove(id: number): Promise<void> {
+    await this.notificationRepository.delete(id);
   }
 }
