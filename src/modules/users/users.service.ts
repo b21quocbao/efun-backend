@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Response } from 'src/shares/interceptors/response.interceptor';
@@ -47,5 +47,58 @@ export class UsersService {
 
   async remove(id: number): Promise<void> {
     await this.userRepository.delete(id);
+  }
+
+  async setRefreshToken(refreshToken: string, userId: number): Promise<void> {
+    await this.userRepository.update(userId, {
+      refreshToken,
+    });
+  }
+
+  async setCountry(ip: string, country: string, userId: number): Promise<void> {
+    await this.userRepository.update(userId, {
+      ip,
+      country,
+    });
+  }
+
+  async getUserIfRefreshTokenMatch(
+    refreshToken: string,
+    userId: number,
+  ): Promise<UserEntity> {
+    const user = await this.userRepository.findOne({
+      select: ['id', 'refreshToken'],
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user)
+      throw new HttpException({ key: 'NOT_EXISTS' }, HttpStatus.NOT_FOUND);
+
+    const isRefreshTokenMatching = user.refreshToken === refreshToken;
+
+    if (!isRefreshTokenMatching)
+      throw new HttpException(
+        { key: 'REFRESH_TOKEN_INVALID' },
+        HttpStatus.UNAUTHORIZED,
+      );
+
+    return user;
+  }
+
+  async getUser(id: number): Promise<UserEntity> {
+    return this.userRepository.findOneOrFail(id);
+  }
+
+  async blockUser(id: number): Promise<void> {
+    await this.userRepository.update(id, { isBlocked: true });
+  }
+
+  async findByAddress(address: string): Promise<UserEntity> {
+    return this.userRepository
+      .createQueryBuilder('users')
+      .where('users.address = :address', { address })
+      .getOne();
   }
 }

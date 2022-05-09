@@ -1,49 +1,42 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Param, Put, Query, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { UserID } from 'src/shares/decorators/get-user-id.decorator';
+import { RolesGuardAdmin } from 'src/shares/decorators/is-admin.decorator';
 import { Response } from 'src/shares/interceptors/response.interceptor';
+import { PaginationInput } from 'src/shares/pagination/pagination.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserEntity } from './entities/user.entity';
+import { UsersService } from './users.service';
 
 @ApiTags('Users')
 @Controller('users')
+@ApiBearerAuth()
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  async create(@Body() createUserDto: CreateUserDto): Promise<UserEntity> {
-    return this.usersService.create(createUserDto);
-  }
-
   @Get()
-  async findAll(): Promise<Response<UserEntity[]>> {
-    return this.usersService.findAll();
+  @UseGuards(JwtAuthGuard)
+  async getUser(@UserID() userId: number) {
+    return this.usersService.getUser(userId);
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string): Promise<UserEntity> {
-    return this.usersService.findOne(+id);
+  // @Delete()
+  // @UseGuards(JwtAuthGuard)
+  // async deleteAccount(@UserID() userId: number): Promise<void> {
+  //   return this.usersService.remove(userId);
+  // }
+
+  @Put('block-user/:id')
+  @UseGuards(JwtAuthGuard, RolesGuardAdmin)
+  async blockUser(@Param('id') id: string): Promise<void> {
+    return this.usersService.blockUser(+id);
   }
 
-  @Patch(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ): Promise<UserEntity> {
-    return this.usersService.update(+id, updateUserDto);
-  }
-
-  @Delete(':id')
-  async remove(@Param('id') id: string): Promise<void> {
-    return this.usersService.remove(+id);
+  @Get('admin')
+  @UseGuards(JwtAuthGuard, RolesGuardAdmin)
+  async findAll(
+    @Query() { pageNumber, pageSize }: PaginationInput,
+  ): Promise<Response<UserEntity[]>> {
+    return this.usersService.findAll(pageNumber, pageSize);
   }
 }
