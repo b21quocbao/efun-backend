@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { CreateEventDto } from './dto/create-event.dto';
-import { UpdateEventDto } from './dto/update-event.dto';
-import { Response } from 'src/shares/interceptors/response.interceptor';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Response } from 'src/shares/interceptors/response.interceptor';
 import { Repository } from 'typeorm';
-import { EventEntity } from './entities/event.entity';
+import { CreateEventDto } from './dto/create-event.dto';
 import { GetAllEventDto } from './dto/get-event.dto';
+import { UpdateEventDto } from './dto/update-event.dto';
+import { EventEntity } from './entities/event.entity';
 
 @Injectable()
 export class EventsService {
@@ -24,6 +24,16 @@ export class EventsService {
   }: GetAllEventDto): Promise<Response<EventEntity[]>> {
     const qb = this.eventRepository
       .createQueryBuilder('events')
+      .leftJoin(
+        (qb) =>
+          qb
+            .select(['events.id as id', 'SUM(pools.amount::numeric) as total'])
+            .from(EventEntity, 'events')
+            .leftJoin('events.pools', 'pools')
+            .groupBy('events.id'),
+        'ev',
+        'ev.id = events.id',
+      )
       .leftJoin('events.category', 'category')
       .leftJoin('events.user', 'user')
       .select([
@@ -31,6 +41,7 @@ export class EventsService {
         'category.name as category',
         'user.isVerified as "isUserVerified"',
         'user.address as address',
+        'ev.total as "totalAmount"',
       ]);
     if (pageSize && pageNumber) {
       qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
