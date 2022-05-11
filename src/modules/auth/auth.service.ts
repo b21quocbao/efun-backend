@@ -57,7 +57,6 @@ export class AuthService {
     const ip =
       req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
     const geoData = lookup(ip);
-    console.log(geoData, 'Line #67 auth.service.ts');
 
     const user = req.user;
 
