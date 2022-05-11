@@ -52,6 +52,9 @@ export class UserEntity {
   @JoinTable()
   followers: UserEntity[];
 
+  @Column({ default: false })
+  isVerified: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 

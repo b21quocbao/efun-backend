@@ -5,6 +5,7 @@ import { Response } from 'src/shares/interceptors/response.interceptor';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EventEntity } from './entities/event.entity';
+import { GetAllEventDto } from './dto/get-event.dto';
 
 @Injectable()
 export class EventsService {
@@ -17,17 +18,25 @@ export class EventsService {
     return this.eventRepository.save(createEventDto);
   }
 
-  async findAll(
-    pageNumber?: number,
-    pageSize?: number,
-  ): Promise<Response<EventEntity[]>> {
-    const qb = this.eventRepository.createQueryBuilder('events');
-
+  async findAll({
+    pageNumber,
+    pageSize,
+  }: GetAllEventDto): Promise<Response<EventEntity[]>> {
+    const qb = this.eventRepository
+      .createQueryBuilder('events')
+      .leftJoin('events.category', 'category')
+      .leftJoin('events.user', 'user')
+      .select([
+        'events.*',
+        'category.name as category',
+        'user.isVerified as "isUserVerified"',
+        'user.address as address',
+      ]);
     if (pageSize && pageNumber) {
       qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
     }
 
-    const [rs, total] = await Promise.all([qb.getMany(), qb.getCount()]);
+    const [rs, total] = await Promise.all([qb.getRawMany(), qb.getCount()]);
     return {
       data: rs,
       pageNumber: Number(pageNumber),
