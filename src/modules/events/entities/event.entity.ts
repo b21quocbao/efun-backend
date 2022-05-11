@@ -67,6 +67,9 @@ export class EventEntity {
   @Column({ nullable: true })
   resultProofUrl?: string;
 
+  @Column({ nullable: true })
+  shortDescription?: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
