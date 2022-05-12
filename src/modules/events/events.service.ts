@@ -6,6 +6,7 @@ import { CreateEventDto } from './dto/create-event.dto';
 import { GetAllEventDto } from './dto/get-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { EventEntity } from './entities/event.entity';
+import { ESortEvent } from './enums/event-type.enum';
 
 @Injectable()
 export class EventsService {
@@ -19,6 +20,7 @@ export class EventsService {
   }
 
   async findAll({
+    orderBy,
     pageNumber,
     pageSize,
   }: GetAllEventDto): Promise<Response<EventEntity[]>> {
@@ -27,7 +29,10 @@ export class EventsService {
       .leftJoin(
         (qb) =>
           qb
-            .select(['events.id as id', 'SUM(pools.amount::numeric) as total'])
+            .select([
+              'events.id as id',
+              'SUM(COALESCE(pools.amount::numeric,0)) as total',
+            ])
             .from(EventEntity, 'events')
             .leftJoin('events.pools', 'pools')
             .groupBy('events.id'),
@@ -36,6 +41,7 @@ export class EventsService {
       )
       .leftJoin('events.category', 'category')
       .leftJoin('events.user', 'user')
+      .where('events.deadline >= now()')
       .select([
         'events.*',
         'category.name as category',
@@ -43,6 +49,11 @@ export class EventsService {
         'user.address as address',
         'ev.total as "totalAmount"',
       ]);
+    if (orderBy == ESortEvent.UPCOMING) {
+      qb.orderBy('deadline');
+    } else if (orderBy == ESortEvent.BIGGEST_EFUN_POOL) {
+      qb.orderBy('ev.total', 'DESC');
+    }
     if (pageSize && pageNumber) {
       qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
     }

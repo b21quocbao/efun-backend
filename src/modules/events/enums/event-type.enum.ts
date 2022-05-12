@@ -3,3 +3,8 @@ export enum EventType {
   MultipleChoices = 'MultipleChoices',
   TeamScore = 'TeamScore',
 }
+
+export enum ESortEvent {
+  BIGGEST_EFUN_POOL = 'Biggest EFUN Pool',
+  UPCOMING = 'Upcoming',
+}
