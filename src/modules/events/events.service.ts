@@ -20,6 +20,7 @@ export class EventsService {
   }
 
   async findAll({
+    search,
     orderBy,
     pageNumber,
     pageSize,
@@ -49,6 +50,9 @@ export class EventsService {
         'user.address as address',
         'ev.total as "totalAmount"',
       ]);
+    if (search) {
+      qb.andWhere('events.name ILIKE :name', { name: `%${search}%` });
+    }
     if (orderBy == ESortEvent.UPCOMING) {
       qb.orderBy('deadline');
     } else if (orderBy == ESortEvent.BIGGEST_EFUN_POOL) {
