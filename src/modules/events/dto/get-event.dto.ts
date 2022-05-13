@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsOptional } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { PaginationInput } from 'src/shares/pagination/pagination.dto';
 import { ESortEvent } from '../enums/event-type.enum';
 
@@ -10,4 +10,9 @@ export class GetAllEventDto extends PaginationInput {
   @IsEnum(ESortEvent)
   @IsOptional()
   orderBy?: ESortEvent;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  search?: string;
 }
