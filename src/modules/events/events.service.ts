@@ -27,19 +27,7 @@ export class EventsService {
   }: GetAllEventDto): Promise<Response<EventEntity[]>> {
     const qb = this.eventRepository
       .createQueryBuilder('events')
-      .leftJoin(
-        (qb) =>
-          qb
-            .select([
-              'events.id as id',
-              'SUM(COALESCE(pools.amount::numeric,0)) as total',
-            ])
-            .from(EventEntity, 'events')
-            .leftJoin('events.pools', 'pools')
-            .groupBy('events.id'),
-        'ev',
-        'ev.id = events.id',
-      )
+      .leftJoin('events.pools', 'pools')
       .leftJoin('events.category', 'category')
       .leftJoin('events.user', 'user')
       .where('events.deadline >= now()')
@@ -48,8 +36,12 @@ export class EventsService {
         'category.name as category',
         'user.isVerified as "isUserVerified"',
         'user.address as address',
-        'ev.total as "totalAmount"',
-      ]);
+        'SUM(COALESCE(pools.amount::numeric,0)) as "totalAmount"',
+      ])
+      .groupBy('events.id')
+      .addGroupBy('category.name')
+      .addGroupBy('user.isVerified')
+      .addGroupBy('user.address');
     if (search) {
       qb.andWhere('events.name ILIKE :name', { name: `%${search}%` });
     }
