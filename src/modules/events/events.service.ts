@@ -95,8 +95,8 @@ export class EventsService {
     const total = await this.eventRepository.count(where);
     return {
       data,
-      pageNumber,
-      pageSize,
+      pageNumber: Number(pageNumber),
+      pageSize: Number(pageSize),
       total,
     };
   }
