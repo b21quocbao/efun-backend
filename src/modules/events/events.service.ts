@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Response } from 'src/shares/interceptors/response.interceptor';
-import { Not, Repository } from 'typeorm';
+import { MoreThanOrEqual, Not, Repository } from 'typeorm';
 import { CreateEventDto } from './dto/create-event.dto';
 import { GetAllEventDto, GetOtherEventDto } from './dto/get-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
@@ -85,6 +85,7 @@ export class EventsService {
     const where = {
       userId: event.userId,
       id: Not(+eventId),
+      deadline: MoreThanOrEqual(new Date()),
     };
     const data = await this.eventRepository.find({
       where,
