@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Response } from 'src/shares/interceptors/response.interceptor';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { CreateEventDto } from './dto/create-event.dto';
-import { GetAllEventDto } from './dto/get-event.dto';
+import { GetAllEventDto, GetOtherEventDto } from './dto/get-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { EventEntity } from './entities/event.entity';
 import { ESortEvent } from './enums/event-type.enum';
@@ -77,5 +77,26 @@ export class EventsService {
 
   async remove(id: number): Promise<void> {
     await this.eventRepository.delete(id);
+  }
+
+  async findOtherEvents(request: GetOtherEventDto) {
+    const { eventId, pageNumber, pageSize } = request;
+    const event = await this.eventRepository.findOneOrFail(eventId);
+    const where = {
+      userId: event.userId,
+      id: Not(+eventId),
+    };
+    const data = await this.eventRepository.find({
+      where,
+      skip: (pageNumber - 1) * pageSize,
+      take: pageSize,
+    });
+    const total = await this.eventRepository.count(where);
+    return {
+      data,
+      pageNumber,
+      pageSize,
+      total,
+    };
   }
 }
