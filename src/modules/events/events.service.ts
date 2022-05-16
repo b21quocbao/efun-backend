@@ -48,7 +48,7 @@ export class EventsService {
     if (orderBy == ESortEvent.UPCOMING) {
       qb.orderBy('deadline');
     } else if (orderBy == ESortEvent.BIGGEST_EFUN_POOL) {
-      qb.orderBy('ev.total', 'DESC');
+      qb.orderBy('"totalAmount"', 'DESC');
     }
     if (pageSize && pageNumber) {
       qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
