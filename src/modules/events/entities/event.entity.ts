@@ -73,6 +73,9 @@ export class EventEntity {
   @Column({ nullable: true })
   shortDescription?: string;
 
+  @Column()
+  userId: number;
+
   @CreateDateColumn()
   createdAt: Date;
 
