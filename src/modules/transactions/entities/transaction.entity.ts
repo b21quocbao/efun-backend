@@ -1,12 +1,12 @@
-import { PredictPoolEntity } from 'src/modules/predict-pools/entities/predict-pool.entity';
 import { PredictionEntity } from 'src/modules/predictions/entities/prediction.entity';
+import { RewardEntity } from 'src/modules/rewards/entities/reward.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
   Column,
-  ManyToOne,
+  OneToOne,
 } from 'typeorm';
 
 @Entity('transactions')
@@ -20,11 +20,11 @@ export class TransactionEntity {
   @Column()
   contractAddress: string;
 
-  @ManyToOne(() => PredictionEntity, (prediction) => prediction.transactions)
-  prediction: PredictionEntity;
+  @OneToOne(() => PredictionEntity, (prediction) => prediction.transaction)
+  prediction?: PredictionEntity;
 
-  @ManyToOne(() => PredictPoolEntity, (predictPool) => predictPool.transactions)
-  predictPool: PredictPoolEntity;
+  @OneToOne(() => RewardEntity, (reward) => reward.transaction)
+  reward?: RewardEntity;
 
   @Column({ nullable: true })
   walletAddress: string;

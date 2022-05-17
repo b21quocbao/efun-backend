@@ -13,8 +13,6 @@ import { NotificationEntity } from '../notifications/entities/notification.entit
 import { NotificationsModule } from '../notifications/notifications.module';
 import { PoolEntity } from '../pools/entities/pool.entity';
 import { PoolsModule } from '../pools/pools.module';
-import { PredictPoolEntity } from '../predict-pools/entities/predict-pool.entity';
-import { PredictPoolsModule } from '../predict-pools/predict-pools.module';
 import { PredictionEntity } from '../predictions/entities/prediction.entity';
 import { PredictionsModule } from '../predictions/predictions.module';
 import { ReportEntity } from '../reports/entities/report.entity';
@@ -46,7 +44,6 @@ import { AppService } from './app.service';
           LatestBlockEntity,
           NotificationEntity,
           PoolEntity,
-          PredictPoolEntity,
           PredictionEntity,
           ReportEntity,
           TransactionEntity,
@@ -70,7 +67,6 @@ import { AppService } from './app.service';
     NotificationsModule,
     PoolsModule,
     PredictionsModule,
-    PredictPoolsModule,
     ReportsModule,
     TransactionsModule,
     UsersModule,

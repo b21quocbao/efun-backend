@@ -1,7 +1,6 @@
 import { CategoryEntity } from 'src/modules/categories/entities/category.entity';
-import { PoolEntity } from 'src/modules/pools/entities/pool.entity';
-import { PredictPoolEntity } from 'src/modules/predict-pools/entities/predict-pool.entity';
 import { PredictionEntity } from 'src/modules/predictions/entities/prediction.entity';
+import { RewardEntity } from 'src/modules/rewards/entities/reward.entity';
 import { UserEntity } from 'src/modules/users/entities/user.entity';
 import {
   Entity,
@@ -12,6 +11,7 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
+import { EventStatus } from '../enums/event-status.enum';
 import { EventType } from '../enums/event-type.enum';
 
 @Entity('events')
@@ -25,6 +25,9 @@ export class EventEntity {
   @Column()
   name: string;
 
+  @Column({ default: EventStatus.PENDING })
+  status: EventStatus;
+
   @Column()
   thumbnailUrl: string;
 
@@ -36,12 +39,6 @@ export class EventEntity {
 
   @Column({ nullable: true })
   scoreData?: string;
-
-  @OneToMany(() => PoolEntity, (pool) => pool.event)
-  pools: PoolEntity[];
-
-  @OneToMany(() => PredictPoolEntity, (predictPool) => predictPool.event)
-  predictPools: PredictPoolEntity[];
 
   @Column()
   deadline: Date;
@@ -57,6 +54,9 @@ export class EventEntity {
 
   @OneToMany(() => PredictionEntity, (prediction) => prediction.event)
   predictions: PredictionEntity[];
+
+  @OneToMany(() => RewardEntity, (reward) => reward.event)
+  rewards: RewardEntity[];
 
   @Column({ default: 0 })
   views: number;

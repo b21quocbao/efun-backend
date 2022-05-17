@@ -11,25 +11,22 @@ import {
   OneToOne,
   JoinColumn,
 } from 'typeorm';
-import { PredictionStatus } from '../enums/prediction-status.enum';
+import { RewardStatus } from '../enums/reward-status.enum';
 
-@Entity('predictions')
-export class PredictionEntity {
+@Entity('rewards')
+export class RewardEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => EventEntity, (event) => event.predictions)
+  @ManyToOne(() => EventEntity, (event) => event.rewards)
   event: EventEntity;
 
-  @ManyToOne(() => UserEntity, (user) => user.predictions)
+  @ManyToOne(() => UserEntity, (user) => user.rewards)
   user: UserEntity;
 
-  @OneToOne(() => TransactionEntity, (transaction) => transaction.prediction)
+  @OneToOne(() => TransactionEntity, (transaction) => transaction.reward)
   @JoinColumn()
   transaction: TransactionEntity;
-
-  @Column()
-  option: string;
 
   @Column()
   token: string;
@@ -37,8 +34,8 @@ export class PredictionEntity {
   @Column()
   amount: string;
 
-  @Column({ default: PredictionStatus.Pending })
-  status: PredictionStatus;
+  @Column({ default: RewardStatus.Pending })
+  status: RewardStatus;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -11,7 +11,6 @@ export class CreateEventDto {
   endTime: Date;
   optionDetails: string;
   streamUrl?: string;
-  views: number;
   result?: string;
   resultProofUrl?: string;
 }

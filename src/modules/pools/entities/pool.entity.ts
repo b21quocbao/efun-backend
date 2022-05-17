@@ -1,4 +1,4 @@
-import { EventEntity } from 'src/modules/events/entities/event.entity';
+import { UserEntity } from 'src/modules/users/entities/user.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -7,16 +7,21 @@ import {
   Column,
   JoinColumn,
   ManyToOne,
+  Unique,
 } from 'typeorm';
 
 @Entity('pools')
+@Unique(['token', 'userId'])
 export class PoolEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => EventEntity, (event) => event.pools)
+  @ManyToOne(() => UserEntity, (user) => user.pools)
   @JoinColumn()
-  event: EventEntity;
+  user: UserEntity;
+
+  @Column()
+  token: string;
 
   @Column()
   amount: string;
