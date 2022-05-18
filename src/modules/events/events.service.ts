@@ -24,12 +24,14 @@ export class EventsService {
     description,
     option,
     orderBy,
+    categoryId,
+    isHot,
     pageNumber,
     pageSize,
   }: GetAllEventDto): Promise<Response<EventEntity[]>> {
     const qb = this.eventRepository
       .createQueryBuilder('events')
-      .leftJoin('events.pools', 'pools')
+      // .leftJoin('events.pools', 'pools')
       .leftJoin('events.category', 'category')
       .leftJoin('events.user', 'user')
       .where('events.deadline >= now()')
@@ -38,7 +40,7 @@ export class EventsService {
         'category.name as category',
         'user.isVerified as "isUserVerified"',
         'user.address as address',
-        'SUM(COALESCE(pools.amount::numeric,0)) as "totalAmount"',
+        // 'SUM(COALESCE(pools.amount::numeric,0)) as "totalAmount"',
       ])
       .groupBy('events.id')
       .addGroupBy('category.name')
@@ -48,15 +50,23 @@ export class EventsService {
       qb.andWhere('events.name ILIKE :name', { name: `%${name}%` });
     }
     if (description) {
-      qb.andWhere('events.name ILIKE :name', { name: `%${description}%` });
+      qb.andWhere('events.description ILIKE :description', {
+        description: `%${description}%`,
+      });
     }
     if (option) {
-      qb.andWhere('events.name ILIKE :name', { name: `%${option}%` });
+      qb.andWhere('events.option ILIKE :option', { option: `%${option}%` });
+    }
+    if (categoryId) {
+      qb.andWhere('events.categoryId = :categoryId', { categoryId });
+    }
+    if (isHot) {
+      qb.andWhere('events.isHot = :isHot', { isHot });
     }
     if (orderBy == ESortEvent.UPCOMING) {
       qb.orderBy('deadline');
     } else if (orderBy == ESortEvent.BIGGEST_EFUN_POOL) {
-      qb.orderBy('"totalAmount"', 'DESC');
+      // qb.orderBy('"totalAmount"', 'DESC');
     }
     if (pageSize && pageNumber) {
       qb.limit(pageSize).offset((pageNumber - 1) * pageSize);

@@ -76,6 +76,9 @@ export class EventEntity {
   @Column()
   userId: number;
 
+  @Column({ default: false })
+  isHot: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 

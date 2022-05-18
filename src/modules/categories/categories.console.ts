@@ -53,5 +53,10 @@ export class CategoryConsole {
         'https://d1icd6shlvmxi6.cloudfront.net/gsc/L3REGZ/ce/f2/9a/cef29afcffed4f0abe9e08a160463ad0/images/landing/u19.svg?pageId=d9364718-003d-498b-aa32-00a5a86e0e85',
       index: 6,
     });
+    await this.categoriesService.create({
+      name: 'Others',
+      logoUrl: '',
+      index: 7,
+    });
   }
 }
