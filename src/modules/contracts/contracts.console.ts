@@ -275,7 +275,7 @@ export class ContractConsole {
       this.web3,
       this.latestBlockService,
       contract,
-      ContractEvent.RewardClaimed,
+      ContractEvent.LPDeposited,
       eventHandler,
     );
   }
