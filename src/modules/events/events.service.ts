@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Response } from 'src/shares/interceptors/response.interceptor';
-import { MoreThanOrEqual, Not, Repository } from 'typeorm';
+import { Brackets, MoreThanOrEqual, Not, Repository } from 'typeorm';
 import { CreateEventDto } from './dto/create-event.dto';
 import { GetAllEventDto, GetOtherEventDto } from './dto/get-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
@@ -20,9 +20,7 @@ export class EventsService {
   }
 
   async findAll({
-    name,
-    description,
-    option,
+    search,
     orderBy,
     categoryId,
     isHot,
@@ -46,16 +44,16 @@ export class EventsService {
       .addGroupBy('category.name')
       .addGroupBy('user.isVerified')
       .addGroupBy('user.address');
-    if (name) {
-      qb.andWhere('events.name ILIKE :name', { name: `%${name}%` });
-    }
-    if (description) {
-      qb.andWhere('events.description ILIKE :description', {
-        description: `%${description}%`,
-      });
-    }
-    if (option) {
-      qb.andWhere('events.option ILIKE :option', { option: `%${option}%` });
+    if (search) {
+      qb.andWhere(
+        new Brackets((qb) => {
+          qb.andWhere('events.name ILIKE :name', { name: `%${search}%` })
+            .orWhere('events.description ILIKE :description', {
+              description: `%${search}%`,
+            })
+            .orWhere('events.option ILIKE :option', { option: `%${search}%` });
+        }),
+      );
     }
     if (categoryId) {
       qb.andWhere('events.categoryId = :categoryId', { categoryId });

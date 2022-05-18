@@ -41,6 +41,9 @@ export class EventEntity {
   scoreData?: string;
 
   @Column()
+  startTime: Date;
+
+  @Column()
   deadline: Date;
 
   @Column()

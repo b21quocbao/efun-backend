@@ -23,7 +23,7 @@ export class RewardEntity {
   @ManyToOne(() => UserEntity, (user) => user.rewards)
   user: UserEntity;
 
-  @OneToOne(() => TransactionEntity, (transaction) => transaction.reward)
+  @OneToOne(() => TransactionEntity)
   @JoinColumn()
   transaction: TransactionEntity;
 

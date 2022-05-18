@@ -7,6 +7,7 @@ export class CreateEventDto {
   categoryId: number;
   type: EventType;
   scoreData?: string;
+  startTime: Date;
   deadline: Date;
   endTime: Date;
   optionDetails: string;

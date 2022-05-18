@@ -23,7 +23,7 @@ export class PredictionEntity {
   @ManyToOne(() => UserEntity, (user) => user.predictions)
   user: UserEntity;
 
-  @OneToOne(() => TransactionEntity, (transaction) => transaction.prediction)
+  @OneToOne(() => TransactionEntity)
   @JoinColumn()
   transaction: TransactionEntity;
 

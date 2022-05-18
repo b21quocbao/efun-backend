@@ -21,17 +21,7 @@ export class GetAllEventDto extends PaginationInput {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  name?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  description?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  option?: string;
+  search?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
