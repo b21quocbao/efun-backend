@@ -1,6 +1,7 @@
 import { CategoryEntity } from 'src/modules/categories/entities/category.entity';
 import { PredictionEntity } from 'src/modules/predictions/entities/prediction.entity';
 import { RewardEntity } from 'src/modules/rewards/entities/reward.entity';
+import { TransactionEntity } from 'src/modules/transactions/entities/transaction.entity';
 import { UserEntity } from 'src/modules/users/entities/user.entity';
 import {
   Entity,
@@ -10,6 +11,8 @@ import {
   Column,
   ManyToOne,
   OneToMany,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
 import { EventStatus } from '../enums/event-status.enum';
 import { EventType } from '../enums/event-type.enum';
@@ -50,7 +53,10 @@ export class EventEntity {
   endTime: Date;
 
   @Column()
-  optionDetails: string;
+  options: string;
+
+  @Column()
+  odds: string;
 
   @Column({ nullable: true })
   streamUrl?: string;
@@ -81,6 +87,13 @@ export class EventEntity {
 
   @Column({ default: false })
   isHot: boolean;
+
+  @OneToOne(() => TransactionEntity)
+  @JoinColumn()
+  transaction?: TransactionEntity;
+
+  @Column({ nullable: true })
+  transactionId: number;
 
   @CreateDateColumn()
   createdAt: Date;

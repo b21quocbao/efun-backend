@@ -10,8 +10,10 @@ export class CreateEventDto {
   startTime: Date;
   deadline: Date;
   endTime: Date;
-  optionDetails: string;
+  options: string;
+  odds: string;
   streamUrl?: string;
   result?: string;
   resultProofUrl?: string;
+  transactionId?: number;
 }

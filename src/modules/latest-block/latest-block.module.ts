@@ -6,5 +6,6 @@ import { LatestBlockService } from './latest-block.service';
 @Module({
   imports: [TypeOrmModule.forFeature([LatestBlockEntity])],
   providers: [LatestBlockService],
+  exports: [LatestBlockService],
 })
 export class LatestBlockModule {}
