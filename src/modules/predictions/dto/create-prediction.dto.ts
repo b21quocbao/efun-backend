@@ -1,7 +1,7 @@
 export class CreatePredictionDto {
   eventId: number;
   userId: number;
-  transactionId: string;
+  transactionId: number;
   option: string;
   token: string;
   amount: string;
