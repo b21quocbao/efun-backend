@@ -24,6 +24,9 @@ export class PoolEntity {
   token: string;
 
   @Column()
+  userId: number;
+
+  @Column()
   amount: string;
 
   @CreateDateColumn()
