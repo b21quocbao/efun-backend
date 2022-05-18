@@ -14,6 +14,7 @@ import { PredictionsService } from '../predictions/predictions.service';
 import { RewardsService } from '../rewards/rewards.service';
 import { predictionABI } from 'src/shares/contracts/abi/predictionABI';
 import { EventType } from '../events/enums/event-type.enum';
+import { EventStatus } from '../events/enums/event-status.enum';
 
 @Console()
 @Injectable()
@@ -74,6 +75,7 @@ export class ContractConsole {
           endTime: new Date(event.returnValues.endTime * 1000),
           options: JSON.stringify(event.returnValues.options.data),
           odds: JSON.stringify(event.returnValues.options.odds),
+          status: EventStatus.AVAILABLE,
           userId: user.id,
           transactionId: transaction.id,
         });
@@ -122,6 +124,7 @@ export class ContractConsole {
 
         await this.eventsService.update(eventEnitty.id, {
           result: event.returnValues.result,
+          status: EventStatus.FINISH,
           transactionId: transaction.id,
         });
       }
