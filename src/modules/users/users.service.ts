@@ -98,7 +98,7 @@ export class UsersService {
   async findByAddress(address: string): Promise<UserEntity> {
     return this.userRepository
       .createQueryBuilder('users')
-      .where('users.address = :address', { address })
+      .where('users.address ILIKE :address', { address: `%${address}%` })
       .getOne();
   }
 }
