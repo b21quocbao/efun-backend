@@ -11,7 +11,6 @@ import {
   OneToOne,
   JoinColumn,
 } from 'typeorm';
-import { PredictionStatus } from '../enums/prediction-status.enum';
 
 @Entity('predictions')
 export class PredictionEntity {
@@ -36,9 +35,6 @@ export class PredictionEntity {
 
   @Column()
   amount: string;
-
-  @Column({ default: PredictionStatus.Pending })
-  status: PredictionStatus;
 
   @CreateDateColumn()
   createdAt: Date;

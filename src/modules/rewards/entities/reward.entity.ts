@@ -11,7 +11,6 @@ import {
   OneToOne,
   JoinColumn,
 } from 'typeorm';
-import { RewardStatus } from '../enums/reward-status.enum';
 
 @Entity('rewards')
 export class RewardEntity {
@@ -33,9 +32,6 @@ export class RewardEntity {
 
   @Column()
   amount: string;
-
-  @Column({ default: RewardStatus.Pending })
-  status: RewardStatus;
 
   @CreateDateColumn()
   createdAt: Date;

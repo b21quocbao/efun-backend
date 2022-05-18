@@ -3,7 +3,7 @@ import { CreateLatestBlockDto } from './dto/create-latest-block.dto';
 import { UpdateLatestBlockDto } from './dto/update-latest-block.dto';
 import { Response } from 'src/shares/interceptors/response.interceptor';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { LatestBlockEntity } from './entities/latest-block.entity';
 
 @Injectable()
@@ -52,5 +52,44 @@ export class LatestBlockService {
 
   async remove(id: number): Promise<void> {
     await this.latestBlockRepository.delete(id);
+  }
+
+  async saveLatestBlock(
+    network: string,
+    type: string,
+    block: string,
+    entityManager: EntityManager = undefined,
+  ): Promise<void> {
+    const latestBlock = new LatestBlockEntity();
+    latestBlock.block = block;
+    if (entityManager) {
+      await entityManager
+        .createQueryBuilder()
+        .update(LatestBlockEntity)
+        .set({ block })
+        .where('network = :network', { network })
+        .andWhere('type = :type', { type })
+        .execute();
+    } else {
+      await this.latestBlockRepository.update({ network, type }, latestBlock);
+    }
+  }
+
+  async getLatestBlock(
+    network: string,
+    type: string,
+  ): Promise<LatestBlockEntity> {
+    let latestBlock = await this.latestBlockRepository.findOne({
+      network,
+      type,
+    });
+    if (!latestBlock) {
+      latestBlock = new LatestBlockEntity();
+      latestBlock.network = network;
+      latestBlock.type = type;
+      latestBlock.block = '0';
+      await this.latestBlockRepository.insert(latestBlock);
+    }
+    return latestBlock;
   }
 }
