@@ -48,6 +48,14 @@ export class CreateEventDto {
   @IsString()
   odds: string;
 
+  @ApiProperty()
+  @IsString()
+  description: string;
+
+  @ApiProperty()
+  @IsString()
+  shortDescription: string;
+
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()

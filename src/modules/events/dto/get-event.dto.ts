@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsBoolean,
   IsEnum,
@@ -24,11 +25,13 @@ export class GetAllEventDto extends PaginationInput {
   search?: string;
 
   @ApiPropertyOptional()
+  @Transform(({ value }) => Number(value))
   @IsOptional()
   @IsNumber()
   categoryId?: number;
 
   @ApiPropertyOptional()
+  @Transform(({ value }) => value.toLowerCase() === 'true')
   @IsOptional()
   @IsBoolean()
   isHot?: boolean;

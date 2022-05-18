@@ -76,11 +76,11 @@ export class EventEntity {
   @Column({ nullable: true })
   resultProofUrl?: string;
 
-  @Column({ nullable: true })
-  description?: string;
+  @Column({ default: '' })
+  description: string;
 
-  @Column({ nullable: true })
-  shortDescription?: string;
+  @Column({ default: '' })
+  shortDescription: string;
 
   @Column()
   userId: number;

@@ -39,12 +39,6 @@ export class EventConsole {
     const eventHandler = async (event): Promise<void> => {
       console.log(`Processing event ${JSON.stringify(event.returnValues)}`);
       console.log(`Handle item with id ${event.returnValues.idx}`);
-      console.log(event.returnValues, 'Line #54 events.console.ts');
-      console.log(
-        ['MULTIPLE_CHOICES_PROXY', 'GROUP_PREDICT_PROXY', 'HANDICAP_PROXY']
-          .map((e) => process.env[e].toLowerCase())
-          .includes(event.returnValues.helperAddress.toLowerCase()),
-      );
 
       const user = await this.usersService.findByAddress(
         event.returnValues.creator,
