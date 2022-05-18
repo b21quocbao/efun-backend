@@ -20,7 +20,9 @@ export class EventsService {
   }
 
   async findAll({
-    search,
+    name,
+    description,
+    option,
     orderBy,
     pageNumber,
     pageSize,
@@ -42,8 +44,14 @@ export class EventsService {
       .addGroupBy('category.name')
       .addGroupBy('user.isVerified')
       .addGroupBy('user.address');
-    if (search) {
-      qb.andWhere('events.name ILIKE :name', { name: `%${search}%` });
+    if (name) {
+      qb.andWhere('events.name ILIKE :name', { name: `%${name}%` });
+    }
+    if (description) {
+      qb.andWhere('events.name ILIKE :name', { name: `%${description}%` });
+    }
+    if (option) {
+      qb.andWhere('events.name ILIKE :name', { name: `%${option}%` });
     }
     if (orderBy == ESortEvent.UPCOMING) {
       qb.orderBy('deadline');
