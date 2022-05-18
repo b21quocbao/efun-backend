@@ -36,6 +36,15 @@ export class PredictionEntity {
   @Column()
   amount: string;
 
+  @Column()
+  eventId: number;
+
+  @Column()
+  userId: number;
+
+  @Column()
+  transactionId: number;
+
   @CreateDateColumn()
   createdAt: Date;
 

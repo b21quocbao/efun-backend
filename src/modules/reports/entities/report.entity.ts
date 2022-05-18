@@ -26,6 +26,12 @@ export class ReportEntity {
   @JoinColumn()
   prediction: PredictionEntity;
 
+  @Column()
+  userId: number;
+
+  @Column()
+  predictionId: number;
+
   @CreateDateColumn()
   createdAt: Date;
 

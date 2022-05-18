@@ -85,6 +85,9 @@ export class EventEntity {
   @Column()
   userId: number;
 
+  @Column()
+  categoryId: number;
+
   @Column({ default: false })
   isHot: boolean;
 

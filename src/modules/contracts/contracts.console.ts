@@ -15,6 +15,7 @@ import { RewardsService } from '../rewards/rewards.service';
 import { predictionABI } from 'src/shares/contracts/abi/predictionABI';
 import { EventType } from '../events/enums/event-type.enum';
 import { EventStatus } from '../events/enums/event-status.enum';
+import { PoolsService } from '../pools/pools.service';
 
 @Console()
 @Injectable()
@@ -28,6 +29,7 @@ export class ContractConsole {
     private readonly usersService: UsersService,
     private readonly latestBlockService: LatestBlockService,
     private readonly rewardsService: RewardsService,
+    private readonly poolsService: PoolsService,
   ) {
     this.web3 = new Web3();
     this.web3.setProvider(new Web3.providers.HttpProvider(process.env.RPC_URL));
@@ -215,6 +217,51 @@ export class ContractConsole {
 
         await this.rewardsService.create({
           eventId: event.returnValues.eventId,
+          userId: user.id,
+          transactionId: transaction.id,
+          token: event.returnValues.token,
+          amount: event.returnValues.amount,
+        });
+      }
+    };
+
+    await crawlSmartcontractEvents(
+      Number(statingBlock),
+      this.web3,
+      this.latestBlockService,
+      contract,
+      ContractEvent.RewardClaimed,
+      eventHandler,
+    );
+  }
+
+  @Command({
+    command: 'create-lp <statingBlock>',
+  })
+  async createLP(statingBlock = 0): Promise<void> {
+    const contract = new this.web3.eth.Contract(
+      predictionABI as AbiItem[],
+      process.env.PREDICTION_PROXY,
+    );
+    const eventHandler = async (event): Promise<void> => {
+      console.log(`Processing event ${JSON.stringify(event.returnValues)}`);
+      console.log(`Handle item with id ${event.returnValues.eventId}`);
+      const user = await this.usersService.findByAddress(
+        event.returnValues.user,
+      );
+      const receipt = await this.web3.eth.getTransactionReceipt(
+        event.transactionHash,
+      );
+
+      if (user) {
+        const transaction = await this.transactionsService.create({
+          contractAddress: event.address,
+          gas: receipt?.gasUsed,
+          walletAddress: receipt?.from,
+          txId: event.transactionHash,
+        });
+
+        await this.poolsService.create({
           userId: user.id,
           transactionId: transaction.id,
           token: event.returnValues.token,

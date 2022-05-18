@@ -1,3 +1,4 @@
+import { TransactionEntity } from 'src/modules/transactions/entities/transaction.entity';
 import { UserEntity } from 'src/modules/users/entities/user.entity';
 import {
   Entity,
@@ -8,6 +9,7 @@ import {
   JoinColumn,
   ManyToOne,
   Unique,
+  OneToOne,
 } from 'typeorm';
 
 @Entity('pools')
@@ -20,11 +22,18 @@ export class PoolEntity {
   @JoinColumn()
   user: UserEntity;
 
+  @OneToOne(() => TransactionEntity)
+  @JoinColumn()
+  transaction: TransactionEntity;
+
   @Column()
   token: string;
 
   @Column()
   userId: number;
+
+  @Column()
+  transactionId: number;
 
   @Column()
   amount: string;

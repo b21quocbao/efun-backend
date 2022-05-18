@@ -23,6 +23,9 @@ export class NotificationEntity {
   @ManyToOne(() => UserEntity, (user) => user.notifications)
   user: UserEntity;
 
+  @Column()
+  userId: number;
+
   @Column({ nullable: true })
   metadata?: string;
 
