@@ -8,5 +8,6 @@ import { RewardEntity } from './entities/reward.entity';
   imports: [TypeOrmModule.forFeature([RewardEntity])],
   controllers: [RewardsController],
   providers: [RewardsService],
+  exports: [RewardsService],
 })
 export class RewardsModule {}

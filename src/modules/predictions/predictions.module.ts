@@ -8,5 +8,6 @@ import { PredictionEntity } from './entities/prediction.entity';
   imports: [TypeOrmModule.forFeature([PredictionEntity])],
   controllers: [PredictionsController],
   providers: [PredictionsService],
+  exports: [PredictionsService],
 })
 export class PredictionsModule {}

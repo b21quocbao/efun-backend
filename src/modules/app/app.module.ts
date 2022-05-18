@@ -5,6 +5,7 @@ import { ConsoleModule } from 'nestjs-console';
 import { AuthModule } from '../auth/auth.module';
 import { CategoriesModule } from '../categories/categories.module';
 import { CategoryEntity } from '../categories/entities/category.entity';
+import { ContractsModule } from '../contracts/contracts.module';
 import { EventEntity } from '../events/entities/event.entity';
 import { EventsModule } from '../events/events.module';
 import { LatestBlockEntity } from '../latest-block/entities/latest-block.entity';
@@ -75,6 +76,7 @@ import { AppService } from './app.service';
     TransactionsModule,
     UsersModule,
     AuthModule,
+    ContractsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
