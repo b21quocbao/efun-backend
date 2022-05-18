@@ -281,7 +281,7 @@ export class ContractConsole {
   }
 
   @Command({
-    command: 'crawl-all',
+    command: 'crawl-all <statingBlock>',
   })
   async crawlAll(statingBlock = 0): Promise<void> {
     await Promise.all([
@@ -289,6 +289,7 @@ export class ContractConsole {
       this.updateResult(statingBlock),
       this.createPrediction(statingBlock),
       this.createReward(statingBlock),
+      this.createLP(statingBlock),
     ]);
   }
 
