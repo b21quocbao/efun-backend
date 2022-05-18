@@ -13,6 +13,7 @@ import { EventsService } from '../events/events.service';
 import { PredictionsService } from '../predictions/predictions.service';
 import { RewardsService } from '../rewards/rewards.service';
 import { predictionABI } from 'src/shares/contracts/abi/predictionABI';
+import { EventType } from '../events/enums/event-type.enum';
 
 @Console()
 @Injectable()
@@ -31,128 +32,6 @@ export class ContractConsole {
     this.web3.setProvider(new Web3.providers.HttpProvider(process.env.RPC_URL));
   }
 
-  async createEventsEventHandler(event): Promise<void> {
-    console.log(`Processing event ${JSON.stringify(event.returnValues)}`);
-    console.log(`Handle item with id ${event.returnValues.idx}`);
-
-    const user = await this.usersService.findByAddress(
-      event.returnValues.creator,
-    );
-    const eventEnitty = await this.eventsService.findOne(
-      event.returnValues.idx,
-    );
-    const receipt = await this.web3.eth.getTransactionReceipt(
-      event.transactionHash,
-    );
-
-    if (
-      user &&
-      eventEnitty &&
-      ['MULTIPLE_CHOICES_PROXY', 'GROUP_PREDICT_PROXY', 'HANDICAP_PROXY']
-        .map((e) => process.env[e].toLowerCase())
-        .includes(event.returnValues.helperAddress.toLowerCase())
-    ) {
-      const transaction = await this.transactionsService.create({
-        contractAddress: event.address,
-        gas: receipt?.gasUsed,
-        walletAddress: receipt?.from,
-        txId: event.transactionHash,
-      });
-
-      await this.eventsService.update(eventEnitty.id, {
-        startTime: event.returnValues.startTime,
-        deadline: event.returnValues.deadlineTime,
-        endTime: event.returnValues.endTime,
-        options: JSON.stringify(event.returnValues.options.data),
-        odds: JSON.stringify(event.returnValues.options.odds),
-        userId: user.id,
-        transactionId: transaction.id,
-      });
-    }
-  }
-
-  async updateResultEventHandler(event): Promise<void> {
-    console.log(`Processing event ${JSON.stringify(event.returnValues)}`);
-    console.log(`Handle item with id ${event.returnValues.eventId}`);
-
-    const user = await this.usersService.findByAddress(
-      event.returnValues.caller,
-    );
-    const eventEnitty = await this.eventsService.findOne(
-      event.returnValues.eventId,
-    );
-    const receipt = await this.web3.eth.getTransactionReceipt(
-      event.transactionHash,
-    );
-
-    if (user && eventEnitty) {
-      const transaction = await this.transactionsService.create({
-        contractAddress: event.address,
-        gas: receipt?.gasUsed,
-        walletAddress: receipt?.from,
-        txId: event.transactionHash,
-      });
-
-      await this.eventsService.update(eventEnitty.id, {
-        result: event.returnValues.result,
-        transactionId: transaction.id,
-      });
-    }
-  }
-
-  async createPredictionEventHandler(event): Promise<void> {
-    console.log(`Processing event ${JSON.stringify(event.returnValues)}`);
-    console.log(`Handle item with id ${event.returnValues.eventId}`);
-    const user = await this.usersService.findByAddress(event.returnValues.user);
-    const receipt = await this.web3.eth.getTransactionReceipt(
-      event.transactionHash,
-    );
-
-    if (user) {
-      const transaction = await this.transactionsService.create({
-        contractAddress: event.address,
-        gas: receipt?.gasUsed,
-        walletAddress: receipt?.from,
-        txId: event.transactionHash,
-      });
-
-      await this.predictionsService.create({
-        eventId: event.returnValues.eventId,
-        userId: user.id,
-        transactionId: transaction.id,
-        option: event.returnValues.option,
-        token: event.returnValues.token,
-        amount: event.returnValues.amount,
-      });
-    }
-  }
-
-  async createRewardEventHandler(event): Promise<void> {
-    console.log(`Processing event ${JSON.stringify(event.returnValues)}`);
-    console.log(`Handle item with id ${event.returnValues.eventId}`);
-    const user = await this.usersService.findByAddress(event.returnValues.user);
-    const receipt = await this.web3.eth.getTransactionReceipt(
-      event.transactionHash,
-    );
-
-    if (user) {
-      const transaction = await this.transactionsService.create({
-        contractAddress: event.address,
-        gas: receipt?.gasUsed,
-        walletAddress: receipt?.from,
-        txId: event.transactionHash,
-      });
-
-      await this.rewardsService.create({
-        eventId: event.returnValues.eventId,
-        userId: user.id,
-        transactionId: transaction.id,
-        token: event.returnValues.token,
-        amount: event.returnValues.amount,
-      });
-    }
-  }
-
   @Command({
     command: 'create-events <statingBlock>',
   })
@@ -161,6 +40,45 @@ export class ContractConsole {
       eventABI as AbiItem[],
       process.env.EVENT_PROXY,
     );
+    const eventHandler = async (event): Promise<void> => {
+      console.log(`Processing event ${JSON.stringify(event.returnValues)}`);
+      console.log(`Handle item with id ${event.returnValues.idx}`);
+
+      const user = await this.usersService.findByAddress(
+        event.returnValues.creator,
+      );
+      const eventEnitty = await this.eventsService.findOne(
+        event.returnValues.idx,
+      );
+      const receipt = await this.web3.eth.getTransactionReceipt(
+        event.transactionHash,
+      );
+
+      if (
+        user &&
+        eventEnitty &&
+        ['MULTIPLE_CHOICES_PROXY', 'GROUP_PREDICT_PROXY', 'HANDICAP_PROXY']
+          .map((e) => process.env[e].toLowerCase())
+          .includes(event.returnValues.helperAddress.toLowerCase())
+      ) {
+        const transaction = await this.transactionsService.create({
+          contractAddress: event.address,
+          gas: receipt?.gasUsed,
+          walletAddress: receipt?.from,
+          txId: event.transactionHash,
+        });
+
+        await this.eventsService.update(eventEnitty.id, {
+          startTime: event.returnValues.startTime,
+          deadline: event.returnValues.deadlineTime,
+          endTime: event.returnValues.endTime,
+          options: JSON.stringify(event.returnValues.options.data),
+          odds: JSON.stringify(event.returnValues.options.odds),
+          userId: user.id,
+          transactionId: transaction.id,
+        });
+      }
+    };
 
     await crawlSmartcontractEvents(
       Number(statingBlock),
@@ -168,7 +86,7 @@ export class ContractConsole {
       this.latestBlockService,
       contract,
       ContractEvent.EventCreated,
-      this.createEventsEventHandler,
+      eventHandler,
     );
   }
 
@@ -180,6 +98,34 @@ export class ContractConsole {
       eventABI as AbiItem[],
       process.env.EVENT_PROXY,
     );
+    const eventHandler = async (event): Promise<void> => {
+      console.log(`Processing event ${JSON.stringify(event.returnValues)}`);
+      console.log(`Handle item with id ${event.returnValues.eventId}`);
+
+      const user = await this.usersService.findByAddress(
+        event.returnValues.caller,
+      );
+      const eventEnitty = await this.eventsService.findOne(
+        event.returnValues.eventId,
+      );
+      const receipt = await this.web3.eth.getTransactionReceipt(
+        event.transactionHash,
+      );
+
+      if (user && eventEnitty) {
+        const transaction = await this.transactionsService.create({
+          contractAddress: event.address,
+          gas: receipt?.gasUsed,
+          walletAddress: receipt?.from,
+          txId: event.transactionHash,
+        });
+
+        await this.eventsService.update(eventEnitty.id, {
+          result: event.returnValues.result,
+          transactionId: transaction.id,
+        });
+      }
+    };
 
     await crawlSmartcontractEvents(
       Number(statingBlock),
@@ -187,7 +133,7 @@ export class ContractConsole {
       this.latestBlockService,
       contract,
       ContractEvent.EventResultUpdated,
-      this.updateResultEventHandler,
+      eventHandler,
     );
   }
 
@@ -199,6 +145,34 @@ export class ContractConsole {
       predictionABI as AbiItem[],
       process.env.PREDICTION_PROXY,
     );
+    const eventHandler = async (event): Promise<void> => {
+      console.log(`Processing event ${JSON.stringify(event.returnValues)}`);
+      console.log(`Handle item with id ${event.returnValues.eventId}`);
+      const user = await this.usersService.findByAddress(
+        event.returnValues.user,
+      );
+      const receipt = await this.web3.eth.getTransactionReceipt(
+        event.transactionHash,
+      );
+
+      if (user) {
+        const transaction = await this.transactionsService.create({
+          contractAddress: event.address,
+          gas: receipt?.gasUsed,
+          walletAddress: receipt?.from,
+          txId: event.transactionHash,
+        });
+
+        await this.predictionsService.create({
+          eventId: event.returnValues.eventId,
+          userId: user.id,
+          transactionId: transaction.id,
+          option: event.returnValues.option,
+          token: event.returnValues.token,
+          amount: event.returnValues.amount,
+        });
+      }
+    };
 
     await crawlSmartcontractEvents(
       Number(statingBlock),
@@ -206,7 +180,7 @@ export class ContractConsole {
       this.latestBlockService,
       contract,
       ContractEvent.PredictionCreated,
-      this.createPredictionEventHandler,
+      eventHandler,
     );
   }
 
@@ -218,6 +192,33 @@ export class ContractConsole {
       predictionABI as AbiItem[],
       process.env.PREDICTION_PROXY,
     );
+    const eventHandler = async (event): Promise<void> => {
+      console.log(`Processing event ${JSON.stringify(event.returnValues)}`);
+      console.log(`Handle item with id ${event.returnValues.eventId}`);
+      const user = await this.usersService.findByAddress(
+        event.returnValues.user,
+      );
+      const receipt = await this.web3.eth.getTransactionReceipt(
+        event.transactionHash,
+      );
+
+      if (user) {
+        const transaction = await this.transactionsService.create({
+          contractAddress: event.address,
+          gas: receipt?.gasUsed,
+          walletAddress: receipt?.from,
+          txId: event.transactionHash,
+        });
+
+        await this.rewardsService.create({
+          eventId: event.returnValues.eventId,
+          userId: user.id,
+          transactionId: transaction.id,
+          token: event.returnValues.token,
+          amount: event.returnValues.amount,
+        });
+      }
+    };
 
     await crawlSmartcontractEvents(
       Number(statingBlock),
@@ -225,59 +226,40 @@ export class ContractConsole {
       this.latestBlockService,
       contract,
       ContractEvent.RewardClaimed,
-      this.createRewardEventHandler,
+      eventHandler,
     );
   }
 
   @Command({
-    command: 'crawl-all <statingBlock>',
+    command: 'crawl-all',
   })
   async crawlAll(statingBlock = 0): Promise<void> {
-    const contract1 = new this.web3.eth.Contract(
-      eventABI as AbiItem[],
-      process.env.EVENT_PROXY,
-    );
-
-    const contract2 = new this.web3.eth.Contract(
-      predictionABI as AbiItem[],
-      process.env.PREDICTION_PROXY,
-    );
-
-    console.log('Starting', 'Line #244 contracts.console.ts');
-
     await Promise.all([
-      crawlSmartcontractEvents(
-        Number(statingBlock),
-        this.web3,
-        this.latestBlockService,
-        contract1,
-        ContractEvent.EventCreated,
-        this.createEventsEventHandler,
-      ),
-      crawlSmartcontractEvents(
-        Number(statingBlock),
-        this.web3,
-        this.latestBlockService,
-        contract1,
-        ContractEvent.EventResultUpdated,
-        this.updateResultEventHandler,
-      ),
-      crawlSmartcontractEvents(
-        Number(statingBlock),
-        this.web3,
-        this.latestBlockService,
-        contract2,
-        ContractEvent.PredictionCreated,
-        this.createPredictionEventHandler,
-      ),
-      crawlSmartcontractEvents(
-        Number(statingBlock),
-        this.web3,
-        this.latestBlockService,
-        contract2,
-        ContractEvent.RewardClaimed,
-        this.createRewardEventHandler,
-      ),
+      this.createEvents(statingBlock),
+      this.updateResult(statingBlock),
+      this.createPrediction(statingBlock),
+      this.createReward(statingBlock),
     ]);
+  }
+
+  @Command({
+    command: 'seed-event',
+  })
+  async seedEvent(): Promise<void> {
+    await this.eventsService.create({
+      userId: 1,
+      name: 'PL Winner',
+      thumbnailUrl:
+        'https://media.bongda.com.vn/files/hai.phan/2022/05/18/man-city-vs-liverpool-0843.jpg',
+      categoryId: 2,
+      type: EventType.GroupPredict,
+      startTime: new Date(Date.now() + 5 * 60 * 1000),
+      deadline: new Date(Date.now() + 7 * 24 * 3600 * 1000),
+      endTime: new Date(Date.now() + 10 * 24 * 3600 * 1000),
+      options: '["Liverpool","Man City"]',
+      odds: '[0,0]',
+      description: 'Which team will be PL Winner',
+      shortDescription: 'PL Winner Team',
+    });
   }
 }
