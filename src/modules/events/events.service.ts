@@ -51,7 +51,7 @@ export class EventsService {
             .orWhere('events.description ILIKE :description', {
               description: `%${search}%`,
             })
-            .orWhere('events.option ILIKE :option', { option: `%${search}%` });
+            .orWhere('events.options ILIKE :options', { options: `%${search}%` });
         }),
       );
     }
