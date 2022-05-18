@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDate, IsNumber, IsString } from 'class-validator';
+import { IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
 import { EventType } from '../enums/event-type.enum';
 
 export class CreateEventDto {
@@ -25,6 +25,7 @@ export class CreateEventDto {
 
   @ApiPropertyOptional()
   @IsString()
+  @IsOptional()
   scoreData?: string;
 
   @ApiProperty()
@@ -49,17 +50,21 @@ export class CreateEventDto {
 
   @ApiPropertyOptional()
   @IsString()
+  @IsOptional()
   streamUrl?: string;
 
   @ApiPropertyOptional()
   @IsString()
+  @IsOptional()
   result?: string;
 
   @ApiPropertyOptional()
   @IsString()
+  @IsOptional()
   resultProofUrl?: string;
 
   @ApiPropertyOptional()
   @IsNumber()
+  @IsOptional()
   transactionId?: number;
 }
