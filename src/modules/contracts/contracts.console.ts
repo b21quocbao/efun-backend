@@ -69,9 +69,9 @@ export class ContractConsole {
         });
 
         await this.eventsService.update(eventEnitty.id, {
-          startTime: event.returnValues.startTime,
-          deadline: event.returnValues.deadlineTime,
-          endTime: event.returnValues.endTime,
+          startTime: new Date(event.returnValues.startTime * 1000),
+          deadline: new Date(event.returnValues.deadlineTime * 1000),
+          endTime: new Date(event.returnValues.endTime * 1000),
           options: JSON.stringify(event.returnValues.options.data),
           odds: JSON.stringify(event.returnValues.options.odds),
           userId: user.id,
