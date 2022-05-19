@@ -12,9 +12,9 @@ export const predictionABI = [
     inputs: [
       {
         indexed: false,
-        internalType: 'address',
-        name: 'user',
-        type: 'address',
+        internalType: 'uint256',
+        name: 'eventId',
+        type: 'uint256',
       },
       {
         indexed: false,
@@ -138,6 +138,7 @@ export const predictionABI = [
   },
   {
     inputs: [
+      { internalType: 'uint256', name: '_eventId', type: 'uint256' },
       { internalType: 'address', name: '_token', type: 'address' },
       { internalType: 'uint256', name: '_amount', type: 'uint256' },
     ],
@@ -216,7 +217,10 @@ export const predictionABI = [
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: '_token', type: 'address' }],
+    inputs: [
+      { internalType: 'uint256', name: '_eventId', type: 'uint256' },
+      { internalType: 'address', name: '_token', type: 'address' },
+    ],
     name: 'getLiquidityPool',
     outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
     stateMutability: 'view',
