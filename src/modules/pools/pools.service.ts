@@ -40,6 +40,14 @@ export class PoolsService {
     return this.poolRepository.findOne(id);
   }
 
+  async findByEventToken(eventId: number, token: string): Promise<PoolEntity> {
+    return this.poolRepository
+      .createQueryBuilder('pools')
+      .where('pools."eventId" = :eventId', { eventId })
+      .andWhere('pools.token = :token', { token })
+      .getOne();
+  }
+
   async update(id: number, updatePoolDto: UpdatePoolDto): Promise<PoolEntity> {
     await this.poolRepository.update(id, updatePoolDto);
     return this.poolRepository.findOne(id);

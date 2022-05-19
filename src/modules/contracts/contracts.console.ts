@@ -119,11 +119,14 @@ export class ContractConsole {
       const user = await this.usersService.findByAddress(
         event.returnValues.user,
       );
+      const eventEntity = await this.eventsService.findOne(
+        event.returnValues.eventId,
+      );
       const receipt = await this.web3.eth.getTransactionReceipt(
         event.transactionHash,
       );
 
-      if (user) {
+      if (user && eventEntity) {
         const transaction = await this.transactionsService.create({
           contractAddress: event.address,
           gas: receipt?.gasUsed,
@@ -148,11 +151,14 @@ export class ContractConsole {
       const user = await this.usersService.findByAddress(
         event.returnValues.user,
       );
+      const eventEntity = await this.eventsService.findOne(
+        event.returnValues.eventId,
+      );
       const receipt = await this.web3.eth.getTransactionReceipt(
         event.transactionHash,
       );
 
-      if (user) {
+      if (user && eventEntity) {
         const transaction = await this.transactionsService.create({
           contractAddress: event.address,
           gas: receipt?.gasUsed,
@@ -173,14 +179,18 @@ export class ContractConsole {
     this.eventHandler5 = async (event): Promise<void> => {
       console.log(`Processing event ${JSON.stringify(event.returnValues)}`);
       console.log(`Handle item with id ${event.returnValues.eventId}`);
-      const user = await this.usersService.findByAddress(
-        event.returnValues.user,
-      );
       const receipt = await this.web3.eth.getTransactionReceipt(
         event.transactionHash,
       );
+      const eventEntity = await this.eventsService.findOne(
+        event.returnValues.eventId,
+      );
+      const pool = await this.poolsService.findByEventToken(
+        event.returnValues.eventId,
+        event.returnValues.token,
+      );
 
-      if (user) {
+      if (eventEntity) {
         const transaction = await this.transactionsService.create({
           contractAddress: event.address,
           gas: receipt?.gasUsed,
@@ -188,12 +198,18 @@ export class ContractConsole {
           txId: event.transactionHash,
         });
 
-        await this.poolsService.create({
-          userId: user.id,
-          transactionId: transaction.id,
-          token: event.returnValues.token,
-          amount: event.returnValues.amount,
-        });
+        if (pool) {
+          await this.poolsService.update(pool.id, {
+            amount: event.returnValues.amount,
+          });
+        } else {
+          await this.poolsService.create({
+            eventId: event.returnValues.eventId,
+            transactionId: transaction.id,
+            token: event.returnValues.token,
+            amount: event.returnValues.amount,
+          });
+        }
       }
     };
   }

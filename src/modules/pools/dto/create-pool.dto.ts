@@ -1,6 +1,6 @@
 export class CreatePoolDto {
   token: string;
   amount: string;
-  userId: number;
+  eventId: number;
   transactionId: number;
 }

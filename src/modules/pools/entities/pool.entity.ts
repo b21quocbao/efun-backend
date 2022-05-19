@@ -1,5 +1,5 @@
+import { EventEntity } from 'src/modules/events/entities/event.entity';
 import { TransactionEntity } from 'src/modules/transactions/entities/transaction.entity';
-import { UserEntity } from 'src/modules/users/entities/user.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -13,14 +13,14 @@ import {
 } from 'typeorm';
 
 @Entity('pools')
-@Unique(['token', 'userId'])
+@Unique(['token', 'eventId'])
 export class PoolEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => UserEntity, (user) => user.pools)
+  @ManyToOne(() => EventEntity, (event) => event.pools)
   @JoinColumn()
-  user: UserEntity;
+  event: EventEntity;
 
   @OneToOne(() => TransactionEntity)
   @JoinColumn()
@@ -30,7 +30,7 @@ export class PoolEntity {
   token: string;
 
   @Column()
-  userId: number;
+  eventId: number;
 
   @Column()
   transactionId: number;

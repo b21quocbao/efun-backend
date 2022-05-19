@@ -1,4 +1,5 @@
 import { CategoryEntity } from 'src/modules/categories/entities/category.entity';
+import { PoolEntity } from 'src/modules/pools/entities/pool.entity';
 import { PredictionEntity } from 'src/modules/predictions/entities/prediction.entity';
 import { RewardEntity } from 'src/modules/rewards/entities/reward.entity';
 import { TransactionEntity } from 'src/modules/transactions/entities/transaction.entity';
@@ -36,6 +37,9 @@ export class EventEntity {
 
   @ManyToOne(() => CategoryEntity, (category) => category.events)
   category: CategoryEntity;
+
+  @OneToMany(() => PoolEntity, (pool) => pool.event)
+  pools: PoolEntity[];
 
   @Column()
   type: EventType;
