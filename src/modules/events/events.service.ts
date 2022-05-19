@@ -39,11 +39,7 @@ export class EventsService {
         'user.isVerified as "isUserVerified"',
         'user.address as address',
         // 'SUM(COALESCE(pools.amount::numeric,0)) as "totalAmount"',
-      ])
-      .groupBy('events.id')
-      .addGroupBy('category.name')
-      .addGroupBy('user.isVerified')
-      .addGroupBy('user.address');
+      ]);
     if (search) {
       qb.andWhere(
         new Brackets((qb) => {
@@ -87,7 +83,14 @@ export class EventsService {
       .leftJoin('events.category', 'category')
       .leftJoin('events.user', 'user')
       .where('events.id = :id', { id })
-      .getOne();
+      .select([
+        'events.*',
+        'category.name as category',
+        'user.isVerified as "isUserVerified"',
+        'user.address as address',
+        // 'SUM(COALESCE(pools.amount::numeric,0)) as "totalAmount"',
+      ])
+      .getRawOne();
   }
 
   async update(
