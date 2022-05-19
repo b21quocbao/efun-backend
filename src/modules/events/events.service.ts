@@ -39,7 +39,11 @@ export class EventsService {
         'user.isVerified as "isUserVerified"',
         'user.address as address',
         'SUM(COALESCE(pools.amount::numeric,0)) as "totalAmount"',
-      ]);
+      ])
+      .groupBy('events.id')
+      .addGroupBy('category.name')
+      .addGroupBy('user.isVerified')
+      .addGroupBy('user.address');
     if (search) {
       qb.andWhere(
         new Brackets((qb) => {
@@ -91,6 +95,10 @@ export class EventsService {
         'user.address as address',
         'SUM(COALESCE(pools.amount::numeric,0)) as "totalAmount"',
       ])
+      .groupBy('events.id')
+      .addGroupBy('category.name')
+      .addGroupBy('user.isVerified')
+      .addGroupBy('user.address')
       .getRawOne();
   }
 
