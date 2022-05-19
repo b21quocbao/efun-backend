@@ -3,7 +3,10 @@ const Web3 = require('web3');
 import { Injectable } from '@nestjs/common';
 import { Command, Console } from 'nestjs-console';
 import { ContractEvent } from 'src/shares/contracts/constant';
-import { crawlSmartcontractEvents } from 'src/shares/helpers/smartcontract';
+import {
+  crawlSmartcontractEvents,
+  crawlSmartcontractEventsBatch,
+} from 'src/shares/helpers/smartcontract';
 import { LatestBlockService } from '../latest-block/latest-block.service';
 import { TransactionsService } from '../transactions/transactions.service';
 import { UsersService } from '../users/users.service';
@@ -21,6 +24,11 @@ import { PoolsService } from '../pools/pools.service';
 @Injectable()
 export class ContractConsole {
   private web3;
+  private eventHandler1;
+  private eventHandler2;
+  private eventHandler3;
+  private eventHandler4;
+  private eventHandler5;
 
   constructor(
     private readonly eventsService: EventsService,
@@ -33,17 +41,8 @@ export class ContractConsole {
   ) {
     this.web3 = new Web3();
     this.web3.setProvider(new Web3.providers.HttpProvider(process.env.RPC_URL));
-  }
 
-  @Command({
-    command: 'create-events <statingBlock>',
-  })
-  async createEvents(statingBlock = 0): Promise<void> {
-    const contract = new this.web3.eth.Contract(
-      eventABI as AbiItem[],
-      process.env.EVENT_PROXY,
-    );
-    const eventHandler = async (event): Promise<void> => {
+    this.eventHandler1 = async (event): Promise<void> => {
       console.log(`Processing event ${JSON.stringify(event.returnValues)}`);
       console.log(`Handle item with id ${event.returnValues.idx}`);
 
@@ -84,25 +83,7 @@ export class ContractConsole {
       }
     };
 
-    await crawlSmartcontractEvents(
-      Number(statingBlock),
-      this.web3,
-      this.latestBlockService,
-      contract,
-      ContractEvent.EventCreated,
-      eventHandler,
-    );
-  }
-
-  @Command({
-    command: 'update-result <statingBlock>',
-  })
-  async updateResult(statingBlock = 0): Promise<void> {
-    const contract = new this.web3.eth.Contract(
-      eventABI as AbiItem[],
-      process.env.EVENT_PROXY,
-    );
-    const eventHandler = async (event): Promise<void> => {
+    this.eventHandler2 = async (event): Promise<void> => {
       console.log(`Processing event ${JSON.stringify(event.returnValues)}`);
       console.log(`Handle item with id ${event.returnValues.eventId}`);
 
@@ -132,25 +113,7 @@ export class ContractConsole {
       }
     };
 
-    await crawlSmartcontractEvents(
-      Number(statingBlock),
-      this.web3,
-      this.latestBlockService,
-      contract,
-      ContractEvent.EventResultUpdated,
-      eventHandler,
-    );
-  }
-
-  @Command({
-    command: 'create-prediction <statingBlock>',
-  })
-  async createPrediction(statingBlock = 0): Promise<void> {
-    const contract = new this.web3.eth.Contract(
-      predictionABI as AbiItem[],
-      process.env.PREDICTION_PROXY,
-    );
-    const eventHandler = async (event): Promise<void> => {
+    this.eventHandler3 = async (event): Promise<void> => {
       console.log(`Processing event ${JSON.stringify(event.returnValues)}`);
       console.log(`Handle item with id ${event.returnValues.eventId}`);
       const user = await this.usersService.findByAddress(
@@ -179,25 +142,7 @@ export class ContractConsole {
       }
     };
 
-    await crawlSmartcontractEvents(
-      Number(statingBlock),
-      this.web3,
-      this.latestBlockService,
-      contract,
-      ContractEvent.PredictionCreated,
-      eventHandler,
-    );
-  }
-
-  @Command({
-    command: 'create-reward <statingBlock>',
-  })
-  async createReward(statingBlock = 0): Promise<void> {
-    const contract = new this.web3.eth.Contract(
-      predictionABI as AbiItem[],
-      process.env.PREDICTION_PROXY,
-    );
-    const eventHandler = async (event): Promise<void> => {
+    this.eventHandler4 = async (event): Promise<void> => {
       console.log(`Processing event ${JSON.stringify(event.returnValues)}`);
       console.log(`Handle item with id ${event.returnValues.eventId}`);
       const user = await this.usersService.findByAddress(
@@ -225,25 +170,7 @@ export class ContractConsole {
       }
     };
 
-    await crawlSmartcontractEvents(
-      Number(statingBlock),
-      this.web3,
-      this.latestBlockService,
-      contract,
-      ContractEvent.RewardClaimed,
-      eventHandler,
-    );
-  }
-
-  @Command({
-    command: 'create-lp <statingBlock>',
-  })
-  async createLP(statingBlock = 0): Promise<void> {
-    const contract = new this.web3.eth.Contract(
-      predictionABI as AbiItem[],
-      process.env.PREDICTION_PROXY,
-    );
-    const eventHandler = async (event): Promise<void> => {
+    this.eventHandler5 = async (event): Promise<void> => {
       console.log(`Processing event ${JSON.stringify(event.returnValues)}`);
       console.log(`Handle item with id ${event.returnValues.eventId}`);
       const user = await this.usersService.findByAddress(
@@ -269,6 +196,92 @@ export class ContractConsole {
         });
       }
     };
+  }
+
+  @Command({
+    command: 'create-events <statingBlock>',
+  })
+  async createEvents(statingBlock = 0): Promise<void> {
+    const contract = new this.web3.eth.Contract(
+      eventABI as AbiItem[],
+      process.env.EVENT_PROXY,
+    );
+
+    await crawlSmartcontractEvents(
+      Number(statingBlock),
+      this.web3,
+      this.latestBlockService,
+      contract,
+      ContractEvent.EventCreated,
+      this.eventHandler1,
+    );
+  }
+
+  @Command({
+    command: 'update-result <statingBlock>',
+  })
+  async updateResult(statingBlock = 0): Promise<void> {
+    const contract = new this.web3.eth.Contract(
+      eventABI as AbiItem[],
+      process.env.EVENT_PROXY,
+    );
+
+    await crawlSmartcontractEvents(
+      Number(statingBlock),
+      this.web3,
+      this.latestBlockService,
+      contract,
+      ContractEvent.EventResultUpdated,
+      this.eventHandler2,
+    );
+  }
+
+  @Command({
+    command: 'create-prediction <statingBlock>',
+  })
+  async createPrediction(statingBlock = 0): Promise<void> {
+    const contract = new this.web3.eth.Contract(
+      predictionABI as AbiItem[],
+      process.env.PREDICTION_PROXY,
+    );
+
+    await crawlSmartcontractEvents(
+      Number(statingBlock),
+      this.web3,
+      this.latestBlockService,
+      contract,
+      ContractEvent.PredictionCreated,
+      this.eventHandler3,
+    );
+  }
+
+  @Command({
+    command: 'create-reward <statingBlock>',
+  })
+  async createReward(statingBlock = 0): Promise<void> {
+    const contract = new this.web3.eth.Contract(
+      predictionABI as AbiItem[],
+      process.env.PREDICTION_PROXY,
+    );
+
+    await crawlSmartcontractEvents(
+      Number(statingBlock),
+      this.web3,
+      this.latestBlockService,
+      contract,
+      ContractEvent.RewardClaimed,
+      this.eventHandler4,
+    );
+  }
+
+  @Command({
+    command: 'create-lp <statingBlock>',
+  })
+  async createLP(statingBlock = 0): Promise<void> {
+    const contract = new this.web3.eth.Contract(
+      predictionABI as AbiItem[],
+      process.env.PREDICTION_PROXY,
+    );
 
     await crawlSmartcontractEvents(
       Number(statingBlock),
@@ -276,7 +289,7 @@ export class ContractConsole {
       this.latestBlockService,
       contract,
       ContractEvent.LPDeposited,
-      eventHandler,
+      this.eventHandler5,
     );
   }
 
@@ -284,13 +297,36 @@ export class ContractConsole {
     command: 'crawl-all <statingBlock>',
   })
   async crawlAll(statingBlock = 0): Promise<void> {
-    await Promise.all([
-      this.createEvents(statingBlock),
-      this.updateResult(statingBlock),
-      this.createPrediction(statingBlock),
-      this.createReward(statingBlock),
-      this.createLP(statingBlock),
-    ]);
+    const contract1 = new this.web3.eth.Contract(
+      eventABI as AbiItem[],
+      process.env.EVENT_PROXY,
+    );
+
+    const contract2 = new this.web3.eth.Contract(
+      predictionABI as AbiItem[],
+      process.env.PREDICTION_PROXY,
+    );
+
+    await crawlSmartcontractEventsBatch(
+      Number(statingBlock),
+      this.web3,
+      this.latestBlockService,
+      [contract1, contract1, contract2, contract2, contract2],
+      [
+        ContractEvent.EventCreated,
+        ContractEvent.EventResultUpdated,
+        ContractEvent.PredictionCreated,
+        ContractEvent.RewardClaimed,
+        ContractEvent.LPDeposited,
+      ],
+      [
+        this.eventHandler1,
+        this.eventHandler2,
+        this.eventHandler3,
+        this.eventHandler4,
+        this.eventHandler5,
+      ],
+    );
   }
 
   @Command({
