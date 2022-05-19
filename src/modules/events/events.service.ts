@@ -38,7 +38,7 @@ export class EventsService {
         'category.name as category',
         'user.isVerified as "isUserVerified"',
         'user.address as address',
-        // 'SUM(COALESCE(pools.amount::numeric,0)) as "totalAmount"',
+        'SUM(COALESCE(pools.amount::numeric,0)) as "totalAmount"',
       ]);
     if (search) {
       qb.andWhere(
@@ -62,7 +62,7 @@ export class EventsService {
     if (orderBy == ESortEvent.UPCOMING) {
       qb.orderBy('deadline');
     } else if (orderBy == ESortEvent.BIGGEST_EFUN_POOL) {
-      // qb.orderBy('"totalAmount"', 'DESC');
+      qb.orderBy('"totalAmount"', 'DESC');
     }
     if (pageSize && pageNumber) {
       qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
@@ -88,7 +88,7 @@ export class EventsService {
         'category.name as category',
         'user.isVerified as "isUserVerified"',
         'user.address as address',
-        // 'SUM(COALESCE(pools.amount::numeric,0)) as "totalAmount"',
+        'SUM(COALESCE(pools.amount::numeric,0)) as "totalAmount"',
       ])
       .getRawOne();
   }
