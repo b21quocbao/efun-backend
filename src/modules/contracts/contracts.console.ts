@@ -50,7 +50,7 @@ export class ContractConsole {
       const user = await this.usersService.findByAddress(
         event.returnValues.creator,
       );
-      const eventEnitty = await this.eventsService.findOne(
+      const eventEntity = await this.eventsService.findOne(
         event.returnValues.idx,
       );
       const receipt = await this.web3.eth.getTransactionReceipt(
@@ -59,7 +59,7 @@ export class ContractConsole {
 
       if (
         user &&
-        eventEnitty &&
+        eventEntity &&
         ['MULTIPLE_CHOICES_PROXY', 'GROUP_PREDICT_PROXY', 'HANDICAP_PROXY']
           .map((e) => process.env[e].toLowerCase())
           .includes(event.returnValues.helperAddress.toLowerCase())
@@ -71,7 +71,7 @@ export class ContractConsole {
           txId: event.transactionHash,
         });
 
-        await this.eventsService.update(eventEnitty.id, {
+        await this.eventsService.update(eventEntity.id, {
           startTime: new Date(event.returnValues.startTime * 1000),
           deadline: new Date(event.returnValues.deadlineTime * 1000),
           endTime: new Date(event.returnValues.endTime * 1000),
@@ -109,14 +109,14 @@ export class ContractConsole {
       const user = await this.usersService.findByAddress(
         event.returnValues.caller,
       );
-      const eventEnitty = await this.eventsService.findOne(
+      const eventEntity = await this.eventsService.findOne(
         event.returnValues.eventId,
       );
       const receipt = await this.web3.eth.getTransactionReceipt(
         event.transactionHash,
       );
 
-      if (user && eventEnitty) {
+      if (user && eventEntity) {
         const transaction = await this.transactionsService.create({
           contractAddress: event.address,
           gas: receipt?.gasUsed,
@@ -124,7 +124,7 @@ export class ContractConsole {
           txId: event.transactionHash,
         });
 
-        await this.eventsService.update(eventEnitty.id, {
+        await this.eventsService.update(eventEntity.id, {
           result: event.returnValues.result,
           status: EventStatus.FINISH,
           transactionId: transaction.id,

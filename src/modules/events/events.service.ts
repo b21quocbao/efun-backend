@@ -82,7 +82,12 @@ export class EventsService {
   }
 
   async findOne(id: number): Promise<EventEntity> {
-    return this.eventRepository.findOne(id);
+    return this.eventRepository
+      .createQueryBuilder('events')
+      .leftJoin('events.category', 'category')
+      .leftJoin('events.user', 'user')
+      .where('events.id = :id', { id })
+      .getOne();
   }
 
   async update(
