@@ -42,3 +42,46 @@ export async function crawlSmartcontractEvents(
     await sleep(BLOCK_TIME);
   }
 }
+
+export async function crawlSmartcontractEventsBatch(
+  startingBlock: number,
+  web3: any,
+  latestBlockService: LatestBlockService,
+  // eslint-disable-next-line
+  contracts: any[],
+  eventNames: string[],
+  callbacks: ((event) => void)[],
+): Promise<void> {
+  let cursor = startingBlock;
+  const latestBlock = await latestBlockService.getLatestBlock(
+    LatestBlockNetwork.BSC,
+    'crawl-all',
+  );
+  if (latestBlock.block) cursor = Number(latestBlock.block);
+
+  while (true) {
+    const to = Math.min(cursor + STEP_BLOCK, await web3.eth.getBlockNumber());
+    const params = { fromBlock: cursor + 1, toBlock: to };
+    const eventsBatch = await Promise.all(
+      contracts.map((contract, idx) =>
+        contract.getPastEvents(eventNames[idx], params),
+      ),
+    );
+
+    for (let idx = 0; idx < eventsBatch.length; idx++) {
+      const events = eventsBatch[idx];
+      const callback = callbacks[idx];
+      for (const event of events) {
+        callback(event);
+      }
+    }
+
+    cursor = to;
+    await latestBlockService.saveLatestBlock(
+      LatestBlockNetwork.BSC,
+      'crawl-all',
+      to.toString(),
+    );
+    await sleep(BLOCK_TIME);
+  }
+}
