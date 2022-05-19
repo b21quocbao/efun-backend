@@ -29,7 +29,7 @@ export class EventsService {
   }: GetAllEventDto): Promise<Response<EventEntity[]>> {
     const qb = this.eventRepository
       .createQueryBuilder('events')
-      // .leftJoin('events.pools', 'pools')
+      .leftJoin('events.pools', 'pools')
       .leftJoin('events.category', 'category')
       .leftJoin('events.user', 'user')
       .where('events.deadline >= now()')
@@ -80,6 +80,7 @@ export class EventsService {
   async findOne(id: number): Promise<EventEntity> {
     return this.eventRepository
       .createQueryBuilder('events')
+      .leftJoin('events.pools', 'pools')
       .leftJoin('events.category', 'category')
       .leftJoin('events.user', 'user')
       .where('events.id = :id', { id })
