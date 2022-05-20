@@ -354,8 +354,7 @@ export class ContractConsole {
     command: 'seed-event',
   })
   async seedEvent(): Promise<void> {
-    await this.eventsService.create({
-      userId: 1,
+    await this.eventsService.create(1, {
       name: 'PL Winner',
       thumbnailUrl:
         'https://media.bongda.com.vn/files/hai.phan/2022/05/18/man-city-vs-liverpool-0843.jpg',

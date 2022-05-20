@@ -17,6 +17,7 @@ import {
 } from 'typeorm';
 import { EventStatus } from '../enums/event-status.enum';
 import { EventType } from '../enums/event-type.enum';
+import { MarketType } from '../enums/market-type.enum';
 
 @Entity('events')
 export class EventEntity {
@@ -85,6 +86,9 @@ export class EventEntity {
 
   @Column({ default: '' })
   shortDescription: string;
+
+  @Column({ default: MarketType.None })
+  marketType: MarketType;
 
   @Column()
   userId: number;

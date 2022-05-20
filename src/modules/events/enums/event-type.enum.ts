@@ -1,7 +1,7 @@
 export enum EventType {
-  GroupPredict = 'GroupPredict',
-  MultipleChoices = 'MultipleChoices',
-  TeamScore = 'TeamScore',
+  GroupPredict = 'Group Predict',
+  MultipleChoices = 'Multiple Choices',
+  TeamScore = 'Team Score',
 }
 
 export enum ESortEvent {

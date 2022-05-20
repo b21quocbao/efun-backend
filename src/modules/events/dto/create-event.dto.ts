@@ -1,12 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import { IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
 import { EventType } from '../enums/event-type.enum';
+import { MarketType } from '../enums/market-type.enum';
 
 export class CreateEventDto {
-  @ApiProperty()
-  @IsNumber()
-  userId: number;
-
   @ApiProperty()
   @IsString()
   name: string;
@@ -28,15 +26,23 @@ export class CreateEventDto {
   @IsOptional()
   scoreData?: string;
 
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  marketType?: MarketType;
+
   @ApiProperty()
+  @Transform(({ value }) => new Date(value))
   @IsDate()
   startTime: Date;
 
   @ApiProperty()
+  @Transform(({ value }) => new Date(value))
   @IsDate()
   deadline: Date;
 
   @ApiProperty()
+  @Transform(({ value }) => new Date(value))
   @IsDate()
   endTime: Date;
 
@@ -60,19 +66,4 @@ export class CreateEventDto {
   @IsString()
   @IsOptional()
   streamUrl?: string;
-
-  @ApiPropertyOptional()
-  @IsString()
-  @IsOptional()
-  result?: string;
-
-  @ApiPropertyOptional()
-  @IsString()
-  @IsOptional()
-  resultProofUrl?: string;
-
-  @ApiPropertyOptional()
-  @IsNumber()
-  @IsOptional()
-  transactionId?: number;
 }
