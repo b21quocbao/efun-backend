@@ -59,7 +59,12 @@ export class ContractConsole {
       if (
         user &&
         eventEntity &&
-        ['MULTIPLE_CHOICES_PROXY', 'GROUP_PREDICT_PROXY', 'HANDICAP_PROXY']
+        [
+          'MULTIPLE_CHOICES_PROXY',
+          'GROUP_PREDICT_PROXY',
+          'HANDICAP_PROXY',
+          'OVER_UNDER_PROXY',
+        ]
           .map((e) => process.env[e].toLowerCase())
           .includes(event.returnValues.helperAddress.toLowerCase())
       ) {
