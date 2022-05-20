@@ -198,21 +198,7 @@ export const predictionABI = [
       { internalType: 'address', name: 'token', type: 'address' },
     ],
     name: 'getEventInfo',
-    outputs: [
-      {
-        components: [
-          {
-            internalType: 'uint256',
-            name: 'predictionAmount',
-            type: 'uint256',
-          },
-          { internalType: 'string', name: 'predictOptions', type: 'string' },
-        ],
-        internalType: 'struct EDataTypes.PredictStats',
-        name: '',
-        type: 'tuple',
-      },
-    ],
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
     stateMutability: 'view',
     type: 'function',
   },
@@ -231,6 +217,7 @@ export const predictionABI = [
       { internalType: 'uint256', name: 'eventId', type: 'uint256' },
       { internalType: 'address', name: 'account', type: 'address' },
       { internalType: 'address', name: 'token', type: 'address' },
+      { internalType: 'uint256', name: 'index', type: 'uint256' },
     ],
     name: 'getPredictInfo',
     outputs: [
@@ -241,8 +228,7 @@ export const predictionABI = [
             name: 'predictionAmount',
             type: 'uint256',
           },
-          { internalType: 'uint256', name: 'numPredict', type: 'uint256' },
-          { internalType: 'string', name: 'predictOptions', type: 'string' },
+          { internalType: 'uint256', name: 'predictOptions', type: 'uint256' },
           { internalType: 'bool', name: 'claimed', type: 'bool' },
         ],
         internalType: 'struct EDataTypes.Prediction',
@@ -285,6 +271,17 @@ export const predictionABI = [
     type: 'function',
   },
   {
+    inputs: [
+      { internalType: 'address', name: '', type: 'address' },
+      { internalType: 'address', name: '', type: 'address' },
+      { internalType: 'uint256', name: '', type: 'uint256' },
+    ],
+    name: 'numPredicts',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [],
     name: 'owner',
     outputs: [{ internalType: 'address', name: '', type: 'address' }],
@@ -301,9 +298,9 @@ export const predictionABI = [
   {
     inputs: [
       { internalType: 'uint256', name: '_eventId', type: 'uint256' },
-      { internalType: 'string', name: '_option', type: 'string' },
-      { internalType: 'address', name: '_token', type: 'address' },
-      { internalType: 'uint256', name: '_amount', type: 'uint256' },
+      { internalType: 'string[]', name: '_options', type: 'string[]' },
+      { internalType: 'address[]', name: '_tokens', type: 'address[]' },
+      { internalType: 'uint256[]', name: '_amounts', type: 'uint256[]' },
     ],
     name: 'predict',
     outputs: [],
@@ -315,12 +312,12 @@ export const predictionABI = [
       { internalType: 'address', name: '', type: 'address' },
       { internalType: 'address', name: '', type: 'address' },
       { internalType: 'uint256', name: '', type: 'uint256' },
+      { internalType: 'uint256', name: '', type: 'uint256' },
     ],
     name: 'predictions',
     outputs: [
       { internalType: 'uint256', name: 'predictionAmount', type: 'uint256' },
-      { internalType: 'uint256', name: 'numPredict', type: 'uint256' },
-      { internalType: 'string', name: 'predictOptions', type: 'string' },
+      { internalType: 'uint256', name: 'predictOptions', type: 'uint256' },
       { internalType: 'bool', name: 'claimed', type: 'bool' },
     ],
     stateMutability: 'view',

@@ -30,18 +30,6 @@ export const eventABI = [
       {
         indexed: false,
         internalType: 'address',
-        name: 'sToken',
-        type: 'address',
-      },
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'sTotal',
-        type: 'uint256',
-      },
-      {
-        indexed: false,
-        internalType: 'address',
         name: 'creator',
         type: 'address',
       },
@@ -87,31 +75,6 @@ export const eventABI = [
   {
     anonymous: false,
     inputs: [
-      {
-        indexed: false,
-        internalType: 'address',
-        name: 'caller',
-        type: 'address',
-      },
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'eventId',
-        type: 'uint256',
-      },
-      {
-        indexed: false,
-        internalType: 'enum EDataTypes.EventStatus',
-        name: 'status',
-        type: 'uint8',
-      },
-    ],
-    name: 'EventStatusUpdated',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
       { indexed: false, internalType: 'uint8', name: 'version', type: 'uint8' },
     ],
     name: 'Initialized',
@@ -143,8 +106,6 @@ export const eventABI = [
       { internalType: 'uint256', name: '_deadlineTime', type: 'uint256' },
       { internalType: 'uint256', name: '_endTime', type: 'uint256' },
       { internalType: 'address', name: '_helperAddress', type: 'address' },
-      { internalType: 'address', name: '_sToken', type: 'address' },
-      { internalType: 'uint256', name: '_sTotal', type: 'uint256' },
       {
         components: [
           { internalType: 'string[]', name: 'data', type: 'string[]' },
@@ -167,6 +128,7 @@ export const eventABI = [
       { internalType: 'uint256', name: 'startTime', type: 'uint256' },
       { internalType: 'uint256', name: 'deadlineTime', type: 'uint256' },
       { internalType: 'uint256', name: 'endTime', type: 'uint256' },
+      { internalType: 'uint256', name: 'resultIndex', type: 'uint256' },
       { internalType: 'string', name: 'result', type: 'string' },
       {
         internalType: 'enum EDataTypes.EventStatus',
@@ -174,8 +136,6 @@ export const eventABI = [
         type: 'uint8',
       },
       { internalType: 'address', name: 'helperAddress', type: 'address' },
-      { internalType: 'address', name: 'sToken', type: 'address' },
-      { internalType: 'uint256', name: 'sTotal', type: 'uint256' },
       { internalType: 'address', name: 'creator', type: 'address' },
     ],
     stateMutability: 'view',
@@ -190,6 +150,7 @@ export const eventABI = [
           { internalType: 'uint256', name: 'startTime', type: 'uint256' },
           { internalType: 'uint256', name: 'deadlineTime', type: 'uint256' },
           { internalType: 'uint256', name: 'endTime', type: 'uint256' },
+          { internalType: 'uint256', name: 'resultIndex', type: 'uint256' },
           { internalType: 'string', name: 'result', type: 'string' },
           {
             internalType: 'enum EDataTypes.EventStatus',
@@ -197,8 +158,6 @@ export const eventABI = [
             type: 'uint8',
           },
           { internalType: 'address', name: 'helperAddress', type: 'address' },
-          { internalType: 'address', name: 'sToken', type: 'address' },
-          { internalType: 'uint256', name: 'sTotal', type: 'uint256' },
           { internalType: 'address', name: 'creator', type: 'address' },
           { internalType: 'string[]', name: 'options', type: 'string[]' },
           { internalType: 'uint256[]', name: 'odds', type: 'uint256[]' },
@@ -245,17 +204,6 @@ export const eventABI = [
       { internalType: 'string', name: '_result', type: 'string' },
     ],
     name: 'updateEventResult',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      { internalType: 'uint256', name: '_eventId', type: 'uint256' },
-      { internalType: 'address', name: '_sToken', type: 'address' },
-      { internalType: 'uint256', name: '_sTotal', type: 'uint256' },
-    ],
-    name: 'updateSToken',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
