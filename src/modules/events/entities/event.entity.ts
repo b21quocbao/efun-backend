@@ -106,6 +106,9 @@ export class EventEntity {
   @Column({ nullable: true })
   transactionId: number;
 
+  @Column({ default: '' })
+  metadata: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

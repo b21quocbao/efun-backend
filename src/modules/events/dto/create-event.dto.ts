@@ -60,6 +60,10 @@ export class CreateEventDto {
 
   @ApiProperty()
   @IsString()
+  metadata: string;
+
+  @ApiProperty()
+  @IsString()
   shortDescription: string;
 
   @ApiPropertyOptional()
