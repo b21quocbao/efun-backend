@@ -53,6 +53,9 @@ export class EventsService {
             })
             .orWhere('events.options ILIKE :options', {
               options: `%${search}%`,
+            })
+            .orWhere('events."shortDescription" ILIKE :shortDescription', {
+              shortDescription: `%${search}%`,
             });
         }),
       );
