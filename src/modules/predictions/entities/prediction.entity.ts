@@ -50,15 +50,15 @@ export class PredictionEntity {
   @Column()
   transactionId: number;
 
-  @Column()
-  rewardAmount: string;
+  @Column({ nullable: true })
+  rewardAmount?: string;
 
   @OneToOne(() => TransactionEntity)
   @JoinColumn({ name: 'rewardTransactionId' })
-  rewardTransaction: TransactionEntity;
+  rewardTransaction?: TransactionEntity;
 
-  @Column()
-  rewardTransactionId: number;
+  @Column({ nullable: true })
+  rewardTransactionId?: number;
 
   @CreateDateColumn()
   createdAt: Date;
