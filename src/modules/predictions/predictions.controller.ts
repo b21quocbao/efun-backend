@@ -1,21 +1,30 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { PredictionsService } from './predictions.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Response } from 'src/shares/interceptors/response.interceptor';
+import { PaginationInput } from 'src/shares/pagination/pagination.dto';
 import { PredictionEntity } from './entities/prediction.entity';
+import { UserID } from 'src/shares/decorators/get-user-id.decorator';
 
 @ApiTags('Predictions')
 @Controller('predictions')
+@ApiBearerAuth()
 export class PredictionsController {
   constructor(private readonly predictionsService: PredictionsService) {}
 
   @Get()
-  async findAll(): Promise<Response<PredictionEntity[]>> {
-    return this.predictionsService.findAll();
+  async findAll(
+    @UserID() userId: number,
+    @Query() { pageNumber, pageSize }: PaginationInput,
+  ): Promise<Response<PredictionEntity[]>> {
+    return this.predictionsService.findAll(userId, pageNumber, pageSize);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<PredictionEntity> {
-    return this.predictionsService.findOne(+id);
+  async findOne(
+    @UserID() userId: number,
+    @Param('id') id: string,
+  ): Promise<PredictionEntity> {
+    return this.predictionsService.findOne(userId, +id);
   }
 }

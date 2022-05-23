@@ -18,8 +18,6 @@ import { PredictionEntity } from '../predictions/entities/prediction.entity';
 import { PredictionsModule } from '../predictions/predictions.module';
 import { ReportEntity } from '../reports/entities/report.entity';
 import { ReportsModule } from '../reports/reports.module';
-import { RewardEntity } from '../rewards/entities/reward.entity';
-import { RewardsModule } from '../rewards/rewards.module';
 import { TransactionEntity } from '../transactions/entities/transaction.entity';
 import { TransactionsModule } from '../transactions/transactions.module';
 import { UserEntity } from '../users/entities/user.entity';
@@ -47,7 +45,6 @@ import { AppService } from './app.service';
           LatestBlockEntity,
           NotificationEntity,
           PoolEntity,
-          RewardEntity,
           PredictionEntity,
           ReportEntity,
           TransactionEntity,
@@ -55,7 +52,7 @@ import { AppService } from './app.service';
         ],
         synchronize: process.env.APP_ENV === 'local',
         schema: configService.get<string>('DB_SCHEMA'),
-        logging: false,
+        logging: true,
         extra: {
           /*ssl: {
             rejectUnauthorized: false
@@ -72,7 +69,6 @@ import { AppService } from './app.service';
     PoolsModule,
     PredictionsModule,
     ReportsModule,
-    RewardsModule,
     TransactionsModule,
     UsersModule,
     AuthModule,

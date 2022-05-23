@@ -20,16 +20,36 @@ export class PredictionsService {
   }
 
   async findAll(
+    userId: number,
     pageNumber?: number,
     pageSize?: number,
   ): Promise<Response<PredictionEntity[]>> {
-    const qb = this.predictionRepository.createQueryBuilder('predictions');
+    const qb = this.predictionRepository
+      .createQueryBuilder('predictions')
+      .leftJoin('predictions.event', 'event')
+      .leftJoin('predictions.transaction', 'transaction')
+      .leftJoin('event.user', 'user')
+      .leftJoin('event.category', 'category')
+      .select([
+        'predictions.*',
+        'event.name as name',
+        'event.odds as odds',
+        'event.options as options',
+        'event.type as type',
+        'event.marketType as marketType',
+        'event.status as "eventStatus"',
+        'category.name as category',
+        'user.isVerified as "isUserVerified"',
+        'user.address as address',
+        'transaction."txId" as "transactionNumber"',
+      ])
+      .where('predictions."userId" = :userId', { userId });
 
     if (pageSize && pageNumber) {
       qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
     }
 
-    const [rs, total] = await Promise.all([qb.getMany(), qb.getCount()]);
+    const [rs, total] = await Promise.all([qb.getRawMany(), qb.getCount()]);
     return {
       data: rs,
       pageNumber: Number(pageNumber),
@@ -38,8 +58,35 @@ export class PredictionsService {
     };
   }
 
-  async findOne(id: number): Promise<PredictionEntity> {
-    return this.predictionRepository.findOne(id);
+  async findOne(userId: number, id: number): Promise<PredictionEntity> {
+    return this.predictionRepository
+      .createQueryBuilder('predictions')
+      .leftJoin('predictions.event', 'event')
+      .leftJoin('predictions.transaction', 'transaction')
+      .leftJoin('event.user', 'user')
+      .leftJoin('event.category', 'category')
+      .select([
+        'predictions.*',
+        'event.* as event',
+        'category.name as category',
+        'user.isVerified as "isUserVerified"',
+        'user.address as address',
+        'transaction."txId" as "transactionNumber"',
+      ])
+      .where('predictions.id = :id', { id })
+      .andWhere('predictions."userId" = :userId', { userId })
+      .getRawOne();
+  }
+
+  async findByPredictNum(
+    predictNum: number,
+    userId: number,
+  ): Promise<PredictionEntity> {
+    return this.predictionRepository
+      .createQueryBuilder('predictions')
+      .where('predictions."predictNum" = :predictNum', { predictNum })
+      .andWhere('predictions."userId" = :userId', { userId })
+      .getOne();
   }
 
   async update(

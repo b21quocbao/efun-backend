@@ -1,7 +1,6 @@
 import { CategoryEntity } from 'src/modules/categories/entities/category.entity';
 import { PoolEntity } from 'src/modules/pools/entities/pool.entity';
 import { PredictionEntity } from 'src/modules/predictions/entities/prediction.entity';
-import { RewardEntity } from 'src/modules/rewards/entities/reward.entity';
 import { TransactionEntity } from 'src/modules/transactions/entities/transaction.entity';
 import { UserEntity } from 'src/modules/users/entities/user.entity';
 import {
@@ -68,9 +67,6 @@ export class EventEntity {
 
   @OneToMany(() => PredictionEntity, (prediction) => prediction.event)
   predictions: PredictionEntity[];
-
-  @OneToMany(() => RewardEntity, (reward) => reward.event)
-  rewards: RewardEntity[];
 
   @Column({ default: 0 })
   views: number;

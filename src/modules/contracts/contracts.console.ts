@@ -14,7 +14,6 @@ import { AbiItem } from 'web3-utils';
 import { eventABI } from 'src/shares/contracts/abi/eventABI';
 import { EventsService } from '../events/events.service';
 import { PredictionsService } from '../predictions/predictions.service';
-import { RewardsService } from '../rewards/rewards.service';
 import { predictionABI } from 'src/shares/contracts/abi/predictionABI';
 import { EventType } from '../events/enums/event-type.enum';
 import { EventStatus } from '../events/enums/event-status.enum';
@@ -36,7 +35,6 @@ export class ContractConsole {
     private readonly transactionsService: TransactionsService,
     private readonly usersService: UsersService,
     private readonly latestBlockService: LatestBlockService,
-    private readonly rewardsService: RewardsService,
     private readonly poolsService: PoolsService,
   ) {
     this.web3 = new Web3();
@@ -142,6 +140,7 @@ export class ContractConsole {
         await this.predictionsService.create({
           eventId: event.returnValues.eventId,
           userId: user.id,
+          predictNum: event.returnValues.predictNum,
           transactionId: transaction.id,
           option: event.returnValues.option,
           token: event.returnValues.token,
@@ -162,8 +161,11 @@ export class ContractConsole {
       const receipt = await this.web3.eth.getTransactionReceipt(
         event.transactionHash,
       );
+      const prediction = await this.predictionsService.findByPredictNum(
+        user.id,
+      );
 
-      if (user && eventEntity) {
+      if (user && eventEntity && prediction) {
         const transaction = await this.transactionsService.create({
           contractAddress: event.address,
           gas: receipt?.gasUsed,
@@ -171,12 +173,9 @@ export class ContractConsole {
           txId: event.transactionHash,
         });
 
-        await this.rewardsService.create({
-          eventId: event.returnValues.eventId,
-          userId: user.id,
-          transactionId: transaction.id,
-          token: event.returnValues.token,
-          amount: event.returnValues.amount,
+        await this.predictionsService.update(prediction.id, {
+          rewardTransactionId: transaction.id,
+          rewardAmount: event.returnValues.amount,
         });
       }
     };

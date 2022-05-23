@@ -1,6 +1,7 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'src/shares/interceptors/response.interceptor';
+import { PaginationInput } from 'src/shares/pagination/pagination.dto';
 import { CategoriesService } from './categories.service';
 import { CategoryEntity } from './entities/category.entity';
 
@@ -10,8 +11,10 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Get()
-  async findAll(): Promise<Response<CategoryEntity[]>> {
-    return this.categoriesService.findAll();
+  async findAll(
+    @Query() { pageNumber, pageSize }: PaginationInput,
+  ): Promise<Response<CategoryEntity[]>> {
+    return this.categoriesService.findAll(pageNumber, pageSize);
   }
 
   @Get(':id')

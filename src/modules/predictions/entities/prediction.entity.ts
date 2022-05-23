@@ -10,9 +10,11 @@ import {
   ManyToOne,
   OneToOne,
   JoinColumn,
+  Unique,
 } from 'typeorm';
 
 @Entity('predictions')
+@Unique(['userId', 'predictNum'])
 export class PredictionEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -40,10 +42,23 @@ export class PredictionEntity {
   eventId: number;
 
   @Column()
+  predictNum: number;
+
+  @Column()
   userId: number;
 
   @Column()
   transactionId: number;
+
+  @Column()
+  rewardAmount: string;
+
+  @OneToOne(() => TransactionEntity)
+  @JoinColumn({ name: 'rewardTransactionId' })
+  rewardTransaction: TransactionEntity;
+
+  @Column()
+  rewardTransactionId: number;
 
   @CreateDateColumn()
   createdAt: Date;

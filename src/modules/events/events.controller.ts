@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Response } from 'src/shares/interceptors/response.interceptor';
+import { PaginationInput } from 'src/shares/pagination/pagination.dto';
 import { EventEntity } from './entities/event.entity';
 import { GetAllEventDto, GetOtherEventDto } from './dto/get-event.dto';
 import { UserID } from 'src/shares/decorators/get-user-id.decorator';

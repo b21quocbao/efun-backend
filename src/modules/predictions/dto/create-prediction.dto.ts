@@ -5,4 +5,5 @@ export class CreatePredictionDto {
   option: string;
   token: string;
   amount: string;
+  predictNum: number;
 }

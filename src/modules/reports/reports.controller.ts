@@ -6,12 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ReportsService } from './reports.service';
 import { CreateReportDto } from './dto/create-report.dto';
 import { UpdateReportDto } from './dto/update-report.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'src/shares/interceptors/response.interceptor';
+import { PaginationInput } from 'src/shares/pagination/pagination.dto';
 import { ReportEntity } from './entities/report.entity';
 
 @ApiTags('Reports')
@@ -27,8 +29,10 @@ export class ReportsController {
   }
 
   @Get()
-  async findAll(): Promise<Response<ReportEntity[]>> {
-    return this.reportsService.findAll();
+  async findAll(
+    @Query() { pageNumber, pageSize }: PaginationInput,
+  ): Promise<Response<ReportEntity[]>> {
+    return this.reportsService.findAll(pageNumber, pageSize);
   }
 
   @Get(':id')

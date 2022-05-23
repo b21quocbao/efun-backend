@@ -62,6 +62,12 @@ export const predictionABI = [
       },
       {
         indexed: false,
+        internalType: 'uint256',
+        name: 'predictNum',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
         internalType: 'address',
         name: 'user',
         type: 'address',
@@ -99,6 +105,12 @@ export const predictionABI = [
       },
       {
         indexed: false,
+        internalType: 'uint256',
+        name: 'predictNum',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
         internalType: 'address',
         name: 'user',
         type: 'address',
@@ -130,6 +142,7 @@ export const predictionABI = [
     inputs: [
       { internalType: 'uint256', name: '_eventId', type: 'uint256' },
       { internalType: 'address', name: '_token', type: 'address' },
+      { internalType: 'uint256', name: '_predictNum', type: 'uint256' },
     ],
     name: 'claimReward',
     outputs: [],
