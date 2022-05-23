@@ -162,6 +162,7 @@ export class ContractConsole {
         event.transactionHash,
       );
       const prediction = await this.predictionsService.findByPredictNum(
+        event.returnValues.predictNum,
         user.id,
       );
 
