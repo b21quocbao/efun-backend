@@ -52,7 +52,7 @@ import { AppService } from './app.service';
         ],
         synchronize: process.env.APP_ENV === 'local',
         schema: configService.get<string>('DB_SCHEMA'),
-        logging: true,
+        logging: false,
         extra: {
           /*ssl: {
             rejectUnauthorized: false
