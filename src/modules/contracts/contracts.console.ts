@@ -142,7 +142,7 @@ export class ContractConsole {
           userId: user.id,
           predictNum: event.returnValues.predictNum,
           transactionId: transaction.id,
-          option: event.returnValues.option,
+          optionIndex: event.returnValues.optionIndex,
           token: event.returnValues.token,
           amount: event.returnValues.amount,
         });

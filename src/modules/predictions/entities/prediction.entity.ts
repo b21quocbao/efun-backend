@@ -30,7 +30,7 @@ export class PredictionEntity {
   transaction: TransactionEntity;
 
   @Column()
-  option: string;
+  optionIndex: number;
 
   @Column()
   token: string;

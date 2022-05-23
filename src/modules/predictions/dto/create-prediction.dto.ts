@@ -2,7 +2,7 @@ export class CreatePredictionDto {
   eventId: number;
   userId: number;
   transactionId: number;
-  option: string;
+  optionIndex: number;
   token: string;
   amount: string;
   predictNum: number;

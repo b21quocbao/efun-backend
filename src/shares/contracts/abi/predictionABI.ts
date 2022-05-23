@@ -74,9 +74,9 @@ export const predictionABI = [
       },
       {
         indexed: false,
-        internalType: 'string',
-        name: 'option',
-        type: 'string',
+        internalType: 'uint256',
+        name: 'optionIndex',
+        type: 'uint256',
       },
       {
         indexed: false,
