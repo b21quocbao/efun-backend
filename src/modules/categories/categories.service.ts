@@ -5,6 +5,7 @@ import { Response } from 'src/shares/interceptors/response.interceptor';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CategoryEntity } from './entities/category.entity';
+import { SearchCategoryDto } from './dto/search-category.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -18,6 +19,7 @@ export class CategoriesService {
   }
 
   async findAll(
+    searchCategoryDto: SearchCategoryDto,
     pageNumber?: number,
     pageSize?: number,
   ): Promise<Response<CategoryEntity[]>> {
@@ -25,6 +27,10 @@ export class CategoriesService {
 
     if (pageSize && pageNumber) {
       qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
+    }
+
+    if (searchCategoryDto.fatherId || searchCategoryDto.fatherId == 0) {
+      qb.where({ fatherId: searchCategoryDto.fatherId });
     }
 
     const [rs, total] = await Promise.all([qb.getMany(), qb.getCount()]);

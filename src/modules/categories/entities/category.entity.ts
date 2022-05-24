@@ -6,6 +6,8 @@ import {
   UpdateDateColumn,
   Column,
   OneToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity('categories')
@@ -24,6 +26,16 @@ export class CategoryEntity {
 
   @OneToMany(() => EventEntity, (event) => event.category)
   events: EventEntity[];
+
+  @ManyToOne(() => CategoryEntity, (category) => category.children)
+  @JoinColumn({ name: 'fatherId' })
+  father?: CategoryEntity;
+
+  @Column({ nullable: true })
+  fatherId?: number;
+
+  @OneToMany(() => CategoryEntity, (category) => category.father)
+  children: CategoryEntity[];
 
   @CreateDateColumn()
   createdAt: Date;

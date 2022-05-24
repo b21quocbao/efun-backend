@@ -3,6 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'src/shares/interceptors/response.interceptor';
 import { PaginationInput } from 'src/shares/pagination/pagination.dto';
 import { CategoriesService } from './categories.service';
+import { SearchCategoryDto } from './dto/search-category.dto';
 import { CategoryEntity } from './entities/category.entity';
 
 @ApiTags('Categories')
@@ -13,8 +14,13 @@ export class CategoriesController {
   @Get()
   async findAll(
     @Query() { pageNumber, pageSize }: PaginationInput,
+    @Query() searchCategoryDto: SearchCategoryDto,
   ): Promise<Response<CategoryEntity[]>> {
-    return this.categoriesService.findAll(pageNumber, pageSize);
+    return this.categoriesService.findAll(
+      searchCategoryDto,
+      pageNumber,
+      pageSize,
+    );
   }
 
   @Get(':id')
