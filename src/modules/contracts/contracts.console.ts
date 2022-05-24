@@ -350,24 +350,24 @@ export class ContractConsole {
     );
   }
 
-  @Command({
-    command: 'seed-event',
-  })
-  async seedEvent(): Promise<void> {
-    await this.eventsService.create(1, {
-      name: 'PL Winner',
-      metadata: '',
-      thumbnailUrl:
-        'https://media.bongda.com.vn/files/hai.phan/2022/05/18/man-city-vs-liverpool-0843.jpg',
-      categoryId: 2,
-      type: EventType.GroupPredict,
-      startTime: new Date(Date.now() + 5 * 60 * 1000),
-      deadline: new Date(Date.now() + 7 * 24 * 3600 * 1000),
-      endTime: new Date(Date.now() + 10 * 24 * 3600 * 1000),
-      options: '["Liverpool","Man City"]',
-      odds: '[0,0]',
-      description: 'Which team will be PL Winner',
-      shortDescription: 'PL Winner Team',
-    });
-  }
+  // @Command({
+  //   command: 'seed-event',
+  // })
+  // async seedEvent(): Promise<void> {
+  //   await this.eventsService.create(1, {
+  //     name: 'PL Winner',
+  //     metadata: '',
+  //     thumbnailUrl:
+  //       'https://media.bongda.com.vn/files/hai.phan/2022/05/18/man-city-vs-liverpool-0843.jpg',
+  //     categoryId: 2,
+  //     type: EventType.GroupPredict,
+  //     startTime: new Date(Date.now() + 5 * 60 * 1000),
+  //     deadline: new Date(Date.now() + 7 * 24 * 3600 * 1000),
+  //     endTime: new Date(Date.now() + 10 * 24 * 3600 * 1000),
+  //     options: '["Liverpool","Man City"]',
+  //     odds: '[0,0]',
+  //     description: 'Which team will be PL Winner',
+  //     shortDescription: 'PL Winner Team',
+  //   });
+  // }
 }
