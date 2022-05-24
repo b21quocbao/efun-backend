@@ -18,6 +18,10 @@ export class CreateEventDto {
   categoryId: number;
 
   @ApiProperty()
+  @IsNumber()
+  competitionId: number;
+
+  @ApiProperty()
   @IsString()
   type: EventType;
 
