@@ -37,6 +37,10 @@ export class CategoriesService {
       qb.where({ name: searchCategoryDto.name });
     }
 
+    if (searchCategoryDto.nonFather) {
+      qb.where({ fatherId: null });
+    }
+
     const [rs, total] = await Promise.all([qb.getMany(), qb.getCount()]);
     return {
       data: rs,

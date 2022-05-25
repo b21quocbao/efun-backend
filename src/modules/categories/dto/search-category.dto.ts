@@ -1,8 +1,14 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class SearchCategoryDto {
+  @ApiPropertyOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value.toLowerCase() === 'true')
+  @IsOptional()
+  nonFather?: boolean;
+
   @ApiPropertyOptional()
   @IsNumber()
   @Transform(({ value }) => Number(value))
