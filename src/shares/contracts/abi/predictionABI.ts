@@ -152,8 +152,8 @@ export const predictionABI = [
   {
     inputs: [
       { internalType: 'uint256', name: '_eventId', type: 'uint256' },
-      { internalType: 'address', name: '_token', type: 'address' },
-      { internalType: 'uint256', name: '_amount', type: 'uint256' },
+      { internalType: 'address[]', name: '_tokens', type: 'address[]' },
+      { internalType: 'uint256[]', name: '_amounts', type: 'uint256[]' },
     ],
     name: 'depositLP',
     outputs: [],
