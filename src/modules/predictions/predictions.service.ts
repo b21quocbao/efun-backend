@@ -37,6 +37,7 @@ export class PredictionsService {
         'event.options as options',
         'event.type as type',
         'event.marketType as marketType',
+        'event.metadata as metadata',
         'event.status as "eventStatus"',
         'category.name as category',
         'user.isVerified as "isUserVerified"',
@@ -67,7 +68,13 @@ export class PredictionsService {
       .leftJoin('event.category', 'category')
       .select([
         'predictions.*',
-        'event.* as event',
+        'event.name as name',
+        'event.odds as odds',
+        'event.options as options',
+        'event.type as type',
+        'event.marketType as marketType',
+        'event.metadata as metadata',
+        'event.status as "eventStatus"',
         'category.name as category',
         'user.isVerified as "isUserVerified"',
         'user.address as address',
