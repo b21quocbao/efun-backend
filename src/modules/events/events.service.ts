@@ -32,18 +32,21 @@ export class EventsService {
   }: GetAllEventDto): Promise<Response<EventEntity[]>> {
     const qb = this.eventRepository
       .createQueryBuilder('events')
-      .leftJoin('events.pools', 'pools')
+      .leftJoin('events.predictions', 'predictions')
       .leftJoin('events.category', 'category')
       .leftJoin('events.user', 'user')
+      .leftJoin('events.competition', 'competition')
       .where('events.deadline >= now()')
       .select([
         'events.*',
+        'competition.name as competition',
         'category.name as category',
         'user.isVerified as "isUserVerified"',
         'user.address as address',
-        'SUM(COALESCE(pools.amount::numeric,0)) as "totalAmount"',
+        'SUM(COALESCE(predictions.amount::numeric,0)) as "totalAmount"',
       ])
       .groupBy('events.id')
+      .addGroupBy('competition.name')
       .addGroupBy('category.name')
       .addGroupBy('user.isVerified')
       .addGroupBy('user.address');
@@ -90,7 +93,7 @@ export class EventsService {
   async findOne(id: number): Promise<EventEntity> {
     return this.eventRepository
       .createQueryBuilder('events')
-      .leftJoin('events.pools', 'pools')
+      .leftJoin('events.predictions', 'predictions')
       .leftJoin('events.category', 'category')
       .leftJoin('events.user', 'user')
       .where('events.id = :id', { id })
@@ -99,7 +102,7 @@ export class EventsService {
         'category.name as category',
         'user.isVerified as "isUserVerified"',
         'user.address as address',
-        'SUM(COALESCE(pools.amount::numeric,0)) as "totalAmount"',
+        'SUM(COALESCE(predictions.amount::numeric,0)) as "totalAmount"',
       ])
       .groupBy('events.id')
       .addGroupBy('category.name')
