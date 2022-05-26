@@ -15,9 +15,10 @@ export class CompetitionsService {
   ) {}
 
   async create(
+    userId: number,
     createCompetitionDto: CreateCompetitionDto,
   ): Promise<CompetitionEntity> {
-    return this.competitionRepository.save(createCompetitionDto);
+    return this.competitionRepository.save({ userId, ...createCompetitionDto });
   }
 
   async findAll(

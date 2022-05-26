@@ -36,8 +36,15 @@ export class EventEntity {
   @Column()
   thumbnailUrl: string;
 
+  @Column({ nullable: true })
+  bannerlUrl: string;
+
   @ManyToOne(() => CategoryEntity, (category) => category.events)
   category: CategoryEntity;
+
+  @ManyToOne(() => CategoryEntity, (category) => category.events)
+  @JoinColumn({ name: 'subCategoryId' })
+  subCategory: CategoryEntity;
 
   @ManyToOne(() => CompetitionEntity, (competition) => competition.events)
   competition: CompetitionEntity;
@@ -95,6 +102,9 @@ export class EventEntity {
 
   @Column()
   categoryId: number;
+
+  @Column({ nullable: true })
+  subCategoryId?: number;
 
   @Column({ nullable: true })
   competitionId?: number;

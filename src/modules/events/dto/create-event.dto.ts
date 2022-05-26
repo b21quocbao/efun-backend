@@ -13,9 +13,17 @@ export class CreateEventDto {
   @IsString()
   thumbnailUrl: string;
 
+  @ApiPropertyOptional()
+  @IsString()
+  bannerUrl?: string;
+
   @ApiProperty()
   @IsNumber()
   categoryId: number;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  subCategoryId?: number;
 
   @ApiProperty()
   @IsNumber()
