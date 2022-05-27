@@ -15,6 +15,7 @@ export class CreateEventDto {
 
   @ApiPropertyOptional()
   @IsString()
+  @IsOptional()
   bannerUrl?: string;
 
   @ApiProperty()
