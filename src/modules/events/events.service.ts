@@ -6,6 +6,7 @@ import { CreateEventDto } from './dto/create-event.dto';
 import { GetAllEventDto, GetOtherEventDto } from './dto/get-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { EventEntity } from './entities/event.entity';
+import { EventStatus } from './enums/event-status.enum';
 import { ESortEvent } from './enums/event-type.enum';
 
 @Injectable()
@@ -38,6 +39,7 @@ export class EventsService {
       .leftJoin('events.user', 'user')
       .leftJoin('events.competition', 'competition')
       .where('events.deadline >= now()')
+      .andWhere('events.status = :status ', { status: EventStatus.AVAILABLE })
       .select([
         'events.*',
         'competition.name as competition',
