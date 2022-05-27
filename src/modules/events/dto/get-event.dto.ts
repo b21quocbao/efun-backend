@@ -31,6 +31,12 @@ export class GetAllEventDto extends PaginationInput {
   categoryId?: number;
 
   @ApiPropertyOptional()
+  @Transform(({ value }) => Number(value))
+  @IsOptional()
+  @IsNumber()
+  userId?: number;
+
+  @ApiPropertyOptional()
   @Transform(({ value }) => value.toLowerCase() === 'true')
   @IsOptional()
   @IsBoolean()

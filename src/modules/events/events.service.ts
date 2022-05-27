@@ -26,6 +26,7 @@ export class EventsService {
     search,
     orderBy,
     categoryId,
+    userId,
     isHot,
     pageNumber,
     pageSize,
@@ -68,6 +69,9 @@ export class EventsService {
     }
     if (categoryId) {
       qb.andWhere('events.categoryId = :categoryId', { categoryId });
+    }
+    if (userId) {
+      qb.andWhere('events.userId = :userId', { userId });
     }
     if (isHot) {
       qb.andWhere('events.isHot = :isHot', { isHot });
