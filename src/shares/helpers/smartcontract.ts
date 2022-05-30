@@ -50,7 +50,7 @@ export async function crawlSmartcontractEventsBatch(
   // eslint-disable-next-line
   contracts: any[],
   eventNames: string[],
-  callbacks: ((event) => void)[],
+  callbacks: ((event: any) => Promise<void>)[],
 ): Promise<void> {
   let cursor = startingBlock;
   const latestBlock = await latestBlockService.getLatestBlock(
@@ -62,17 +62,17 @@ export async function crawlSmartcontractEventsBatch(
   while (true) {
     const to = Math.min(cursor + STEP_BLOCK, await web3.eth.getBlockNumber());
     const params = { fromBlock: cursor + 1, toBlock: to };
-    const eventsBatch = await Promise.all(
-      contracts.map((contract, idx) =>
-        contract.getPastEvents(eventNames[idx], params),
-      ),
-    );
+    const eventsBatch = [];
+    for (let idx = 0; idx < contracts.length; ++idx) {
+      const contract = contracts[idx];
+      eventsBatch.push(await contract.getPastEvents(eventNames[idx], params));
+    }
 
     for (let idx = 0; idx < eventsBatch.length; idx++) {
       const events = eventsBatch[idx];
       const callback = callbacks[idx];
       for (const event of events) {
-        callback(event);
+        await callback(event);
       }
     }
 

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { EventsService } from './events.service';
-import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Response } from 'src/shares/interceptors/response.interceptor';
 import { EventEntity } from './entities/event.entity';
 import { GetAllEventDto, GetOtherEventDto } from './dto/get-event.dto';
