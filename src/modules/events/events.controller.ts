@@ -1,8 +1,7 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Response } from 'src/shares/interceptors/response.interceptor';
-import { PaginationInput } from 'src/shares/pagination/pagination.dto';
 import { EventEntity } from './entities/event.entity';
 import { GetAllEventDto, GetOtherEventDto } from './dto/get-event.dto';
 import { UserID } from 'src/shares/decorators/get-user-id.decorator';
@@ -29,6 +28,19 @@ export class EventsController {
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<EventEntity> {
     return this.eventsService.findOne(+id);
+  }
+
+  @Put('view')
+  async incView(@Param('id') id: string): Promise<void> {
+    return this.eventsService.incView(+id);
+  }
+
+  @Put('update-result-proof')
+  async updateResultProof(
+    @Param('id') id: string,
+    @Param('resultProofUrl') resultProofUrl: string,
+  ): Promise<void> {
+    return this.eventsService.updateResultProof(+id, resultProofUrl);
   }
 
   @Post()

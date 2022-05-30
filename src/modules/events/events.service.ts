@@ -45,6 +45,7 @@ export class EventsService {
         'user.isVerified as "isUserVerified"',
         'user.address as address',
         'SUM(COALESCE(predictions.amount::numeric,0)) as "totalAmount"',
+        'array_agg(distinct predictions.userId) as "participants"',
       ])
       .groupBy('events.id')
       .addGroupBy('competition.name')
@@ -87,7 +88,14 @@ export class EventsService {
 
     const [rs, total] = await Promise.all([qb.getRawMany(), qb.getCount()]);
     return {
-      data: rs,
+      data: rs.map((row) => {
+        return {
+          ...row,
+          participants: row.participants.filter((x: any) => x !== null),
+          numParticipants: row.participants.filter((x: any) => x !== null)
+            .length,
+        };
+      }),
       pageNumber: Number(pageNumber),
       pageSize: Number(pageSize),
       total: total,
@@ -121,6 +129,19 @@ export class EventsService {
   ): Promise<EventEntity> {
     await this.eventRepository.update(id, updateEventDto);
     return this.eventRepository.findOne(id);
+  }
+
+  async incView(id: number): Promise<void> {
+    await this.eventRepository
+      .createQueryBuilder('events')
+      .update(EventEntity)
+      .set({ views: () => 'views + 1' })
+      .where('events.id = :id', { id })
+      .execute();
+  }
+
+  async updateResultProof(id: number, resultProofUrl: string): Promise<void> {
+    await this.eventRepository.update(id, { resultProofUrl });
   }
 
   async remove(id: number): Promise<void> {
