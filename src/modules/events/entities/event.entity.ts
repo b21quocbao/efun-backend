@@ -37,7 +37,7 @@ export class EventEntity {
   thumbnailUrl: string;
 
   @Column({ nullable: true })
-  bannerlUrl: string;
+  bannerUrl: string;
 
   @ManyToOne(() => CategoryEntity, (category) => category.events)
   category: CategoryEntity;
