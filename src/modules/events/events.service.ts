@@ -134,12 +134,9 @@ export class EventsService {
   }
 
   async incView(id: number): Promise<void> {
-    await this.eventRepository
-      .createQueryBuilder('events')
-      .update(EventEntity)
-      .set({ views: () => 'views + 1' })
-      .where('events.id = :id', { id })
-      .execute();
+    console.log(id, "id", 'Line #137 events.service.ts');
+    
+    await this.eventRepository.update(id, { views: () => 'views + 1' });
   }
 
   async updateResultProof(id: number, resultProofUrl: string): Promise<void> {
