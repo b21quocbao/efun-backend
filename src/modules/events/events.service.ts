@@ -31,6 +31,7 @@ export class EventsService {
     isHot,
     pageNumber,
     pageSize,
+    status
   }: GetAllEventDto): Promise<Response<EventEntity[]>> {
     const qb = this.eventRepository
       .createQueryBuilder('events')
@@ -39,7 +40,6 @@ export class EventsService {
       .leftJoin('events.user', 'user')
       .leftJoin('events.competition', 'competition')
       .where('events.deadline >= now()')
-      .andWhere('events.status = :status ', { status: EventStatus.AVAILABLE })
       .select([
         'events.*',
         'competition.name as competition',
@@ -54,6 +54,9 @@ export class EventsService {
       .addGroupBy('category.name')
       .addGroupBy('user.isVerified')
       .addGroupBy('user.address');
+      if(status){
+        qb.andWhere('events.status = :status ', { status: status })
+      }
     if (search) {
       qb.andWhere(
         new Brackets((qb) => {
