@@ -14,7 +14,7 @@ import {
 } from 'typeorm';
 
 @Entity('predictions')
-@Unique(['userId', 'predictNum'])
+@Unique(['userId', 'predictNum', 'token', 'eventId'])
 export class PredictionEntity {
   @PrimaryGeneratedColumn()
   id: number;
