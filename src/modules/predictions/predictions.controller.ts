@@ -5,6 +5,7 @@ import { Response } from 'src/shares/interceptors/response.interceptor';
 import { PaginationInput } from 'src/shares/pagination/pagination.dto';
 import { PredictionEntity } from './entities/prediction.entity';
 import { UserID } from 'src/shares/decorators/get-user-id.decorator';
+import { SearchPredictionDto } from './dto/search-prediction.dto';
 
 @ApiTags('Predictions')
 @Controller('predictions')
@@ -15,9 +16,15 @@ export class PredictionsController {
   @Get()
   async findAll(
     @UserID() userId: number,
+    @Query() request: SearchPredictionDto,
     @Query() { pageNumber, pageSize }: PaginationInput,
   ): Promise<Response<PredictionEntity[]>> {
-    return this.predictionsService.findAll(userId, pageNumber, pageSize);
+    return this.predictionsService.findAll(
+      userId,
+      request,
+      pageNumber,
+      pageSize,
+    );
   }
 
   @Get(':id')

@@ -7,4 +7,5 @@ export enum EventType {
 export enum ESortEvent {
   BIGGEST_EFUN_POOL = 'Biggest EFUN Pool',
   UPCOMING = 'Upcoming',
+  LATEST = 'Latest',
 }

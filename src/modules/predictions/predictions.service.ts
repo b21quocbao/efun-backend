@@ -5,6 +5,8 @@ import { Response } from 'src/shares/interceptors/response.interceptor';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PredictionEntity } from './entities/prediction.entity';
+import { SearchPredictionDto } from './dto/search-prediction.dto';
+import { PSortEvent } from './enums/prediction-type.enum';
 
 @Injectable()
 export class PredictionsService {
@@ -21,6 +23,7 @@ export class PredictionsService {
 
   async findAll(
     userId: number,
+    { orderBy }: SearchPredictionDto,
     pageNumber?: number,
     pageSize?: number,
   ): Promise<Response<PredictionEntity[]>> {
@@ -48,6 +51,9 @@ export class PredictionsService {
 
     if (pageSize && pageNumber) {
       qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
+    }
+    if (orderBy == PSortEvent.LATEST) {
+      qb.orderBy('"createdAt"', 'DESC');
     }
 
     const [rs, total] = await Promise.all([qb.getRawMany(), qb.getCount()]);

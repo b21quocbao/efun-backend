@@ -88,6 +88,8 @@ export class EventsService {
       qb.orderBy('deadline');
     } else if (orderBy == ESortEvent.BIGGEST_EFUN_POOL) {
       qb.orderBy('"totalAmount"', 'DESC');
+    } else if (orderBy == ESortEvent.LATEST) {
+      qb.orderBy('"createdAt"', 'DESC');
     }
     if (pageSize && pageNumber) {
       qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
