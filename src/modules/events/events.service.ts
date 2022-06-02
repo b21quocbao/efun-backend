@@ -8,6 +8,7 @@ import { UpdateEventDto } from './dto/update-event.dto';
 import { EventEntity } from './entities/event.entity';
 import { EventStatus } from './enums/event-status.enum';
 import { ESortEvent } from './enums/event-type.enum';
+import BigNumber from 'bignumber.js';
 
 @Injectable()
 export class EventsService {
@@ -44,24 +45,23 @@ export class EventsService {
       .where('events.status = :status ', { status: EventStatus.AVAILABLE })
       .select([
         'events.*',
-        'array_agg(pools.id) as "poolIds"',
         'array_agg(pools.amount) as "poolAmounts"',
         'array_agg(pools.token) as "poolTokens"',
+        'predictions.token as "predictionToken"',
         'competition.name as competition',
         'category.name as category',
         '"subCategory".name as "subCategory"',
         'user.isVerified as "isUserVerified"',
         'user.address as address',
-        'SUM(COALESCE(predictions.amount::numeric,0)) as "totalAmount"',
+        'SUM(COALESCE(predictions.amount::numeric,0)) as "predictionAmount"',
         'array_agg(distinct predictions.userId) as "participants"',
       ])
       .groupBy('events.id')
-      .addGroupBy('competition.name')
-      .addGroupBy('pools.id')
-      .addGroupBy('category.name')
-      .addGroupBy('"subCategory".name')
-      .addGroupBy('user.isVerified')
-      .addGroupBy('user.address');
+      .addGroupBy('competition.id')
+      .addGroupBy('predictions.token')
+      .addGroupBy('category.id')
+      .addGroupBy('"subCategory".id')
+      .addGroupBy('user.id');
     if (status) {
       qb.andWhere('events.status = :status ', { status: status });
     }
@@ -104,8 +104,49 @@ export class EventsService {
     }
 
     const [rs, total] = await Promise.all([qb.getRawMany(), qb.getCount()]);
+    const newRs = [];
+    let i = 0;
+    for (const event of rs) {
+      event.poolTokenAmounts = {};
+      for (let idx = 0; idx < event.poolTokens.length; ++idx) {
+        event.poolTokenAmounts[event.poolTokens[idx]] = event.poolAmounts[idx];
+      }
+    }
+    while (i < rs.length) {
+      const event = JSON.parse(JSON.stringify(rs[i]));
+      event.predictionTokenAmounts = {};
+      event.poolTokenAmounts = {};
+
+      let j = 0;
+      for (j = i; j < rs.length && rs[j].id == rs[i].id; ++j) {
+        if (rs[j].predictionToken) {
+          event.predictionTokenAmounts[rs[j].predictionToken] =
+            rs[j].predictionAmount;
+        }
+
+        for (const key in rs[j].poolTokenAmounts) {
+          if (key && key != 'null') {
+            if (!event.poolTokenAmounts[key]) {
+              event.poolTokenAmounts[key] = '0';
+            }
+            event.poolTokenAmounts[key] = new BigNumber(
+              event.poolTokenAmounts[key],
+            )
+              .plus(rs[j].poolTokenAmounts[key])
+              .toString();
+          }
+        }
+      }
+      i = j;
+      delete event.poolAmounts;
+      delete event.poolTokens;
+      delete event.predictionToken;
+      delete event.predictionAmount;
+
+      newRs.push(event);
+    }
     return {
-      data: rs.map((row) => {
+      data: newRs.map((row) => {
         return {
           ...row,
           participants: row.participants.filter((x: any) => x !== null),
