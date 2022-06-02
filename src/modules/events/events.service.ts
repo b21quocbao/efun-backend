@@ -39,9 +39,13 @@ export class EventsService {
       .leftJoin('events.category', 'category')
       .leftJoin('events.user', 'user')
       .leftJoin('events.competition', 'competition')
+      .leftJoin('events.pools', 'pools')
       .where('events.status = :status ', { status: EventStatus.AVAILABLE })
       .select([
         'events.*',
+        'array_agg(pools.id) as "poolIds"',
+        'array_agg(pools.amount) as "poolAmounts"',
+        'array_agg(pools.token) as "poolTokens"',
         'competition.name as competition',
         'category.name as category',
         'user.isVerified as "isUserVerified"',
@@ -51,6 +55,7 @@ export class EventsService {
       ])
       .groupBy('events.id')
       .addGroupBy('competition.name')
+      .addGroupBy('pools.id')
       .addGroupBy('category.name')
       .addGroupBy('user.isVerified')
       .addGroupBy('user.address');
@@ -117,9 +122,13 @@ export class EventsService {
       .leftJoin('events.predictions', 'predictions')
       .leftJoin('events.category', 'category')
       .leftJoin('events.user', 'user')
+      .leftJoin('events.pools', 'pools')
       .where('events.id = :id', { id })
       .select([
         'events.*',
+        'array_agg(pools.id) as "poolIds"',
+        'array_agg(pools.amount) as "poolAmounts"',
+        'array_agg(pools.token) as "poolTokens"',
         'category.name as category',
         'user.isVerified as "isUserVerified"',
         'user.address as address',
