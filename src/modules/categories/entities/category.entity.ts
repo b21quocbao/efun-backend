@@ -28,6 +28,9 @@ export class CategoryEntity {
   @OneToMany(() => EventEntity, (event) => event.category)
   events: EventEntity[];
 
+  @OneToMany(() => EventEntity, (event) => event.subCategory)
+  subEvents: EventEntity[];
+
   @OneToMany(() => CompetitionEntity, (competition) => competition.category)
   competitions: CompetitionEntity[];
 

@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { PredictionEntity } from './entities/prediction.entity';
 import { SearchPredictionDto } from './dto/search-prediction.dto';
 import { PSortEvent } from './enums/prediction-type.enum';
+import { isNumber } from 'class-validator';
 
 @Injectable()
 export class PredictionsService {
@@ -33,6 +34,7 @@ export class PredictionsService {
       .leftJoin('predictions.transaction', 'transaction')
       .leftJoin('event.user', 'user')
       .leftJoin('event.category', 'category')
+      .leftJoin('event.subCategory', 'subCategory')
       .select([
         'predictions.*',
         'event.name as name',
@@ -42,7 +44,10 @@ export class PredictionsService {
         'event.marketType as marketType',
         'event.metadata as metadata',
         'event.status as "eventStatus"',
+        'event.result as "eventResult"',
+        'event.options as "eventOptions"',
         'category.name as category',
+        '"subCategory".name as "subCategory"',
         'user.isVerified as "isUserVerified"',
         'user.address as address',
         'transaction."txId" as "transactionNumber"',
@@ -58,7 +63,21 @@ export class PredictionsService {
 
     const [rs, total] = await Promise.all([qb.getRawMany(), qb.getCount()]);
     return {
-      data: rs,
+      data: rs.map((prediction) => {
+        const status = !prediction.eventResult
+          ? 'Predicted'
+          : isNumber(prediction.rewardTransactionId)
+          ? 'Claimed'
+          : prediction.eventResult ==
+            JSON.parse(prediction.eventOptions)[prediction.optionIndex]
+          ? 'Claim'
+          : 'Lost';
+
+        return {
+          ...prediction,
+          status: status,
+        };
+      }),
       pageNumber: Number(pageNumber),
       pageSize: Number(pageSize),
       total: total,
@@ -72,6 +91,7 @@ export class PredictionsService {
       .leftJoin('predictions.transaction', 'transaction')
       .leftJoin('event.user', 'user')
       .leftJoin('event.category', 'category')
+      .leftJoin('event.subCategory', 'subCategory')
       .select([
         'predictions.*',
         'event.name as name',
@@ -82,6 +102,7 @@ export class PredictionsService {
         'event.metadata as metadata',
         'event.status as "eventStatus"',
         'category.name as category',
+        '"subCategory".name as "subCategory"',
         'user.isVerified as "isUserVerified"',
         'user.address as address',
         'transaction."txId" as "transactionNumber"',

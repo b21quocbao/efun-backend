@@ -42,7 +42,7 @@ export class EventEntity {
   @ManyToOne(() => CategoryEntity, (category) => category.events)
   category: CategoryEntity;
 
-  @ManyToOne(() => CategoryEntity, (category) => category.events)
+  @ManyToOne(() => CategoryEntity, (category) => category.subEvents)
   @JoinColumn({ name: 'subCategoryId' })
   subCategory: CategoryEntity;
 

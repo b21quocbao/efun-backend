@@ -37,6 +37,7 @@ export class EventsService {
       .createQueryBuilder('events')
       .leftJoin('events.predictions', 'predictions')
       .leftJoin('events.category', 'category')
+      .leftJoin('events.subCategory', 'subCategory')
       .leftJoin('events.user', 'user')
       .leftJoin('events.competition', 'competition')
       .leftJoin('events.pools', 'pools')
@@ -48,6 +49,7 @@ export class EventsService {
         'array_agg(pools.token) as "poolTokens"',
         'competition.name as competition',
         'category.name as category',
+        '"subCategory".name as "subCategory"',
         'user.isVerified as "isUserVerified"',
         'user.address as address',
         'SUM(COALESCE(predictions.amount::numeric,0)) as "totalAmount"',
@@ -57,6 +59,7 @@ export class EventsService {
       .addGroupBy('competition.name')
       .addGroupBy('pools.id')
       .addGroupBy('category.name')
+      .addGroupBy('"subCategory".name')
       .addGroupBy('user.isVerified')
       .addGroupBy('user.address');
     if (status) {
@@ -121,6 +124,7 @@ export class EventsService {
       .createQueryBuilder('events')
       .leftJoin('events.predictions', 'predictions')
       .leftJoin('events.category', 'category')
+      .leftJoin('events.subCategory', 'subCategory')
       .leftJoin('events.user', 'user')
       .leftJoin('events.pools', 'pools')
       .where('events.id = :id', { id })
@@ -130,12 +134,14 @@ export class EventsService {
         'array_agg(pools.amount) as "poolAmounts"',
         'array_agg(pools.token) as "poolTokens"',
         'category.name as category',
+        '"subCategory".name as "subCategory"',
         'user.isVerified as "isUserVerified"',
         'user.address as address',
         'SUM(COALESCE(predictions.amount::numeric,0)) as "totalAmount"',
       ])
       .groupBy('events.id')
       .addGroupBy('category.name')
+      .addGroupBy('"subCategory".name')
       .addGroupBy('user.isVerified')
       .addGroupBy('user.address')
       .getRawOne();
