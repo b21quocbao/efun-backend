@@ -38,8 +38,7 @@ export class EventsService {
       .leftJoin('events.category', 'category')
       .leftJoin('events.user', 'user')
       .leftJoin('events.competition', 'competition')
-      .where('events.deadline >= now()')
-      .andWhere('events.status = :status ', { status: EventStatus.AVAILABLE })
+      .where('events.status = :status ', { status: EventStatus.AVAILABLE })
       .select([
         'events.*',
         'competition.name as competition',
@@ -75,6 +74,8 @@ export class EventsService {
     }
     if (userId) {
       qb.andWhere('events.userId = :userId', { userId });
+    } else {
+      qb.andWhere('events.deadline >= now()');
     }
     if (isHot) {
       qb.andWhere('events.isHot = :isHot', { isHot });
