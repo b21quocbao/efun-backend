@@ -9,6 +9,7 @@ import {
   IsString,
 } from 'class-validator';
 import { PaginationInput } from 'src/shares/pagination/pagination.dto';
+import { EventStatus } from '../enums/event-status.enum';
 import { ESortEvent } from '../enums/event-type.enum';
 
 export class GetAllEventDto extends PaginationInput {
@@ -41,6 +42,13 @@ export class GetAllEventDto extends PaginationInput {
   @IsOptional()
   @IsBoolean()
   isHot?: boolean;
+
+  @ApiPropertyOptional({
+    enum: EventStatus,
+  })
+  @IsEnum(EventStatus)
+  @IsOptional()
+  status?: EventStatus;
 }
 
 export class GetOtherEventDto extends PaginationInput {

@@ -31,6 +31,7 @@ export class EventsService {
     isHot,
     pageNumber,
     pageSize,
+    status,
   }: GetAllEventDto): Promise<Response<EventEntity[]>> {
     const qb = this.eventRepository
       .createQueryBuilder('events')
@@ -53,6 +54,9 @@ export class EventsService {
       .addGroupBy('category.name')
       .addGroupBy('user.isVerified')
       .addGroupBy('user.address');
+    if (status) {
+      qb.andWhere('events.status = :status ', { status: status });
+    }
     if (search) {
       qb.andWhere(
         new Brackets((qb) => {
@@ -135,8 +139,6 @@ export class EventsService {
   }
 
   async incView(id: number): Promise<void> {
-    console.log(id, "id", 'Line #137 events.service.ts');
-    
     await this.eventRepository.update(id, { views: () => 'views + 1' });
   }
 
