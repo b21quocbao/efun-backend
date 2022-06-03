@@ -33,6 +33,7 @@ export class EventsService {
     pageNumber,
     pageSize,
     status,
+    eventId,
   }: GetAllEventDto): Promise<Response<EventEntity[]>> {
     const qb = this.eventRepository
       .createQueryBuilder('events')
@@ -83,6 +84,9 @@ export class EventsService {
     }
     if (categoryId) {
       qb.andWhere('events.categoryId = :categoryId', { categoryId });
+    }
+    if (eventId || eventId === 0) {
+      qb.andWhere('events.id = :id', { id: eventId });
     }
     if (userId) {
       qb.andWhere('events.userId = :userId', { userId });

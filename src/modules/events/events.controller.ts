@@ -28,7 +28,8 @@ export class EventsController {
 
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<EventEntity> {
-    return this.eventsService.findOne(+id);
+    const { data } = await this.eventsService.findAll({ eventId: +id });
+    return data[0];
   }
 
   @Put('view/:id')

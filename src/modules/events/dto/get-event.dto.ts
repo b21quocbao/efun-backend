@@ -49,6 +49,9 @@ export class GetAllEventDto extends PaginationInput {
   @IsEnum(EventStatus)
   @IsOptional()
   status?: EventStatus;
+
+  @IsOptional()
+  eventId?: number;
 }
 
 export class GetOtherEventDto extends PaginationInput {
