@@ -20,8 +20,7 @@ export class PredictionsController {
     @Query() { pageNumber, pageSize }: PaginationInput,
   ): Promise<Response<PredictionEntity[]>> {
     return this.predictionsService.findAll(
-      userId,
-      request,
+      { ...request, userId },
       pageNumber,
       pageSize,
     );

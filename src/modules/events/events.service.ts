@@ -9,12 +9,15 @@ import { EventEntity } from './entities/event.entity';
 import { EventStatus } from './enums/event-status.enum';
 import { ESortEvent } from './enums/event-type.enum';
 import BigNumber from 'bignumber.js';
+import { PredictionsService } from '../predictions/predictions.service';
+BigNumber.config({ EXPONENTIAL_AT: 100 })
 
 @Injectable()
 export class EventsService {
   constructor(
     @InjectRepository(EventEntity)
     private eventRepository: Repository<EventEntity>,
+    private readonly predictionsService: PredictionsService,
   ) {}
 
   async create(
@@ -48,18 +51,15 @@ export class EventsService {
         'events.*',
         'array_agg(pools.amount) as "poolAmounts"',
         'array_agg(pools.token) as "poolTokens"',
-        'predictions.token as "predictionToken"',
         'competition.name as competition',
         'category.name as category',
         '"subCategory".name as "subCategory"',
         'user.isVerified as "isUserVerified"',
         'user.address as address',
-        'SUM(COALESCE(predictions.amount::numeric,0)) as "predictionAmount"',
         'array_agg(distinct predictions.userId) as "participants"',
       ])
       .groupBy('events.id')
       .addGroupBy('competition.id')
-      .addGroupBy('predictions.token')
       .addGroupBy('category.id')
       .addGroupBy('"subCategory".id')
       .addGroupBy('user.id');
@@ -108,49 +108,34 @@ export class EventsService {
     }
 
     const [rs, total] = await Promise.all([qb.getRawMany(), qb.getCount()]);
-    const newRs = [];
-    let i = 0;
     for (const event of rs) {
       event.poolTokenAmounts = {};
+      event.predictionTokenAmounts = {};
+
       for (let idx = 0; idx < event.poolTokens.length; ++idx) {
         event.poolTokenAmounts[event.poolTokens[idx]] = event.poolAmounts[idx];
       }
-    }
-    while (i < rs.length) {
-      const event = JSON.parse(JSON.stringify(rs[i]));
-      event.predictionTokenAmounts = {};
-      event.poolTokenAmounts = {};
+      const { data } = await this.predictionsService.findAll({
+        eventId: event.id,
+      });
 
-      let j = 0;
-      for (j = i; j < rs.length && rs[j].id == rs[i].id; ++j) {
-        if (rs[j].predictionToken) {
-          event.predictionTokenAmounts[rs[j].predictionToken] =
-            rs[j].predictionAmount;
+      for (const prediction of data) {
+        if (!event.predictionTokenAmounts[prediction.token]) {
+          event.predictionTokenAmounts[prediction.token] = '0';
         }
-
-        for (const key in rs[j].poolTokenAmounts) {
-          if (key && key != 'null') {
-            if (!event.poolTokenAmounts[key]) {
-              event.poolTokenAmounts[key] = '0';
-            }
-            event.poolTokenAmounts[key] = new BigNumber(
-              event.poolTokenAmounts[key],
-            )
-              .plus(rs[j].poolTokenAmounts[key])
-              .toString();
-          }
-        }
+        event.predictionTokenAmounts[prediction.token] = new BigNumber(
+          event.predictionTokenAmounts[prediction.token],
+        )
+          .plus(prediction.amount)
+          .toString();
       }
-      i = j;
+
       delete event.poolAmounts;
       delete event.poolTokens;
-      delete event.predictionToken;
-      delete event.predictionAmount;
-
-      newRs.push(event);
     }
+
     return {
-      data: newRs.map((row) => {
+      data: rs.map((row) => {
         return {
           ...row,
           participants: row.participants.filter((x: any) => x !== null),

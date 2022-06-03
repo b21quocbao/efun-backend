@@ -23,8 +23,7 @@ export class PredictionsService {
   }
 
   async findAll(
-    userId: number,
-    { orderBy }: SearchPredictionDto,
+    { orderBy, eventId, userId }: SearchPredictionDto,
     pageNumber?: number,
     pageSize?: number,
   ): Promise<Response<PredictionEntity[]>> {
@@ -51,14 +50,19 @@ export class PredictionsService {
         'user.isVerified as "isUserVerified"',
         'user.address as address',
         'transaction."txId" as "transactionNumber"',
-      ])
-      .where('predictions."userId" = :userId', { userId });
+      ]);
 
     if (pageSize && pageNumber) {
       qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
     }
     if (orderBy == PSortEvent.LATEST) {
       qb.orderBy('"createdAt"', 'DESC');
+    }
+    if (eventId) {
+      qb.andWhere('predictions."eventId" = :eventId', { eventId });
+    }
+    if (userId) {
+      qb.andWhere('predictions."userId" = :userId', { userId });
     }
 
     const [rs, total] = await Promise.all([qb.getRawMany(), qb.getCount()]);
@@ -72,6 +76,7 @@ export class PredictionsService {
             JSON.parse(prediction.eventOptions)[prediction.optionIndex]
           ? 'Claim'
           : 'Lost';
+        // const estimateAmount = 
 
         return {
           ...prediction,

@@ -9,4 +9,10 @@ export class SearchPredictionDto {
   @IsEnum(PSortEvent)
   @IsOptional()
   orderBy?: PSortEvent;
+
+  @IsOptional()
+  userId?: number;
+
+  @IsOptional()
+  eventId?: number;
 }
