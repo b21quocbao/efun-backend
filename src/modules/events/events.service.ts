@@ -37,6 +37,7 @@ export class EventsService {
     pageSize,
     status,
     eventId,
+    outOfTime,
   }: GetAllEventDto): Promise<Response<EventEntity[]>> {
     const qb = this.eventRepository
       .createQueryBuilder('events')
@@ -46,7 +47,6 @@ export class EventsService {
       .leftJoin('events.user', 'user')
       .leftJoin('events.competition', 'competition')
       .leftJoin('events.pools', 'pools')
-      .where('events.status = :status ', { status: EventStatus.AVAILABLE })
       .select([
         'events.*',
         'array_agg(pools.amount) as "poolAmounts"',
@@ -86,11 +86,12 @@ export class EventsService {
       qb.andWhere('events.categoryId = :categoryId', { categoryId });
     }
     if (eventId || eventId === 0) {
-      qb.andWhere('events.id = :id', { id: eventId });
+      qb.andWhere('events.id = :eventId', { eventId });
     }
     if (userId) {
       qb.andWhere('events.userId = :userId', { userId });
-    } else {
+    }
+    if (outOfTime) {
       qb.andWhere('events.deadline >= now()');
     }
     if (isHot) {
