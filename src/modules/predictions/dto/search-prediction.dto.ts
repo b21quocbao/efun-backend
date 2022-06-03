@@ -15,4 +15,7 @@ export class SearchPredictionDto {
 
   @IsOptional()
   eventId?: number;
+
+  @IsOptional()
+  predictionId?: number;
 }

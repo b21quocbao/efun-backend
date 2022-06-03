@@ -69,6 +69,8 @@ export class ContractConsole {
         const transaction = await this.transactionsService.create({
           contractAddress: event.address,
           gas: receipt?.gasUsed,
+          receipt: JSON.stringify(receipt),
+          blockNumber: receipt?.blockNumber,
           walletAddress: receipt?.from,
           txId: event.transactionHash,
         });
@@ -104,6 +106,8 @@ export class ContractConsole {
         const transaction = await this.transactionsService.create({
           contractAddress: event.address,
           gas: receipt?.gasUsed,
+          receipt: JSON.stringify(receipt),
+          blockNumber: receipt?.blockNumber,
           walletAddress: receipt?.from,
           txId: event.transactionHash,
         });
@@ -133,6 +137,8 @@ export class ContractConsole {
         const transaction = await this.transactionsService.create({
           contractAddress: event.address,
           gas: receipt?.gasUsed,
+          receipt: JSON.stringify(receipt),
+          blockNumber: receipt?.blockNumber,
           walletAddress: receipt?.from,
           txId: event.transactionHash,
         });
@@ -170,6 +176,8 @@ export class ContractConsole {
         const transaction = await this.transactionsService.create({
           contractAddress: event.address,
           gas: receipt?.gasUsed,
+          receipt: JSON.stringify(receipt),
+          blockNumber: receipt?.blockNumber,
           walletAddress: receipt?.from,
           txId: event.transactionHash,
         });
@@ -199,6 +207,8 @@ export class ContractConsole {
         const transaction = await this.transactionsService.create({
           contractAddress: event.address,
           gas: receipt?.gasUsed,
+          receipt: JSON.stringify(receipt),
+          blockNumber: receipt?.blockNumber,
           walletAddress: receipt?.from,
           txId: event.transactionHash,
         });

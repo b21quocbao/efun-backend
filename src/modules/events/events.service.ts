@@ -10,7 +10,7 @@ import { EventStatus } from './enums/event-status.enum';
 import { ESortEvent } from './enums/event-type.enum';
 import BigNumber from 'bignumber.js';
 import { PredictionsService } from '../predictions/predictions.service';
-BigNumber.config({ EXPONENTIAL_AT: 100 })
+BigNumber.config({ EXPONENTIAL_AT: 100 });
 
 @Injectable()
 export class EventsService {

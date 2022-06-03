@@ -23,6 +23,12 @@ export class TransactionEntity {
   @Column({ nullable: true })
   gas: number;
 
+  @Column({ nullable: true })
+  blockNumber: number;
+
+  @Column({ nullable: true })
+  receipt: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

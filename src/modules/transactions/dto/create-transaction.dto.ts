@@ -3,4 +3,6 @@ export class CreateTransactionDto {
   walletAddress: string;
   txId: string;
   gas: number;
+  receipt: string;
+  blockNumber: number;
 }

@@ -23,7 +23,7 @@ export class PredictionsService {
   }
 
   async findAll(
-    { orderBy, eventId, userId }: SearchPredictionDto,
+    { orderBy, eventId, userId, predictionId }: SearchPredictionDto,
     pageNumber?: number,
     pageSize?: number,
   ): Promise<Response<PredictionEntity[]>> {
@@ -50,6 +50,7 @@ export class PredictionsService {
         'user.isVerified as "isUserVerified"',
         'user.address as address',
         'transaction."txId" as "transactionNumber"',
+        'transaction."blockNumber" as "blockNumber"',
       ]);
 
     if (pageSize && pageNumber) {
@@ -63,6 +64,9 @@ export class PredictionsService {
     }
     if (userId) {
       qb.andWhere('predictions."userId" = :userId', { userId });
+    }
+    if (predictionId) {
+      qb.andWhere('predictions."id" = :predictionId', { predictionId });
     }
 
     const [rs, total] = await Promise.all([qb.getRawMany(), qb.getCount()]);

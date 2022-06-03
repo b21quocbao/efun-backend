@@ -31,6 +31,10 @@ export class PredictionsController {
     @UserID() userId: number,
     @Param('id') id: string,
   ): Promise<PredictionEntity> {
-    return this.predictionsService.findOne(userId, +id);
+    const { data } = await this.predictionsService.findAll({
+      predictionId: +id,
+      userId,
+    });
+    return data[0];
   }
 }
