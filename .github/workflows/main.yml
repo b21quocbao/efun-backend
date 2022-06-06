@@ -1,17 +1,46 @@
-name: Deploy
-
+name: CI/CD Pipeline
 on:
   push:
-    branches:
-      - main
-
+    branches: [ master ]
+  
 jobs:
-  build:
+  continuous-integration:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
+      # Step 1
+      - uses: actions/checkout@v3
+      # Step 2
+      - name: Set up NodeJS 16
+        uses: actions/setup-node@v2
         with:
-          heroku_api_key: '404a894f-f163-40b7-8a07-36945d7f6782'
-          heroku_app_name: 'efun-be-v2' #Must be unique in Heroku
-          heroku_email: 'ngobao2001@gmail.com'
+          node-version: '16'
+      - run: npm install -g yarn
+      # Step 3
+      - name: Install Dependencies
+        run: yarn install
+      # Step 4
+      - name: Test Application
+        run: yarn test
+      # Step 5
+      - name: Build Application
+        run: yarn build
+
+  continuous-deployment:
+    runs-on: ubuntu-latest
+    needs: [continuous-integration]
+    if: github.ref == 'refs/heads/master'
+    steps:
+     # Step 1
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ap-southeast-1
+     # Step 2
+      - name: Create CodeDeploy Deployment
+        id: deploy
+        run: |
+          aws deploy create-deployment \
+            --application-name Git_Application \
+            --deployment-group-name development_gropup \
+            --deployment-config-name CodeDeployDefault.OneAtATime \
+            --github-location repository=${{ github.repository }},commitId=${{ github.sha }}
