@@ -19,9 +19,6 @@ jobs:
       - name: Install Dependencies
         run: yarn install
       # Step 4
-      - name: Test Application
-        run: yarn test
-      # Step 5
       - name: Build Application
         run: yarn build
 
