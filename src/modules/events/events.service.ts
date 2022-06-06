@@ -206,6 +206,7 @@ export class EventsService {
     const where = {
       userId: event.userId,
       id: Not(+eventId),
+      status: EventStatus.AVAILABLE,
       deadline: MoreThanOrEqual(new Date()),
     };
     const data = await this.eventRepository.find({
