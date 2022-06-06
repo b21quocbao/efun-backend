@@ -26,6 +26,18 @@ export class PredictionsController {
     );
   }
 
+  @Get('all')
+  async findAllPred(
+    @Query() request: SearchPredictionDto,
+    @Query() { pageNumber, pageSize }: PaginationInput,
+  ): Promise<Response<PredictionEntity[]>> {
+    return this.predictionsService.findAll(
+      { ...request },
+      pageNumber,
+      pageSize,
+    );
+  }
+
   @Get(':id')
   async findOne(
     @UserID() userId: number,

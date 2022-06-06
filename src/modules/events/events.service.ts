@@ -10,6 +10,7 @@ import { EventStatus } from './enums/event-status.enum';
 import { ESortEvent } from './enums/event-type.enum';
 import BigNumber from 'bignumber.js';
 import { PredictionsService } from '../predictions/predictions.service';
+import { PredictionEntity } from '../predictions/entities/prediction.entity';
 BigNumber.config({ EXPONENTIAL_AT: 100 });
 
 @Injectable()
@@ -17,7 +18,8 @@ export class EventsService {
   constructor(
     @InjectRepository(EventEntity)
     private eventRepository: Repository<EventEntity>,
-    private readonly predictionsService: PredictionsService,
+    @InjectRepository(PredictionEntity)
+    private predictionRepository: Repository<PredictionEntity>,
   ) {}
 
   async create(
@@ -38,7 +40,7 @@ export class EventsService {
     status,
     eventId,
     outOfTime,
-  }: GetAllEventDto): Promise<Response<EventEntity[]>> {
+  }: GetAllEventDto): Promise<Response<any[]>> {
     const qb = this.eventRepository
       .createQueryBuilder('events')
       .leftJoin('events.predictions', 'predictions')
@@ -116,11 +118,11 @@ export class EventsService {
       for (let idx = 0; idx < event.poolTokens.length; ++idx) {
         event.poolTokenAmounts[event.poolTokens[idx]] = event.poolAmounts[idx];
       }
-      const { data } = await this.predictionsService.findAll({
+      const predictions = await this.predictionRepository.find({
         eventId: event.id,
       });
 
-      for (const prediction of data) {
+      for (const prediction of predictions) {
         if (!event.predictionTokenAmounts[prediction.token]) {
           event.predictionTokenAmounts[prediction.token] = '0';
         }
@@ -150,7 +152,7 @@ export class EventsService {
     };
   }
 
-  async findOne(id: number): Promise<EventEntity> {
+  async findOne(id: number): Promise<any> {
     return this.eventRepository
       .createQueryBuilder('events')
       .leftJoin('events.predictions', 'predictions')

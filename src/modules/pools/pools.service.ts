@@ -21,7 +21,9 @@ export class PoolsService {
     pageNumber?: number,
     pageSize?: number,
   ): Promise<Response<PoolEntity[]>> {
-    const qb = this.poolRepository.createQueryBuilder('pools');
+    const qb = this.poolRepository
+      .createQueryBuilder('pools')
+      .leftJoinAndSelect('pools.event', 'event');
 
     if (pageSize && pageNumber) {
       qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
@@ -46,6 +48,18 @@ export class PoolsService {
       .where('pools."eventId" = :eventId', { eventId })
       .andWhere('pools.token = :token', { token })
       .getOne();
+  }
+
+  async totalAmount(eventId: number, token: string): Promise<number> {
+    const qb = this.poolRepository
+      .createQueryBuilder('pools')
+      .where('pools.eventId = :eventId', { eventId })
+      .andWhere('pools.token = :token', { token });
+    qb.select(['SUM(COALESCE(pools.amount::numeric,0)) as "totalAmount"'])
+      .groupBy('"eventId"')
+      .addGroupBy('token');
+
+    return (await qb.getRawOne())?.totalAmount || 0;
   }
 
   async update(id: number, updatePoolDto: UpdatePoolDto): Promise<PoolEntity> {

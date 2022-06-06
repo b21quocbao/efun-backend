@@ -380,4 +380,21 @@ export class ContractConsole {
   //     shortDescription: 'PL Winner Team',
   //   });
   // }
+
+  @Command({
+    command: 'receipt',
+  })
+  async receipt(): Promise<void> {
+    const transactions = await this.transactionsService.findAll();
+    for (const transaction of transactions.data)
+      if (transaction.id >= 2057) {
+        const receipt = await this.web3.eth.getTransactionReceipt(
+          transaction.txId,
+        );
+        await this.transactionsService.update(transaction.id, {
+          receipt: JSON.stringify(receipt),
+          blockNumber: receipt?.blockNumber,
+        });
+      }
+  }
 }

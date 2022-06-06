@@ -8,12 +8,17 @@ import { PredictionEntity } from './entities/prediction.entity';
 import { SearchPredictionDto } from './dto/search-prediction.dto';
 import { PSortEvent } from './enums/prediction-type.enum';
 import { isNumber } from 'class-validator';
+import { EventType } from '../events/enums/event-type.enum';
+import { PoolsService } from '../pools/pools.service';
+import BigNumber from 'bignumber.js';
+BigNumber.config({ EXPONENTIAL_AT: 100 });
 
 @Injectable()
 export class PredictionsService {
   constructor(
     @InjectRepository(PredictionEntity)
     private predictionRepository: Repository<PredictionEntity>,
+    private readonly poolsService: PoolsService,
   ) {}
 
   async create(
@@ -36,11 +41,12 @@ export class PredictionsService {
       .leftJoin('event.subCategory', 'subCategory')
       .select([
         'predictions.*',
+        'event.id as "eventId"',
         'event.name as name',
         'event.odds as odds',
         'event.options as options',
         'event.type as type',
-        'event.marketType as marketType',
+        'event.marketType as "marketType"',
         'event.metadata as metadata',
         'event.status as "eventStatus"',
         'event.result as "eventResult"',
@@ -71,22 +77,50 @@ export class PredictionsService {
 
     const [rs, total] = await Promise.all([qb.getRawMany(), qb.getCount()]);
     return {
-      data: rs.map((prediction) => {
-        const status = !prediction.eventResult
-          ? 'Predicted'
-          : isNumber(prediction.rewardTransactionId)
-          ? 'Claimed'
-          : prediction.eventResult ==
-            JSON.parse(prediction.eventOptions)[prediction.optionIndex]
-          ? 'Claim'
-          : 'Lost';
-        // const estimateAmount = 
+      data: await Promise.all(
+        rs.map(async (prediction) => {
+          const status = !prediction.eventResult
+            ? 'Predicted'
+            : isNumber(prediction.rewardTransactionId)
+            ? 'Claimed'
+            : prediction.eventResult ==
+              JSON.parse(prediction.eventOptions)[prediction.optionIndex]
+            ? 'Claim'
+            : 'Lost';
+          let estimateReward = '0';
+          if (prediction.type === EventType.GroupPredict) {
+            const lp = await this.poolsService.totalAmount(
+              prediction.eventId,
+              prediction.token,
+            );
+            const predictStats = await this.totalAmount(
+              prediction.eventId,
+              prediction.token,
+            );
+            const predictOptionStats = await this.totalAmount(
+              prediction.eventId,
+              prediction.token,
+              prediction.optionIndex,
+            );
 
-        return {
-          ...prediction,
-          status: status,
-        };
-      }),
+            estimateReward = new BigNumber(predictStats)
+              .plus(lp)
+              .multipliedBy(prediction.amount)
+              .dividedBy(predictOptionStats)
+              .toString();
+          } else {
+            estimateReward = new BigNumber(prediction.amount)
+              .multipliedBy(JSON.parse(prediction.odds)[prediction.optionIndex])
+              .toString();
+          }
+
+          return {
+            ...prediction,
+            status: status,
+            estimateReward: estimateReward,
+          };
+        }),
+      ),
       pageNumber: Number(pageNumber),
       pageSize: Number(pageSize),
       total: total,
@@ -119,6 +153,27 @@ export class PredictionsService {
       .where('predictions.id = :id', { id })
       .andWhere('predictions."userId" = :userId', { userId })
       .getRawOne();
+  }
+
+  async totalAmount(
+    eventId: number,
+    token: string,
+    optionIndex?: number,
+  ): Promise<number> {
+    const qb = this.predictionRepository
+      .createQueryBuilder('predictions')
+      .where('predictions.eventId = :eventId', { eventId })
+      .andWhere('predictions.token = :token', { token });
+    if (optionIndex || optionIndex == 0) {
+      qb.andWhere('predictions.optionIndex = :optionIndex', { optionIndex });
+    }
+    qb.select(['SUM(COALESCE(predictions.amount::numeric,0)) as "totalAmount"'])
+      .groupBy('"eventId"')
+      .addGroupBy('token');
+    if (optionIndex || optionIndex == 0) {
+      qb.addGroupBy('"optionIndex"');
+    }
+    return (await qb.getRawOne())?.totalAmount || 0;
   }
 
   async findByPredictNum(
