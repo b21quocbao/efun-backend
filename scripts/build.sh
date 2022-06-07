@@ -1,3 +1,3 @@
 #!/bin/bash
-cd /home/ec2-user/efun-be-v2
+cd /home/ubuntu/efun-be-v2
 yarn build
