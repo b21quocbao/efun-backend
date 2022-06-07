@@ -211,6 +211,9 @@ export class EventsService {
     };
     const data = await this.eventRepository.find({
       where,
+      order: {
+        deadline: 'DESC',
+      },
       skip: (pageNumber - 1) * pageSize,
       take: pageSize,
     });
