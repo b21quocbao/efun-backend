@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /home/ec2-user/minted-gem-be
+    destination: /home/ubuntu/efun-be-v2
 hooks:
   BeforeInstall:
     - location: scripts/install_dependencies.sh
