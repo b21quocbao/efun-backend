@@ -43,6 +43,12 @@ export const eventABI = [
         name: 'options',
         type: 'tuple',
       },
+      {
+        indexed: false,
+        internalType: 'string[12]',
+        name: 'datas',
+        type: 'string[12]',
+      },
     ],
     name: 'EventCreated',
     type: 'event',
@@ -101,7 +107,6 @@ export const eventABI = [
   },
   {
     inputs: [
-      { internalType: 'uint256', name: '_idx', type: 'uint256' },
       { internalType: 'uint256', name: '_startTime', type: 'uint256' },
       { internalType: 'uint256', name: '_deadlineTime', type: 'uint256' },
       { internalType: 'uint256', name: '_endTime', type: 'uint256' },
@@ -115,9 +120,10 @@ export const eventABI = [
         name: '_options',
         type: 'tuple',
       },
+      { internalType: 'string[12]', name: '_datas', type: 'string[12]' },
     ],
     name: 'createSingleEvent',
-    outputs: [],
+    outputs: [{ internalType: 'uint256', name: '_idx', type: 'uint256' }],
     stateMutability: 'nonpayable',
     type: 'function',
   },
@@ -161,6 +167,7 @@ export const eventABI = [
           { internalType: 'address', name: 'creator', type: 'address' },
           { internalType: 'string[]', name: 'options', type: 'string[]' },
           { internalType: 'uint256[]', name: 'odds', type: 'uint256[]' },
+          { internalType: 'string[12]', name: '_datas', type: 'string[12]' },
         ],
         internalType: 'struct EDataTypes.Event',
         name: '_event',
@@ -179,6 +186,13 @@ export const eventABI = [
   },
   {
     inputs: [],
+    name: 'nEvents',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
     name: 'owner',
     outputs: [{ internalType: 'address', name: '', type: 'address' }],
     stateMutability: 'view',
@@ -187,6 +201,13 @@ export const eventABI = [
   {
     inputs: [],
     name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'uint256', name: '_nEvents', type: 'uint256' }],
+    name: 'setNEvents',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',

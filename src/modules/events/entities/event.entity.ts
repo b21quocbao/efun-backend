@@ -6,7 +6,7 @@ import { TransactionEntity } from 'src/modules/transactions/entities/transaction
 import { UserEntity } from 'src/modules/users/entities/user.entity';
 import {
   Entity,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   CreateDateColumn,
   UpdateDateColumn,
   Column,
@@ -21,7 +21,7 @@ import { MarketType } from '../enums/market-type.enum';
 
 @Entity('events')
 export class EventEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn()
   id: number;
 
   @ManyToOne(() => UserEntity, (user) => user.events)

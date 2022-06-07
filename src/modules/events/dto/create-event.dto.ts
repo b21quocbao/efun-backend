@@ -6,6 +6,10 @@ import { MarketType } from '../enums/market-type.enum';
 
 export class CreateEventDto {
   @ApiProperty()
+  @IsNumber()
+  id: number;
+
+  @ApiProperty()
   @IsString()
   name: string;
 

@@ -47,16 +47,12 @@ export class ContractConsole {
       const user = await this.usersService.findByAddress(
         event.returnValues.creator,
       );
-      const eventEntity = await this.eventsService.findOne(
-        event.returnValues.idx,
-      );
       const receipt = await this.web3.eth.getTransactionReceipt(
         event.transactionHash,
       );
 
       if (
         user &&
-        eventEntity &&
         [
           'MULTIPLE_CHOICES_PROXY',
           'GROUP_PREDICT_PROXY',
@@ -76,6 +72,7 @@ export class ContractConsole {
         });
 
         await this.eventsService.create(user.id, {
+          id: event.returnValues.idx,
           startTime: new Date(event.returnValues.startTime * 1000),
           deadline: new Date(event.returnValues.deadlineTime * 1000),
           endTime: new Date(event.returnValues.endTime * 1000),
