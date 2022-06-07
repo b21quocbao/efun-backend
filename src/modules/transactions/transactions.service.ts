@@ -42,6 +42,10 @@ export class TransactionsService {
     return this.transactionRepository.findOne(id);
   }
 
+  async findOneByHash(txId: string): Promise<TransactionEntity> {
+    return this.transactionRepository.findOne({ where: { txId } });
+  }
+
   async update(
     id: number,
     updateTransactionDto: UpdateTransactionDto,

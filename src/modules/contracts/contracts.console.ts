@@ -50,6 +50,9 @@ export class ContractConsole {
       const receipt = await this.web3.eth.getTransactionReceipt(
         event.transactionHash,
       );
+      const transactionEntity = await this.transactionsService.findOneByHash(
+        event.transactionHash,
+      );
 
       if (
         user &&
@@ -60,7 +63,8 @@ export class ContractConsole {
           'OVER_UNDER_PROXY',
         ]
           .map((e) => process.env[e].toLowerCase())
-          .includes(event.returnValues.helperAddress.toLowerCase())
+          .includes(event.returnValues.helperAddress.toLowerCase()) &&
+        !transactionEntity
       ) {
         const transaction = await this.transactionsService.create({
           contractAddress: event.address,
@@ -116,8 +120,11 @@ export class ContractConsole {
       const receipt = await this.web3.eth.getTransactionReceipt(
         event.transactionHash,
       );
+      const transactionEntity = await this.transactionsService.findOneByHash(
+        event.transactionHash,
+      );
 
-      if (user && eventEntity) {
+      if (user && eventEntity && !transactionEntity) {
         const transaction = await this.transactionsService.create({
           contractAddress: event.address,
           gas: receipt?.gasUsed,
@@ -147,8 +154,11 @@ export class ContractConsole {
       const receipt = await this.web3.eth.getTransactionReceipt(
         event.transactionHash,
       );
+      const transactionEntity = await this.transactionsService.findOneByHash(
+        event.transactionHash,
+      );
 
-      if (user && eventEntity) {
+      if (user && eventEntity && !transactionEntity) {
         const transaction = await this.transactionsService.create({
           contractAddress: event.address,
           gas: receipt?.gasUsed,
@@ -182,6 +192,9 @@ export class ContractConsole {
       const receipt = await this.web3.eth.getTransactionReceipt(
         event.transactionHash,
       );
+      const transactionEntity = await this.transactionsService.findOneByHash(
+        event.transactionHash,
+      );
       const prediction = await this.predictionsService.findByPredictNum(
         event.returnValues.predictNum,
         user.id,
@@ -189,7 +202,7 @@ export class ContractConsole {
         event.returnValues.eventId,
       );
 
-      if (user && eventEntity && prediction) {
+      if (user && eventEntity && prediction && !transactionEntity) {
         const transaction = await this.transactionsService.create({
           contractAddress: event.address,
           gas: receipt?.gasUsed,
@@ -212,6 +225,9 @@ export class ContractConsole {
       const receipt = await this.web3.eth.getTransactionReceipt(
         event.transactionHash,
       );
+      const transactionEntity = await this.transactionsService.findOneByHash(
+        event.transactionHash,
+      );
       const eventEntity = await this.eventsService.findOne(
         event.returnValues.eventId,
       );
@@ -220,7 +236,7 @@ export class ContractConsole {
         event.returnValues.token,
       );
 
-      if (eventEntity) {
+      if (eventEntity && !transactionEntity) {
         const transaction = await this.transactionsService.create({
           contractAddress: event.address,
           gas: receipt?.gasUsed,
