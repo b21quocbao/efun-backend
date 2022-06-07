@@ -30,7 +30,7 @@ export class EventEntity {
   @Column()
   name: string;
 
-  @Column({ default: EventStatus.PENDING })
+  @Column({ default: EventStatus.AVAILABLE })
   status: EventStatus;
 
   @Column()

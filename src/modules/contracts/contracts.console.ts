@@ -75,15 +75,33 @@ export class ContractConsole {
           txId: event.transactionHash,
         });
 
-        await this.eventsService.update(eventEntity.id, {
+        await this.eventsService.create(user.id, {
           startTime: new Date(event.returnValues.startTime * 1000),
           deadline: new Date(event.returnValues.deadlineTime * 1000),
           endTime: new Date(event.returnValues.endTime * 1000),
           options: JSON.stringify(event.returnValues.options.data),
           odds: JSON.stringify(event.returnValues.options.odds),
-          status: EventStatus.AVAILABLE,
-          userId: user.id,
           transactionId: transaction.id,
+          name: event.returnValues.datas[0],
+          thumbnailUrl: event.returnValues.datas[1],
+          bannerUrl: event.returnValues.datas[2].length
+            ? event.returnValues.datas[2]
+            : undefined,
+          categoryId: Number(event.returnValues.datas[3]),
+          subCategoryId: event.returnValues.datas[4].length
+            ? Number(event.returnValues.datas[4])
+            : undefined,
+          competitionId: Number(event.returnValues.datas[5]),
+          type: event.returnValues.datas[6],
+          marketType: event.returnValues.datas[7].length
+            ? event.returnValues.datas[7]
+            : undefined,
+          description: event.returnValues.datas[8],
+          metadata: event.returnValues.datas[9],
+          shortDescription: event.returnValues.datas[10],
+          streamUrl: event.returnValues.datas[11].length
+            ? event.returnValues.datas[11]
+            : undefined,
         });
       }
     };

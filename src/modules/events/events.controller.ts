@@ -4,8 +4,6 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Response } from 'src/shares/interceptors/response.interceptor';
 import { EventEntity } from './entities/event.entity';
 import { GetAllEventDto, GetOtherEventDto } from './dto/get-event.dto';
-import { UserID } from 'src/shares/decorators/get-user-id.decorator';
-import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateResultProofDto } from './dto/update-result-proof.dto';
 
 @ApiTags('Events')
@@ -46,13 +44,5 @@ export class EventsController {
       +id,
       updateResultProofDto.resultProofUrl,
     );
-  }
-
-  @Post()
-  async create(
-    @UserID() userId: number,
-    @Body() createEventDto: CreateEventDto,
-  ): Promise<EventEntity> {
-    return this.eventsService.create(userId, createEventDto);
   }
 }

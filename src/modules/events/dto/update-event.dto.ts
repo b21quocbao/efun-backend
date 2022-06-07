@@ -5,7 +5,6 @@ import { CreateEventDto } from './create-event.dto';
 export class UpdateEventDto extends PartialType(CreateEventDto) {
   status?: EventStatus;
   userId?: number;
-  transactionId?: number;
   result?: string;
   proofOfResult?: string;
 }

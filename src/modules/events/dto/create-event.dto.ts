@@ -22,6 +22,10 @@ export class CreateEventDto {
   @IsNumber()
   categoryId: number;
 
+  @ApiProperty()
+  @IsNumber()
+  transactionId: number;
+
   @ApiPropertyOptional()
   @IsNumber()
   subCategoryId?: number;
