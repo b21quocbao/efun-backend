@@ -55,9 +55,6 @@ export class EventEntity {
   @Column()
   type: EventType;
 
-  @Column({ nullable: true })
-  scoreData?: string;
-
   @Column()
   startTime: Date;
 

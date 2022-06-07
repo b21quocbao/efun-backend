@@ -179,11 +179,15 @@ export class PredictionsService {
   async findByPredictNum(
     predictNum: number,
     userId: number,
+    token: string,
+    eventId: number,
   ): Promise<PredictionEntity> {
     return this.predictionRepository
       .createQueryBuilder('predictions')
       .where('predictions."predictNum" = :predictNum', { predictNum })
       .andWhere('predictions."userId" = :userId', { userId })
+      .andWhere('predictions."token" = :token', { token })
+      .andWhere('predictions."eventId" = :eventId', { eventId })
       .getOne();
   }
 

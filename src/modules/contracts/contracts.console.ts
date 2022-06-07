@@ -170,6 +170,8 @@ export class ContractConsole {
       const prediction = await this.predictionsService.findByPredictNum(
         event.returnValues.predictNum,
         user.id,
+        event.returnValues.token,
+        event.returnValues.eventId,
       );
 
       if (user && eventEntity && prediction) {

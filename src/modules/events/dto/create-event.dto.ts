@@ -37,11 +37,6 @@ export class CreateEventDto {
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  scoreData?: string;
-
-  @ApiPropertyOptional()
-  @IsString()
-  @IsOptional()
   marketType?: MarketType;
 
   @ApiProperty()
