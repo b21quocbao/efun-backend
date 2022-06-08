@@ -1,4 +1,7 @@
 import { PartialType } from '@nestjs/swagger';
 import { CreatePoolDto } from './create-pool.dto';
 
-export class UpdatePoolDto extends PartialType(CreatePoolDto) {}
+export class UpdatePoolDto extends PartialType(CreatePoolDto) {
+  claimTransactionId?: number;
+  claimAmount?: string;
+}

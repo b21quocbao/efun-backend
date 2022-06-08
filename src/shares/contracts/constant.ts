@@ -4,4 +4,5 @@ export enum ContractEvent {
   LPDeposited = 'LPDeposited',
   PredictionCreated = 'PredictionCreated',
   RewardClaimed = 'RewardClaimed',
+  LPClaimed = 'LPClaimed',
 }

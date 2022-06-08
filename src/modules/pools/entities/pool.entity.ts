@@ -23,8 +23,12 @@ export class PoolEntity {
   event: EventEntity;
 
   @OneToOne(() => TransactionEntity)
-  @JoinColumn()
+  @JoinColumn({ name: 'transactionId' })
   transaction: TransactionEntity;
+
+  @OneToOne(() => TransactionEntity)
+  @JoinColumn({ name: 'claimTransactionId' })
+  claimTransaction?: TransactionEntity;
 
   @Column()
   token: string;
@@ -37,6 +41,12 @@ export class PoolEntity {
 
   @Column()
   amount: string;
+
+  @Column({ nullable: true })
+  claimTransactionId?: number;
+
+  @Column({ nullable: true })
+  claimAmount?: string;
 
   @CreateDateColumn()
   createdAt: Date;

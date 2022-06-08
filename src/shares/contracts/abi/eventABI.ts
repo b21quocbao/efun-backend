@@ -206,13 +206,6 @@ export const eventABI = [
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'uint256', name: '_nEvents', type: 'uint256' }],
-    name: 'setNEvents',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
     inputs: [{ internalType: 'address', name: 'newOwner', type: 'address' }],
     name: 'transferOwnership',
     outputs: [],

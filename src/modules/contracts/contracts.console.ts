@@ -28,6 +28,7 @@ export class ContractConsole {
   private eventHandler3;
   private eventHandler4;
   private eventHandler5;
+  private eventHandler6;
 
   constructor(
     private readonly eventsService: EventsService,
@@ -260,6 +261,40 @@ export class ContractConsole {
         }
       }
     };
+
+    this.eventHandler6 = async (event): Promise<void> => {
+      console.log(`Processing event ${JSON.stringify(event.returnValues)}`);
+      console.log(`Handle item with id ${event.returnValues.eventId}`);
+      const receipt = await this.web3.eth.getTransactionReceipt(
+        event.transactionHash,
+      );
+      const transactionEntity = await this.transactionsService.findOneByHash(
+        event.transactionHash,
+      );
+      const eventEntity = await this.eventsService.findOne(
+        event.returnValues.eventId,
+      );
+      const pool = await this.poolsService.findByEventToken(
+        event.returnValues.eventId,
+        event.returnValues.token,
+      );
+
+      if (eventEntity && !transactionEntity && pool) {
+        const transaction = await this.transactionsService.create({
+          contractAddress: event.address,
+          gas: receipt?.gasUsed,
+          receipt: JSON.stringify(receipt),
+          blockNumber: receipt?.blockNumber,
+          walletAddress: receipt?.from,
+          txId: event.transactionHash,
+        });
+
+        await this.poolsService.update(pool.id, {
+          claimAmount: event.returnValues.amount,
+          claimTransactionId: transaction.id,
+        });
+      }
+    };
   }
 
   @Command({
@@ -358,6 +393,25 @@ export class ContractConsole {
   }
 
   @Command({
+    command: 'claim-lp <statingBlock>',
+  })
+  async claimLP(statingBlock = 0): Promise<void> {
+    const contract = new this.web3.eth.Contract(
+      predictionABI as AbiItem[],
+      process.env.PREDICTION_PROXY,
+    );
+
+    await crawlSmartcontractEvents(
+      Number(statingBlock),
+      this.web3,
+      this.latestBlockService,
+      contract,
+      ContractEvent.LPClaimed,
+      this.eventHandler6,
+    );
+  }
+
+  @Command({
     command: 'crawl-all <statingBlock>',
   })
   async crawlAll(statingBlock = 0): Promise<void> {
@@ -382,6 +436,7 @@ export class ContractConsole {
         ContractEvent.PredictionCreated,
         ContractEvent.RewardClaimed,
         ContractEvent.LPDeposited,
+        ContractEvent.LPClaimed,
       ],
       [
         this.eventHandler1,
@@ -389,6 +444,7 @@ export class ContractConsole {
         this.eventHandler3,
         this.eventHandler4,
         this.eventHandler5,
+        this.eventHandler6,
       ],
     );
   }
