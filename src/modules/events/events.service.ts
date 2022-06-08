@@ -40,6 +40,8 @@ export class EventsService {
     status,
     eventId,
     outOfTime,
+    subCategoryId,
+    competitionId,
   }: GetAllEventDto): Promise<Response<any[]>> {
     const qb = this.eventRepository
       .createQueryBuilder('events')
@@ -86,6 +88,12 @@ export class EventsService {
     }
     if (categoryId) {
       qb.andWhere('events.categoryId = :categoryId', { categoryId });
+    }
+    if (subCategoryId) {
+      qb.andWhere('events.subCategoryId = :subCategoryId', { subCategoryId });
+    }
+    if (competitionId) {
+      qb.andWhere('events.competitionId = :competitionId', { competitionId });
     }
     if (eventId || eventId === 0) {
       qb.andWhere('events.id = :eventId', { eventId });

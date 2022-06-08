@@ -35,6 +35,18 @@ export class GetAllEventDto extends PaginationInput {
   @Transform(({ value }) => Number(value))
   @IsOptional()
   @IsNumber()
+  competitionId?: number;
+
+  @ApiPropertyOptional()
+  @Transform(({ value }) => Number(value))
+  @IsOptional()
+  @IsNumber()
+  subCategoryId?: number;
+
+  @ApiPropertyOptional()
+  @Transform(({ value }) => Number(value))
+  @IsOptional()
+  @IsNumber()
   userId?: number;
 
   @ApiPropertyOptional()
