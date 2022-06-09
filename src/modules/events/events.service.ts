@@ -40,6 +40,7 @@ export class EventsService {
     status,
     eventId,
     outOfTime,
+    outOfEndTime,
     subCategoryId,
     competitionId,
   }: GetAllEventDto): Promise<Response<any[]>> {
@@ -102,6 +103,9 @@ export class EventsService {
       qb.andWhere('events.userId = :userId', { userId });
     }
     if (outOfTime) {
+      qb.andWhere('events.deadline >= now()');
+    }
+    if (outOfEndTime) {
       qb.andWhere('events.deadline >= now()');
     }
     if (isHot) {
