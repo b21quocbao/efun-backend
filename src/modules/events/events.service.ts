@@ -106,7 +106,7 @@ export class EventsService {
       qb.andWhere('events.deadline >= now()');
     }
     if (outOfEndTime) {
-      qb.andWhere('events.deadline >= now()');
+      qb.andWhere('events."endTime" >= now()');
     }
     if (isHot) {
       qb.andWhere('events.isHot = :isHot', { isHot });
