@@ -273,6 +273,18 @@ export const predictionABI = [
   },
   {
     inputs: [
+      { internalType: 'uint256', name: '_eventId', type: 'uint256' },
+      { internalType: 'address', name: '_token', type: 'address' },
+      { internalType: 'uint256', name: '_index', type: 'uint256' },
+      { internalType: 'uint256', name: '_amount', type: 'uint256' },
+    ],
+    name: 'getPotentialReward',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
       { internalType: 'uint256', name: 'eventId', type: 'uint256' },
       { internalType: 'address', name: 'account', type: 'address' },
       { internalType: 'address', name: 'token', type: 'address' },
