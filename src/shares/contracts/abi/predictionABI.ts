@@ -313,10 +313,10 @@ export const predictionABI = [
   {
     inputs: [
       { internalType: 'uint256', name: '_eventId', type: 'uint256' },
-      { internalType: 'address', name: '_token', type: 'address' },
+      { internalType: 'address[]', name: '_tokens', type: 'address[]' },
     ],
     name: 'getRemainingLP',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    outputs: [{ internalType: 'uint256[]', name: '', type: 'uint256[]' }],
     stateMutability: 'view',
     type: 'function',
   },
