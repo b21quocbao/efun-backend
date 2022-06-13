@@ -110,7 +110,9 @@ export class PredictionsService {
               .toString();
           } else {
             estimateReward = new BigNumber(prediction.amount)
-              .multipliedBy(JSON.parse(prediction.odds)[prediction.optionIndex])
+              .multipliedBy(
+                JSON.parse(prediction.odds)[prediction.optionIndex] / 10000,
+              )
               .toString();
           }
 
