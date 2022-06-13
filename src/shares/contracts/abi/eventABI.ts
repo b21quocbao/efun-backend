@@ -36,7 +36,7 @@ export const eventABI = [
       {
         indexed: false,
         internalType: 'uint256[]',
-        name: '_odds',
+        name: 'odds',
         type: 'uint256[]',
       },
       { indexed: false, internalType: 'string', name: 'datas', type: 'string' },
