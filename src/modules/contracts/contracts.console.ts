@@ -30,6 +30,7 @@ export class ContractConsole {
   private eventHandler4;
   private eventHandler5;
   private eventHandler6;
+  private eventHandler7;
 
   constructor(
     private readonly eventsService: EventsService,
@@ -294,6 +295,44 @@ export class ContractConsole {
         });
       }
     };
+
+    this.eventHandler7 = async (event): Promise<void> => {
+      console.log(`Processing event ${JSON.stringify(event.returnValues)}`);
+      console.log(`Handle item with id ${event.returnValues.eventId}`);
+      const user = await this.usersService.findByAddress(
+        event.returnValues.user,
+      );
+      const eventEntity = await this.eventsService.findOne(
+        event.returnValues.eventId,
+      );
+      const receipt = await this.web3.eth.getTransactionReceipt(
+        event.transactionHash,
+      );
+      const transactionEntity = await this.transactionsService.findOneByHash(
+        event.transactionHash,
+      );
+      const prediction = await this.predictionsService.findByPredictNum(
+        event.returnValues.predictNum,
+        user.id,
+        event.returnValues.token,
+        event.returnValues.eventId,
+      );
+
+      if (user && eventEntity && prediction && !transactionEntity) {
+        const transaction = await this.transactionsService.create({
+          contractAddress: event.address,
+          gas: receipt?.gasUsed,
+          receipt: JSON.stringify(receipt),
+          blockNumber: receipt?.blockNumber,
+          walletAddress: receipt?.from,
+          txId: event.transactionHash,
+        });
+
+        await this.predictionsService.update(prediction.id, {
+          cashBackTransactionId: transaction.id,
+        });
+      }
+    };
   }
 
   @Command({
@@ -407,6 +446,25 @@ export class ContractConsole {
       contract,
       ContractEvent.LPClaimed,
       this.eventHandler6,
+    );
+  }
+
+  @Command({
+    command: 'create-cashback <statingBlock>',
+  })
+  async createCashBack(statingBlock = 0): Promise<void> {
+    const contract = new this.web3.eth.Contract(
+      predictionABI as AbiItem[],
+      process.env.PREDICTION_PROXY,
+    );
+
+    await crawlSmartcontractEvents(
+      Number(statingBlock),
+      this.web3,
+      this.latestBlockService,
+      contract,
+      ContractEvent.CashBackClaimed,
+      this.eventHandler7,
     );
   }
 

@@ -2,6 +2,37 @@ export const predictionABI = [
   {
     anonymous: false,
     inputs: [
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'eventId',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'predictNum',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'user',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'token',
+        type: 'address',
+      },
+    ],
+    name: 'CashBackClaimed',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
       { indexed: false, internalType: 'uint8', name: 'version', type: 'uint8' },
     ],
     name: 'Initialized',
@@ -161,6 +192,17 @@ export const predictionABI = [
     name: 'bnbRate',
     outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'uint256', name: '_eventId', type: 'uint256' },
+      { internalType: 'address', name: '_token', type: 'address' },
+      { internalType: 'uint256', name: '_predictNum', type: 'uint256' },
+    ],
+    name: 'claimCashBack',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
