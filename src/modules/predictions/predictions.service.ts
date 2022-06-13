@@ -11,6 +11,7 @@ import { isNumber } from 'class-validator';
 import { EventType } from '../events/enums/event-type.enum';
 import { PoolsService } from '../pools/pools.service';
 import BigNumber from 'bignumber.js';
+import { EventStatus } from '../events/enums/event-status.enum';
 BigNumber.config({ EXPONENTIAL_AT: 100 });
 
 @Injectable()
@@ -43,6 +44,8 @@ export class PredictionsService {
         'predictions.*',
         'event.id as "eventId"',
         'event.name as name',
+        'event.endTime as "endTime"',
+        'event.cashBackTransactionId as "cashBackTransactionId"',
         'event.odds as odds',
         'event.options as options',
         'event.type as type',
@@ -79,7 +82,7 @@ export class PredictionsService {
     return {
       data: await Promise.all(
         rs.map(async (prediction) => {
-          const status = !prediction.eventResult
+          let status = !prediction.eventResult
             ? 'Predicted'
             : isNumber(prediction.rewardTransactionId)
             ? 'Claimed'
@@ -87,6 +90,15 @@ export class PredictionsService {
               JSON.parse(prediction.eventOptions)[prediction.optionIndex]
             ? 'Claim'
             : 'Lost';
+          if (
+            new Date(prediction.endTime).getTime() >
+              Date.now() + 2 * 86400 * 1000 &&
+            prediction.eventStatus != EventStatus.FINISH
+          ) {
+            status = prediction.cashBackTransactionId
+              ? 'Claimed Cashback'
+              : 'Claim Cashback';
+          }
           let estimateReward = '0';
           if (prediction.type === EventType.GroupPredict) {
             const lp = await this.poolsService.totalAmount(
