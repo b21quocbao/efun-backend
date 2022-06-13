@@ -18,6 +18,7 @@ import { predictionABI } from 'src/shares/contracts/abi/predictionABI';
 import { EventType } from '../events/enums/event-type.enum';
 import { EventStatus } from '../events/enums/event-status.enum';
 import { PoolsService } from '../pools/pools.service';
+import axios from 'axios';
 
 @Console()
 @Injectable()
@@ -75,35 +76,31 @@ export class ContractConsole {
           walletAddress: receipt?.from,
           txId: event.transactionHash,
         });
+        const { data: result } = await axios.get(event.returnValues.datas);
+        console.log(result, 'Line #80 contracts.console.ts');
 
         await this.eventsService.create(user.id, {
           id: event.returnValues.idx,
           startTime: new Date(event.returnValues.startTime * 1000),
           deadline: new Date(event.returnValues.deadlineTime * 1000),
           endTime: new Date(event.returnValues.endTime * 1000),
-          options: JSON.stringify(event.returnValues.options.data),
-          odds: JSON.stringify(event.returnValues.options.odds),
+          odds: JSON.stringify(event.returnValues.odds),
           transactionId: transaction.id,
-          name: event.returnValues.datas[0],
-          thumbnailUrl: event.returnValues.datas[1],
-          bannerUrl: event.returnValues.datas[2].length
-            ? event.returnValues.datas[2]
+          options: result.options,
+          name: result.name,
+          thumbnailUrl: result.thumbnailUrl,
+          bannerUrl: result.bannerUrl.length ? result.bannerUrl : undefined,
+          categoryId: Number(result.categoryId),
+          subCategoryId: result.subCategoryId.length
+            ? Number(result.subCategoryId)
             : undefined,
-          categoryId: Number(event.returnValues.datas[3]),
-          subCategoryId: event.returnValues.datas[4].length
-            ? Number(event.returnValues.datas[4])
-            : undefined,
-          competitionId: Number(event.returnValues.datas[5]),
-          type: event.returnValues.datas[6],
-          marketType: event.returnValues.datas[7].length
-            ? event.returnValues.datas[7]
-            : undefined,
-          description: event.returnValues.datas[8],
-          metadata: event.returnValues.datas[9],
-          shortDescription: event.returnValues.datas[10],
-          streamUrl: event.returnValues.datas[11].length
-            ? event.returnValues.datas[11]
-            : undefined,
+          competitionId: Number(result.competitionId),
+          type: result.type,
+          marketType: result.marketType.length ? result.marketType : undefined,
+          description: result.description,
+          metadata: result.metadata,
+          shortDescription: result.shortDescription,
+          streamUrl: result.streamUrl.length ? result.streamUrl : undefined,
         });
       }
     };
@@ -136,7 +133,9 @@ export class ContractConsole {
         });
 
         await this.eventsService.update(eventEntity.id, {
-          result: event.returnValues.result,
+          result: JSON.parse(eventEntity.options)[
+            event.returnValues.resultIndex
+          ],
           status: EventStatus.FINISH,
           transactionId: transaction.id,
         });

@@ -379,7 +379,7 @@ export const predictionABI = [
   {
     inputs: [
       { internalType: 'uint256', name: '_eventId', type: 'uint256' },
-      { internalType: 'string[]', name: '_options', type: 'string[]' },
+      { internalType: 'uint256[]', name: '_optionIndexs', type: 'uint256[]' },
       { internalType: 'address[]', name: '_tokens', type: 'address[]' },
       { internalType: 'uint256[]', name: '_amounts', type: 'uint256[]' },
     ],
