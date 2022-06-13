@@ -45,7 +45,6 @@ export class PredictionsService {
         'event.id as "eventId"',
         'event.name as name',
         'event.endTime as "endTime"',
-        'event."cashBackTransactionId" as "cashBackTransactionId"',
         'event.odds as odds',
         'event.options as options',
         'event.type as type',
