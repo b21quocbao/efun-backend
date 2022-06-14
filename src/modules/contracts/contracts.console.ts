@@ -134,9 +134,7 @@ export class ContractConsole {
         });
 
         await this.eventsService.update(eventEntity.id, {
-          result: JSON.parse(eventEntity.options)[
-            event.returnValues.resultIndex
-          ],
+          result: JSON.parse(eventEntity.options)[event.returnValues.index],
           status: EventStatus.FINISH,
           transactionId: transaction.id,
         });
