@@ -134,11 +134,21 @@ export class PredictionsService {
                 .catch(() => '0'),
             ).plus(prediction.amount);
           }
+          const sponsor = await this.predictionContract.methods
+            .calculateSponsor(
+              prediction.eventId,
+              prediction.token,
+              prediction.optionIndex,
+              prediction.amount,
+            )
+            .call()
+            .catch(() => '0');
 
           return {
             ...prediction,
             status: status,
             estimateReward: estimateReward,
+            sponsor: sponsor,
           };
         }),
       ),

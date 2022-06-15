@@ -492,6 +492,7 @@ export class ContractConsole {
         ContractEvent.RewardClaimed,
         ContractEvent.LPDeposited,
         ContractEvent.LPClaimed,
+        ContractEvent.CashBackClaimed,
       ],
       [
         this.eventHandler1,
@@ -500,6 +501,7 @@ export class ContractConsole {
         this.eventHandler4,
         this.eventHandler5,
         this.eventHandler6,
+        this.eventHandler7,
       ],
     );
   }
