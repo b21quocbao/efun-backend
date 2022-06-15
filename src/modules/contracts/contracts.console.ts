@@ -213,7 +213,7 @@ export class ContractConsole {
 
         await this.predictionsService.update(prediction.id, {
           rewardTransactionId: transaction.id,
-          rewardAmount: event.returnValues.amount,
+          rewardAmount: event.returnValues.reward,
         });
       }
     };
