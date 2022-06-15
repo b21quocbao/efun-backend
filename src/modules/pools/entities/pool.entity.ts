@@ -22,7 +22,7 @@ export class PoolEntity {
   @JoinColumn()
   event: EventEntity;
 
-  @OneToOne(() => TransactionEntity)
+  @ManyToOne(() => TransactionEntity)
   @JoinColumn({ name: 'transactionId' })
   transaction: TransactionEntity;
 

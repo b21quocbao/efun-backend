@@ -191,7 +191,7 @@ export class ContractConsole {
       const receipt = await this.web3.eth.getTransactionReceipt(
         event.transactionHash,
       );
-      const transactionEntity = await this.transactionsService.findOneByHash(
+      let transactionEntity = await this.transactionsService.findOneByHash(
         event.transactionHash,
       );
       const prediction = await this.predictionsService.findByPredictNum(
@@ -201,18 +201,20 @@ export class ContractConsole {
         event.returnValues.eventId,
       );
 
-      if (user && eventEntity && prediction && !transactionEntity) {
-        const transaction = await this.transactionsService.create({
-          contractAddress: event.address,
-          gas: receipt?.gasUsed,
-          receipt: JSON.stringify(receipt),
-          blockNumber: receipt?.blockNumber,
-          walletAddress: receipt?.from,
-          txId: event.transactionHash,
-        });
+      if (user && eventEntity && prediction) {
+        if (!transactionEntity) {
+          transactionEntity = await this.transactionsService.create({
+            contractAddress: event.address,
+            gas: receipt?.gasUsed,
+            receipt: JSON.stringify(receipt),
+            blockNumber: receipt?.blockNumber,
+            walletAddress: receipt?.from,
+            txId: event.transactionHash,
+          });
+        }
 
         await this.predictionsService.update(prediction.id, {
-          rewardTransactionId: transaction.id,
+          rewardTransactionId: transactionEntity.id,
           rewardAmount: event.returnValues.reward,
         });
       }
@@ -224,7 +226,7 @@ export class ContractConsole {
       const receipt = await this.web3.eth.getTransactionReceipt(
         event.transactionHash,
       );
-      const transactionEntity = await this.transactionsService.findOneByHash(
+      let transactionEntity = await this.transactionsService.findOneByHash(
         event.transactionHash,
       );
       const eventEntity = await this.eventsService.findOne(
@@ -235,15 +237,17 @@ export class ContractConsole {
         event.returnValues.token,
       );
 
-      if (eventEntity && !transactionEntity) {
-        const transaction = await this.transactionsService.create({
-          contractAddress: event.address,
-          gas: receipt?.gasUsed,
-          receipt: JSON.stringify(receipt),
-          blockNumber: receipt?.blockNumber,
-          walletAddress: receipt?.from,
-          txId: event.transactionHash,
-        });
+      if (eventEntity) {
+        if (!transactionEntity) {
+          transactionEntity = await this.transactionsService.create({
+            contractAddress: event.address,
+            gas: receipt?.gasUsed,
+            receipt: JSON.stringify(receipt),
+            blockNumber: receipt?.blockNumber,
+            walletAddress: receipt?.from,
+            txId: event.transactionHash,
+          });
+        }
 
         if (pool) {
           await this.poolsService.update(pool.id, {
@@ -252,7 +256,7 @@ export class ContractConsole {
         } else {
           await this.poolsService.create({
             eventId: event.returnValues.eventId,
-            transactionId: transaction.id,
+            transactionId: transactionEntity.id,
             token: event.returnValues.token,
             amount: event.returnValues.amount,
           });
