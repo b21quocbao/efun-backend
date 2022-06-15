@@ -1,3 +1,5 @@
+// eslint-disable-next-line
+const Web3 = require('web3');
 import { Injectable } from '@nestjs/common';
 import { CreatePredictionDto } from './dto/create-prediction.dto';
 import { UpdatePredictionDto } from './dto/update-prediction.dto';
@@ -8,19 +10,29 @@ import { PredictionEntity } from './entities/prediction.entity';
 import { SearchPredictionDto } from './dto/search-prediction.dto';
 import { PSortEvent } from './enums/prediction-type.enum';
 import { isNumber } from 'class-validator';
-import { EventType } from '../events/enums/event-type.enum';
 import { PoolsService } from '../pools/pools.service';
 import BigNumber from 'bignumber.js';
 import { EventStatus } from '../events/enums/event-status.enum';
+import { predictionABI } from 'src/shares/contracts/abi/predictionABI';
 BigNumber.config({ EXPONENTIAL_AT: 100 });
 
 @Injectable()
 export class PredictionsService {
+  private web3;
+  private predictionContract;
+
   constructor(
     @InjectRepository(PredictionEntity)
     private predictionRepository: Repository<PredictionEntity>,
     private readonly poolsService: PoolsService,
-  ) {}
+  ) {
+    this.web3 = new Web3();
+    this.web3.setProvider(new Web3.providers.HttpProvider(process.env.RPC_URL));
+    this.predictionContract = new this.web3.eth.Contract(
+      predictionABI,
+      process.env.PREDICTION_PROXY,
+    );
+  }
 
   async create(
     createPredictionDto: CreatePredictionDto,
@@ -85,10 +97,8 @@ export class PredictionsService {
             ? 'Predicted'
             : isNumber(prediction.rewardTransactionId)
             ? 'Claimed'
-            : prediction.eventResult ==
-              JSON.parse(prediction.eventOptions)[prediction.optionIndex]
-            ? 'Claim'
-            : 'Lost';
+            : 'Unknown';
+
           if (
             new Date(prediction.endTime).getTime() >
               Date.now() + 2 * 86400 * 1000 &&
@@ -98,33 +108,31 @@ export class PredictionsService {
               ? 'Claimed Cashback'
               : 'Claim Cashback';
           }
-          let estimateReward = '0';
-          if (prediction.type === EventType.GroupPredict) {
-            const lp = await this.poolsService.totalAmount(
-              prediction.eventId,
-              prediction.token,
-            );
-            const predictStats = await this.totalAmount(
-              prediction.eventId,
-              prediction.token,
-            );
-            const predictOptionStats = await this.totalAmount(
-              prediction.eventId,
-              prediction.token,
-              prediction.optionIndex,
-            );
 
-            estimateReward = new BigNumber(predictStats)
-              .plus(lp)
-              .multipliedBy(prediction.amount)
-              .dividedBy(predictOptionStats)
-              .toString();
-          } else {
-            estimateReward = new BigNumber(prediction.amount)
-              .multipliedBy(
-                JSON.parse(prediction.odds)[prediction.optionIndex] / 10000,
+          let estimateReward = prediction.estimateReward;
+          if (status == 'Unknown') {
+            estimateReward = await this.predictionContract.methods
+              .estimateReward(
+                prediction.eventId,
+                prediction.address,
+                prediction.token,
+                prediction.predictNum,
               )
-              .toString();
+              .call()
+              .catch(() => '0');
+            status = estimateReward !== '0' ? 'Claim' : 'Lost';
+          } else {
+            estimateReward = new BigNumber(
+              await this.predictionContract.methods
+                .getPotentialReward(
+                  prediction.eventId,
+                  prediction.token,
+                  prediction.optionIndex,
+                  prediction.amount,
+                )
+                .call()
+                .catch(() => '0'),
+            ).plus(prediction.amount);
           }
 
           return {

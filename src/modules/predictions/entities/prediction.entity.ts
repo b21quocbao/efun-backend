@@ -38,6 +38,9 @@ export class PredictionEntity {
   @Column()
   amount: string;
 
+  @Column({ nullable: true })
+  status?: string;
+
   @Column()
   eventId: number;
 

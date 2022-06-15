@@ -248,6 +248,18 @@ export const predictionABI = [
     type: 'function',
   },
   {
+    inputs: [
+      { internalType: 'uint256', name: '_eventId', type: 'uint256' },
+      { internalType: 'address', name: '_user', type: 'address' },
+      { internalType: 'address', name: '_token', type: 'address' },
+      { internalType: 'uint256', name: '_predictNum', type: 'uint256' },
+    ],
+    name: 'estimateReward',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [],
     name: 'eventData',
     outputs: [{ internalType: 'contract IEvent', name: '', type: 'address' }],
@@ -428,6 +440,27 @@ export const predictionABI = [
     name: 'predict',
     outputs: [],
     stateMutability: 'payable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: '', type: 'address' },
+      { internalType: 'uint256', name: '', type: 'uint256' },
+      { internalType: 'uint256', name: '', type: 'uint256' },
+    ],
+    name: 'predictOptionStats',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: '', type: 'address' },
+      { internalType: 'uint256', name: '', type: 'uint256' },
+    ],
+    name: 'predictStats',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
     type: 'function',
   },
   {
