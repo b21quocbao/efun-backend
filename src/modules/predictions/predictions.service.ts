@@ -49,6 +49,7 @@ export class PredictionsService {
       .createQueryBuilder('predictions')
       .leftJoin('predictions.event', 'event')
       .leftJoin('predictions.transaction', 'transaction')
+      .leftJoin('predictions.user', 'predictUser')
       .leftJoin('event.user', 'user')
       .leftJoin('event.category', 'category')
       .leftJoin('event.subCategory', 'subCategory')
@@ -69,6 +70,7 @@ export class PredictionsService {
         '"subCategory".name as "subCategory"',
         'user.isVerified as "isUserVerified"',
         'user.address as address',
+        '"predictUser".address as "userAddress"',
         'transaction."txId" as "transactionNumber"',
         'transaction."blockNumber" as "blockNumber"',
       ]);
@@ -109,35 +111,22 @@ export class PredictionsService {
               : 'Claim Cashback';
           }
 
-          let estimateReward = prediction.estimateReward;
+          const estimateReward = await this.predictionContract.methods
+            .estimateReward(
+              prediction.eventId,
+              prediction.userAddress,
+              prediction.token,
+              prediction.predictNum,
+            )
+            .call()
+            .catch(() => '0');
           if (status == 'Unknown') {
-            estimateReward = await this.predictionContract.methods
-              .estimateReward(
-                prediction.eventId,
-                prediction.address,
-                prediction.token,
-                prediction.predictNum,
-              )
-              .call()
-              .catch(() => '0');
             status = estimateReward !== '0' ? 'Claim' : 'Lost';
-          } else {
-            estimateReward = new BigNumber(
-              await this.predictionContract.methods
-                .estimateReward(
-                  prediction.eventId,
-                  prediction.address,
-                  prediction.token,
-                  prediction.predictNum,
-                )
-                .call()
-                .catch(() => '0'),
-            );
           }
           const sponsor = await this.predictionContract.methods
             .estimateRewardSponsor(
               prediction.eventId,
-              prediction.address,
+              prediction.userAddress,
               prediction.token,
               prediction.predictNum,
             )
