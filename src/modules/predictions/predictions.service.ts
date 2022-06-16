@@ -124,22 +124,22 @@ export class PredictionsService {
           } else {
             estimateReward = new BigNumber(
               await this.predictionContract.methods
-                .getPotentialReward(
+                .estimateReward(
                   prediction.eventId,
+                  prediction.address,
                   prediction.token,
-                  prediction.optionIndex,
-                  prediction.amount,
+                  prediction.predictNum,
                 )
                 .call()
                 .catch(() => '0'),
-            ).plus(prediction.amount);
+            );
           }
           const sponsor = await this.predictionContract.methods
-            .calculateSponsor(
+            .estimateRewardSponsor(
               prediction.eventId,
+              prediction.address,
               prediction.token,
-              prediction.optionIndex,
-              prediction.amount,
+              prediction.predictNum,
             )
             .call()
             .catch(() => '0');
