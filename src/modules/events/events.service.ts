@@ -116,11 +116,15 @@ export class EventsService {
     if (userId) {
       qb.andWhere('events.userId = :userId', { userId });
     }
-    if (outOfTime) {
-      qb.andWhere('events.deadline >= now()');
+    if (outOfTime === true || outOfTime === false) {
+      qb.andWhere(
+        outOfTime ? 'events.deadline >= now()' : 'events.deadline < now()',
+      );
     }
-    if (outOfEndTime) {
-      qb.andWhere('events."endTime" >= now()');
+    if (outOfEndTime === true || outOfEndTime === false) {
+      qb.andWhere(
+        outOfEndTime ? 'events."endTime" >= now()' : 'events."endTime" < now()',
+      );
     }
     if (isHot) {
       qb.andWhere('events.isHot = :isHot', { isHot });
