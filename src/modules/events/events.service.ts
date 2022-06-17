@@ -1,3 +1,5 @@
+// eslint-disable-next-line
+const Web3 = require('web3');
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Response } from 'src/shares/interceptors/response.interceptor';
@@ -11,16 +13,27 @@ import { ESortEvent } from './enums/event-type.enum';
 import BigNumber from 'bignumber.js';
 import { PredictionsService } from '../predictions/predictions.service';
 import { PredictionEntity } from '../predictions/entities/prediction.entity';
+import { predictionABI } from 'src/shares/contracts/abi/predictionABI';
 BigNumber.config({ EXPONENTIAL_AT: 100 });
 
 @Injectable()
 export class EventsService {
+  private web3;
+  private predictionContract;
+
   constructor(
     @InjectRepository(EventEntity)
     private eventRepository: Repository<EventEntity>,
     @InjectRepository(PredictionEntity)
     private predictionRepository: Repository<PredictionEntity>,
-  ) {}
+  ) {
+    this.web3 = new Web3();
+    this.web3.setProvider(new Web3.providers.HttpProvider(process.env.RPC_URL));
+    this.predictionContract = new this.web3.eth.Contract(
+      predictionABI,
+      process.env.PREDICTION_PROXY,
+    );
+  }
 
   async create(
     userId: number,
@@ -56,6 +69,7 @@ export class EventsService {
         'events.*',
         'array_agg(pools.amount) as "poolAmounts"',
         'array_agg(pools.token) as "poolTokens"',
+        'array_agg(pools."claimAmount") as "poolClaimAmounts"',
         'competition.name as competition',
         'category.name as category',
         '"subCategory".name as "subCategory"',
@@ -123,34 +137,56 @@ export class EventsService {
     }
 
     const [rs, total] = await Promise.all([qb.getRawMany(), qb.getCount()]);
-    for (const event of rs) {
-      event.poolTokenAmounts = {};
-      event.predictionTokenAmounts = {};
+    const processedRs = await Promise.all(
+      rs.map(async (event) => {
+        event.poolTokens = event.poolTokens.filter((x: any, index) => {
+          if (!x) {
+            event.poolAmounts = event.poolAmounts.splice(index, 1);
+            return false;
+          }
+          return true;
+        });
+        const poolEstimateClaimAmounts = await this.predictionContract.methods
+          .getRemainingLP(event.id, event.poolTokens)
+          .call()
+          .catch(() => '0');
+        event.poolTokenAmounts = {};
+        event.poolTokenEstimateClaimAmounts = {};
+        event.poolTokenClaimAmounts = {};
+        event.predictionTokenAmounts = {};
 
-      for (let idx = 0; idx < event.poolTokens.length; ++idx) {
-        event.poolTokenAmounts[event.poolTokens[idx]] = event.poolAmounts[idx];
-      }
-      const predictions = await this.predictionRepository.find({
-        eventId: event.id,
-      });
-
-      for (const prediction of predictions) {
-        if (!event.predictionTokenAmounts[prediction.token]) {
-          event.predictionTokenAmounts[prediction.token] = '0';
+        for (let idx = 0; idx < event.poolTokens.length; ++idx) {
+          event.poolTokenAmounts[event.poolTokens[idx]] =
+            event.poolAmounts[idx];
+          event.poolTokenClaimAmounts[event.poolTokens[idx]] =
+            event.poolClaimAmounts[idx];
+          event.poolTokenEstimateClaimAmounts[event.poolTokens[idx]] =
+            poolEstimateClaimAmounts[idx];
         }
-        event.predictionTokenAmounts[prediction.token] = new BigNumber(
-          event.predictionTokenAmounts[prediction.token],
-        )
-          .plus(prediction.amount)
-          .toString();
-      }
+        const predictions = await this.predictionRepository.find({
+          eventId: event.id,
+        });
 
-      delete event.poolAmounts;
-      delete event.poolTokens;
-    }
+        for (const prediction of predictions) {
+          if (!event.predictionTokenAmounts[prediction.token]) {
+            event.predictionTokenAmounts[prediction.token] = '0';
+          }
+          event.predictionTokenAmounts[prediction.token] = new BigNumber(
+            event.predictionTokenAmounts[prediction.token],
+          )
+            .plus(prediction.amount)
+            .toString();
+        }
+
+        delete event.poolAmounts;
+        delete event.poolClaimAmounts;
+        delete event.poolTokens;
+        return event;
+      }),
+    );
 
     return {
-      data: rs.map((row) => {
+      data: processedRs.map((row) => {
         return {
           ...row,
           participants: row.participants.filter((x: any) => x !== null),
