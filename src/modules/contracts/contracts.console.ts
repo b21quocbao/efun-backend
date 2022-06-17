@@ -270,7 +270,7 @@ export class ContractConsole {
       const receipt = await this.web3.eth.getTransactionReceipt(
         event.transactionHash,
       );
-      const transactionEntity = await this.transactionsService.findOneByHash(
+      let transactionEntity = await this.transactionsService.findOneByHash(
         event.transactionHash,
       );
       const eventEntity = await this.eventsService.findOne(
@@ -281,19 +281,21 @@ export class ContractConsole {
         event.returnValues.token,
       );
 
-      if (eventEntity && !transactionEntity && pool) {
-        const transaction = await this.transactionsService.create({
-          contractAddress: event.address,
-          gas: receipt?.gasUsed,
-          receipt: JSON.stringify(receipt),
-          blockNumber: receipt?.blockNumber,
-          walletAddress: receipt?.from,
-          txId: event.transactionHash,
-        });
+      if (eventEntity && pool) {
+        if (!transactionEntity) {
+          transactionEntity = await this.transactionsService.create({
+            contractAddress: event.address,
+            gas: receipt?.gasUsed,
+            receipt: JSON.stringify(receipt),
+            blockNumber: receipt?.blockNumber,
+            walletAddress: receipt?.from,
+            txId: event.transactionHash,
+          });
+        }
 
         await this.poolsService.update(pool.id, {
           claimAmount: event.returnValues.amount,
-          claimTransactionId: transaction.id,
+          claimTransactionId: transactionEntity.id,
         });
       }
     };

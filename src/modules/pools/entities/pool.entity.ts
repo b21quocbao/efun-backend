@@ -26,7 +26,7 @@ export class PoolEntity {
   @JoinColumn({ name: 'transactionId' })
   transaction: TransactionEntity;
 
-  @OneToOne(() => TransactionEntity)
+  @ManyToOne(() => TransactionEntity)
   @JoinColumn({ name: 'claimTransactionId' })
   claimTransaction?: TransactionEntity;
 
