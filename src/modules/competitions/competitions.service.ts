@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CompetitionEntity } from './entities/competition.entity';
 import { SearchCompetitionDto } from './dto/search-competition.dto';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class CompetitionsService {
@@ -26,6 +27,10 @@ export class CompetitionsService {
     pageNumber?: number,
     pageSize?: number,
   ): Promise<Response<CompetitionEntity[]>> {
+    searchCompetitionDto = plainToClass(
+      SearchCompetitionDto,
+      searchCompetitionDto,
+    );
     const qb = this.competitionRepository.createQueryBuilder('competitions');
 
     if (pageSize && pageNumber) {

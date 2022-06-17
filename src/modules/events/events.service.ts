@@ -14,6 +14,7 @@ import BigNumber from 'bignumber.js';
 import { PredictionsService } from '../predictions/predictions.service';
 import { PredictionEntity } from '../predictions/entities/prediction.entity';
 import { predictionABI } from 'src/shares/contracts/abi/predictionABI';
+import { plainToClass } from 'class-transformer';
 BigNumber.config({ EXPONENTIAL_AT: 100 });
 
 @Injectable()
@@ -39,24 +40,26 @@ export class EventsService {
     userId: number,
     createEventDto: CreateEventDto,
   ): Promise<EventEntity> {
+    createEventDto = plainToClass(CreateEventDto, createEventDto);
     return this.eventRepository.save({ userId, ...createEventDto });
   }
 
-  async findAll({
-    search,
-    orderBy,
-    categoryId,
-    userId,
-    isHot,
-    pageNumber,
-    pageSize,
-    status,
-    eventId,
-    outOfTime,
-    outOfEndTime,
-    subCategoryId,
-    competitionId,
-  }: GetAllEventDto): Promise<Response<any[]>> {
+  async findAll(request: GetAllEventDto): Promise<Response<any[]>> {
+    const {
+      search,
+      orderBy,
+      categoryId,
+      userId,
+      isHot,
+      pageNumber,
+      pageSize,
+      status,
+      eventId,
+      outOfTime,
+      outOfEndTime,
+      subCategoryId,
+      competitionId,
+    } = plainToClass(GetAllEventDto, request);
     const qb = this.eventRepository
       .createQueryBuilder('events')
       .leftJoin('events.predictions', 'predictions')

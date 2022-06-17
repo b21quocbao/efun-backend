@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CategoryEntity } from './entities/category.entity';
 import { SearchCategoryDto } from './dto/search-category.dto';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class CategoriesService {
@@ -23,6 +24,7 @@ export class CategoriesService {
     pageNumber?: number,
     pageSize?: number,
   ): Promise<Response<CategoryEntity[]>> {
+    searchCategoryDto = plainToClass(SearchCategoryDto, searchCategoryDto);
     const qb = this.categoryRepository.createQueryBuilder('categories');
 
     if (pageSize && pageNumber) {
