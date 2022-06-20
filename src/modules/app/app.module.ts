@@ -20,6 +20,14 @@ import { PredictionEntity } from '../predictions/entities/prediction.entity';
 import { PredictionsModule } from '../predictions/predictions.module';
 import { ReportEntity } from '../reports/entities/report.entity';
 import { ReportsModule } from '../reports/reports.module';
+import { CountriesModule } from '../sports/countries/countries.module';
+import { CountryEntity } from '../sports/countries/entities/country.entity';
+import { LeagueEntity } from '../sports/leagues/entities/league.entity';
+import { LeaguesModule } from '../sports/leagues/leagues.module';
+import { SeasonEntity } from '../sports/seasons/entities/season.entity';
+import { SeasonsModule } from '../sports/seasons/seasons.module';
+import { TeamEntity } from '../sports/teams/entities/team.entity';
+import { TeamsModule } from '../sports/teams/teams.module';
 import { TransactionEntity } from '../transactions/entities/transaction.entity';
 import { TransactionsModule } from '../transactions/transactions.module';
 import { UserEntity } from '../users/entities/user.entity';
@@ -52,6 +60,10 @@ import { AppService } from './app.service';
           TransactionEntity,
           CompetitionEntity,
           UserEntity,
+          CountryEntity,
+          SeasonEntity,
+          LeagueEntity,
+          TeamEntity,
         ],
         synchronize: process.env.APP_ENV === 'local',
         schema: configService.get<string>('DB_SCHEMA'),
@@ -77,6 +89,10 @@ import { AppService } from './app.service';
     AuthModule,
     ContractsModule,
     CompetitionsModule,
+    CountriesModule,
+    SeasonsModule,
+    LeaguesModule,
+    TeamsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

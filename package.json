@@ -40,6 +40,7 @@
     "geoip-lite": "^1.4.5",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.2",
+    "moment": "^2.29.3",
     "nestjs-console": "^7.0.1",
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",
