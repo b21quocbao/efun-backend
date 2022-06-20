@@ -490,7 +490,15 @@ export class ContractConsole {
       Number(statingBlock),
       this.web3,
       this.latestBlockService,
-      [contract1, contract1, contract2, contract2, contract2],
+      [
+        contract1,
+        contract1,
+        contract2,
+        contract2,
+        contract2,
+        contract2,
+        contract2,
+      ],
       [
         ContractEvent.EventCreated,
         ContractEvent.EventResultUpdated,
