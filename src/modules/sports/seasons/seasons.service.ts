@@ -6,6 +6,7 @@ import { SeasonEntity } from './entities/season.entity';
 import { CreateSeasonDto } from './dto/create-season.dto';
 import { plainToClass } from 'class-transformer';
 import { GetSeasonDto } from './dto/get-season.dto';
+import { UpdateSeasonDto } from './dto/update-season.dto';
 
 @Injectable()
 export class SeasonsService {
@@ -19,11 +20,17 @@ export class SeasonsService {
     return this.seasonRepository.save(createSeasonDto);
   }
 
-  async createOrUpdate(
-    createSeasonDto: CreateSeasonDto,
+  async updateOrCreate(
+    updateSeasonDto: UpdateSeasonDto,
+    findSeasonDto: Partial<SeasonEntity>,
   ): Promise<SeasonEntity> {
-    createSeasonDto = plainToClass(CreateSeasonDto, createSeasonDto);
-    return this.seasonRepository.save(createSeasonDto);
+    const obj = await this.seasonRepository.findOne({ where: findSeasonDto });
+    if (obj) {
+      return this.update(obj.id, updateSeasonDto);
+    }
+
+    updateSeasonDto = plainToClass(CreateSeasonDto, updateSeasonDto);
+    return this.seasonRepository.save(updateSeasonDto);
   }
 
   async findAll(
@@ -60,5 +67,13 @@ export class SeasonsService {
     const qb = this.seasonRepository.createQueryBuilder('seasons');
 
     return qb.where({ year }).getOne();
+  }
+
+  async update(
+    id: number,
+    updateSeasonDto: UpdateSeasonDto,
+  ): Promise<SeasonEntity> {
+    await this.seasonRepository.update(id, updateSeasonDto);
+    return this.seasonRepository.findOne(id);
   }
 }

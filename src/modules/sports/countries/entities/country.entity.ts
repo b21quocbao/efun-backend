@@ -4,7 +4,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Column,
+  OneToMany,
 } from 'typeorm';
+import { FixtureEntity } from '../../fixtures/entities/fixture.entity';
+import { LeagueEntity } from '../../leagues/entities/league.entity';
+import { TeamEntity } from '../../teams/entities/team.entity';
 
 @Entity('countries')
 export class CountryEntity {
@@ -19,6 +23,15 @@ export class CountryEntity {
 
   @Column({ nullable: true })
   flag?: string;
+
+  @OneToMany(() => FixtureEntity, (fixture) => fixture.country)
+  fixtures: FixtureEntity[];
+
+  @OneToMany(() => LeagueEntity, (league) => league.country)
+  leagues: LeagueEntity[];
+
+  @OneToMany(() => TeamEntity, (team) => team.country)
+  teams: TeamEntity[];
 
   @CreateDateColumn()
   createdAt: Date;

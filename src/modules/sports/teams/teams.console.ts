@@ -43,15 +43,20 @@ export class TeamsConsole {
                     teamItem.country,
                   );
 
-                  this.teamsService.create({
-                    countryId: getCountry ? getCountry.id : null,
-                    remoteId: teamItem.id,
-                    name: teamItem.name,
-                    founded: teamItem.founded,
-                    national: teamItem.national,
-                    logo: teamItem.logo,
-                    meta: JSON.stringify(item),
-                  });
+                  this.teamsService.updateOrCreate(
+                    {
+                      countryId: getCountry ? getCountry.id : null,
+                      remoteId: teamItem.id,
+                      name: teamItem.name,
+                      founded: teamItem.founded,
+                      national: teamItem.national,
+                      logo: teamItem.logo,
+                      meta: JSON.stringify(item),
+                    },
+                    {
+                      remoteId: teamItem.id,
+                    },
+                  );
                 }
               }
             }

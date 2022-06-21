@@ -3,6 +3,7 @@ import { Command, Console } from 'nestjs-console';
 import { Injectable } from '@nestjs/common';
 import { LeaguesService } from './leagues.service';
 import { SeasonsService } from '../seasons/seasons.service';
+import { CountriesService } from '../countries/countries.service';
 
 @Console()
 @Injectable()
@@ -10,6 +11,7 @@ export class LeaguesConsole {
   constructor(
     private readonly leaguesService: LeaguesService,
     private readonly seasonsService: SeasonsService,
+    private readonly coutriesService: CountriesService,
   ) {}
 
   @Command({
@@ -36,8 +38,8 @@ export class LeaguesConsole {
               leagues.data.response.length > 0
             ) {
               for (const item of leagues.data.response) {
-                const getLeague = await this.leaguesService.findOneByName(
-                  item.league.name,
+                const getCountry = await this.coutriesService.findOneByName(
+                  item.country.name,
                 );
 
                 let startDate = null;
@@ -52,25 +54,21 @@ export class LeaguesConsole {
                   }
                 }
 
-                const league = getLeague?.id
-                  ? await this.leaguesService.update(getLeague.id, {
-                      remoteId: item.league.id,
-                      name: item.league.name,
-                      type: item.league.type,
-                      logo: item.league.logo,
-                      startDate: startDate,
-                      endDate: endDate,
-                      meta: JSON.stringify(item),
-                    })
-                  : await this.leaguesService.create({
-                      remoteId: item.league.id,
-                      name: item.league.name,
-                      type: item.league.type,
-                      logo: item.league.logo,
-                      startDate: startDate,
-                      endDate: endDate,
-                      meta: JSON.stringify(item),
-                    });
+                const league = await this.leaguesService.updateOrCreate(
+                  {
+                    countryId: getCountry ? getCountry.id : null,
+                    remoteId: item.league.id,
+                    name: item.league.name,
+                    type: item.league.type,
+                    logo: item.league.logo,
+                    startDate: startDate,
+                    endDate: endDate,
+                    meta: JSON.stringify(item),
+                  },
+                  {
+                    remoteId: item.league.id,
+                  },
+                );
 
                 if (item.seasons) {
                   for (const subItem of item.seasons) {

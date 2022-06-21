@@ -4,17 +4,22 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Column,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import { CountryEntity } from '../../countries/entities/country.entity';
 
 @Entity('teams')
 export class TeamEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ManyToOne(() => CountryEntity, (country) => country.teams)
+  @JoinColumn({ name: 'countryId' })
+  country?: CountryEntity;
+
   @Column({ nullable: true })
   countryId?: number;
-  // references: 'countries',
-  // onDelete: 'CASCADE',
 
   @Column({ nullable: true, unique: true })
   remoteId?: number;

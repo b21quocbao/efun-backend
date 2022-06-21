@@ -19,6 +19,19 @@ export class LeaguesService {
     return this.leagueRepository.save(createLeagueDto);
   }
 
+  async updateOrCreate(
+    updateLeagueDto: UpdateLeagueDto,
+    findLeagueDto: Partial<LeagueEntity>,
+  ): Promise<LeagueEntity> {
+    const obj = await this.leagueRepository.findOne({ where: findLeagueDto });
+    if (obj) {
+      return this.update(obj.id, updateLeagueDto);
+    }
+
+    updateLeagueDto = plainToClass(CreateLeagueDto, updateLeagueDto);
+    return this.leagueRepository.save(updateLeagueDto);
+  }
+
   async findAll(
     pageNumber?: number,
     pageSize?: number,
@@ -46,6 +59,12 @@ export class LeaguesService {
     const qb = this.leagueRepository.createQueryBuilder('leagues');
 
     return qb.where({ name }).getOne();
+  }
+
+  async findOneByRemoteId(remoteId: number): Promise<LeagueEntity> {
+    const qb = this.leagueRepository.createQueryBuilder('leagues');
+
+    return qb.where({ remoteId }).getOne();
   }
 
   async save(league: LeagueEntity): Promise<LeagueEntity> {

@@ -21,7 +21,10 @@ export class SeasonsConsole {
         for (const item of seasons.data.response) {
           if (item >= seasonStart) {
             const seasonRecord = { year: item };
-            await this.seasonsService.createOrUpdate(seasonRecord);
+            await this.seasonsService.updateOrCreate(
+              seasonRecord,
+              seasonRecord,
+            );
           }
         }
       }

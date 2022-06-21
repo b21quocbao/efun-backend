@@ -20,9 +20,17 @@ export class TeamsService {
     return this.teamRepository.save(createTeamDto);
   }
 
-  async createOrUpdate(createTeamDto: CreateTeamDto): Promise<TeamEntity> {
-    createTeamDto = plainToClass(CreateTeamDto, createTeamDto);
-    return this.teamRepository.save(createTeamDto);
+  async updateOrCreate(
+    updateTeamDto: UpdateTeamDto,
+    findTeamDto: Partial<TeamEntity>,
+  ): Promise<TeamEntity> {
+    const obj = await this.teamRepository.findOne({ where: findTeamDto });
+    if (obj) {
+      return this.update(obj.id, updateTeamDto);
+    }
+
+    updateTeamDto = plainToClass(CreateTeamDto, updateTeamDto);
+    return this.teamRepository.save(updateTeamDto);
   }
 
   async findAll(

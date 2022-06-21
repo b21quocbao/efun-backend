@@ -22,8 +22,16 @@ import { ReportEntity } from '../reports/entities/report.entity';
 import { ReportsModule } from '../reports/reports.module';
 import { CountriesModule } from '../sports/countries/countries.module';
 import { CountryEntity } from '../sports/countries/entities/country.entity';
+import { FixtureEntity } from '../sports/fixtures/entities/fixture.entity';
+import { GoalEntity } from '../sports/fixtures/entities/goal.entity';
+import { FixturesModule } from '../sports/fixtures/fixtures.module';
 import { LeagueEntity } from '../sports/leagues/entities/league.entity';
 import { LeaguesModule } from '../sports/leagues/leagues.module';
+import { BetEntity } from '../sports/odds/entities/bet.entity';
+import { BookmakerEntity } from '../sports/odds/entities/bookmaker.entity';
+import { OddsModule } from '../sports/odds/odds.module';
+import { RoundEntity } from '../sports/rounds/entities/round.entity';
+import { RoundsModule } from '../sports/rounds/rounds.module';
 import { SeasonEntity } from '../sports/seasons/entities/season.entity';
 import { SeasonsModule } from '../sports/seasons/seasons.module';
 import { TeamEntity } from '../sports/teams/entities/team.entity';
@@ -64,6 +72,11 @@ import { AppService } from './app.service';
           SeasonEntity,
           LeagueEntity,
           TeamEntity,
+          RoundEntity,
+          FixtureEntity,
+          GoalEntity,
+          BetEntity,
+          BookmakerEntity,
         ],
         synchronize: process.env.APP_ENV === 'local',
         schema: configService.get<string>('DB_SCHEMA'),
@@ -92,7 +105,10 @@ import { AppService } from './app.service';
     CountriesModule,
     SeasonsModule,
     LeaguesModule,
+    RoundsModule,
     TeamsModule,
+    FixturesModule,
+    OddsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

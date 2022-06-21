@@ -4,7 +4,15 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Column,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
 } from 'typeorm';
+import { CountryEntity } from '../../countries/entities/country.entity';
+import { LeagueEntity } from '../../leagues/entities/league.entity';
+import { RoundEntity } from '../../rounds/entities/round.entity';
+import { SeasonEntity } from '../../seasons/entities/season.entity';
+import { GoalEntity } from './goal.entity';
 
 @Entity('fixtures')
 export class FixtureEntity {
@@ -65,25 +73,33 @@ export class FixtureEntity {
   @Column({ nullable: true })
   statusElapsed?: number;
 
+  @ManyToOne(() => CountryEntity, (country) => country.fixtures)
+  @JoinColumn({ name: 'countryId' })
+  country?: CountryEntity;
+
   @Column({ nullable: true })
   countryId?: number;
-  // references: 'countries',
-  // onDelete: 'CASCADE',
+
+  @ManyToOne(() => LeagueEntity, (league) => league.fixtures)
+  @JoinColumn({ name: 'leagueId' })
+  league?: LeagueEntity;
 
   @Column({ nullable: true })
   leagueId?: number;
-  // references: 'leagues',
-  // onDelete: 'CASCADE',
+
+  @ManyToOne(() => SeasonEntity, (season) => season.fixtures)
+  @JoinColumn({ name: 'seasonId' })
+  season?: SeasonEntity;
 
   @Column({ nullable: true })
   seasonId?: number;
-  // references: 'seasons',
-  // onDelete: 'CASCADE',
+
+  @ManyToOne(() => RoundEntity, (round) => round.fixtures)
+  @JoinColumn({ name: 'roundId' })
+  round?: RoundEntity;
 
   @Column({ nullable: true })
   roundId?: number;
-  // references: 'rounds',
-  // onDelete: 'CASCADE',
 
   @Column({ nullable: true })
   teamHomeId?: number;
@@ -126,6 +142,9 @@ export class FixtureEntity {
 
   @Column({ nullable: true })
   asianHandicapMeta?: string;
+
+  @OneToMany(() => GoalEntity, (goal) => goal.fixture)
+  goals: GoalEntity[];
 
   @CreateDateColumn()
   createdAt: Date;

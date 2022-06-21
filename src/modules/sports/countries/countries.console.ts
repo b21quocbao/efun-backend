@@ -17,11 +17,16 @@ export class CountriesConsole {
 
       if (countries.data && countries.data.response) {
         for (const item of countries.data.response) {
-          await this.countriesService.create({
-            name: item.name,
-            code: item.code,
-            flag: item.flag,
-          });
+          await this.countriesService.updateOrCreate(
+            {
+              name: item.name,
+              code: item.code,
+              flag: item.flag,
+            },
+            {
+              name: item.name,
+            },
+          );
         }
       }
     } catch (err) {
