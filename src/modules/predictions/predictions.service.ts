@@ -121,7 +121,19 @@ export class PredictionsService {
             .call()
             .catch(() => '0');
           if (status == 'Unknown') {
-            status = estimateReward !== '0' ? 'Claim' : 'Lost';
+            status = 'Claim';
+            try {
+              await this.predictionContract.methods
+                .validateEstimateReward(
+                  prediction.eventId,
+                  prediction.userAddress,
+                  prediction.token,
+                  prediction.predictNum,
+                )
+                .call();
+            } catch (err) {
+              status = 'Lost';
+            }
           }
           const sponsor = await this.predictionContract.methods
             .estimateRewardSponsor(

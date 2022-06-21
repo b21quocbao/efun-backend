@@ -586,4 +586,16 @@ export const predictionABI = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
+  {
+    inputs: [
+      { internalType: 'uint256', name: '_eventId', type: 'uint256' },
+      { internalType: 'address', name: '_user', type: 'address' },
+      { internalType: 'address', name: '_token', type: 'address' },
+      { internalType: 'uint256', name: '_predictNum', type: 'uint256' },
+    ],
+    name: 'validateEstimateReward',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
 ];
