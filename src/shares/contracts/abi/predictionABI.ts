@@ -251,7 +251,7 @@ export const predictionABI = [
     ],
     name: 'createSingleEvent',
     outputs: [{ internalType: 'uint256', name: '_idx', type: 'uint256' }],
-    stateMutability: 'nonpayable',
+    stateMutability: 'payable',
     type: 'function',
   },
   {
