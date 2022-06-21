@@ -57,18 +57,7 @@ export class ContractConsole {
         event.transactionHash,
       );
 
-      if (
-        user &&
-        [
-          'MULTIPLE_CHOICES_PROXY',
-          'GROUP_PREDICT_PROXY',
-          'HANDICAP_PROXY',
-          'OVER_UNDER_PROXY',
-        ]
-          .map((e) => process.env[e].toLowerCase())
-          .includes(event.returnValues.helperAddress.toLowerCase()) &&
-        !transactionEntity
-      ) {
+      if (user && !transactionEntity) {
         const transaction = await this.transactionsService.create({
           contractAddress: event.address,
           gas: receipt?.gasUsed,
