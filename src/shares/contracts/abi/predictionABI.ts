@@ -33,6 +33,51 @@ export const predictionABI = [
   {
     anonymous: false,
     inputs: [
+      { indexed: false, internalType: 'uint256', name: 'idx', type: 'uint256' },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'startTime',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'deadlineTime',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'endTime',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'helperAddress',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'creator',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256[]',
+        name: 'odds',
+        type: 'uint256[]',
+      },
+      { indexed: false, internalType: 'string', name: 'datas', type: 'string' },
+    ],
+    name: 'EventCreated',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
       { indexed: false, internalType: 'uint8', name: 'version', type: 'uint8' },
     ],
     name: 'Initialized',

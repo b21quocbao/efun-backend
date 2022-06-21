@@ -333,8 +333,8 @@ export class ContractConsole {
   })
   async createEvents(statingBlock = 0): Promise<void> {
     const contract = new this.web3.eth.Contract(
-      eventABI as AbiItem[],
-      process.env.EVENT_PROXY,
+      predictionABI as AbiItem[],
+      process.env.PREDICTION_PROXY,
     );
 
     await crawlSmartcontractEvents(
@@ -480,7 +480,7 @@ export class ContractConsole {
       this.web3,
       this.latestBlockService,
       [
-        contract1,
+        contract2,
         contract1,
         contract2,
         contract2,
