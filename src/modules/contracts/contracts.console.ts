@@ -50,22 +50,27 @@ export class ContractConsole {
       const user = await this.usersService.findByAddress(
         event.returnValues.creator,
       );
+      const eventEntity = await this.eventsService.findOne(
+        event.returnValues.idx,
+      );
       const receipt = await this.web3.eth.getTransactionReceipt(
         event.transactionHash,
       );
-      const transactionEntity = await this.transactionsService.findOneByHash(
+      let transactionEntity = await this.transactionsService.findOneByHash(
         event.transactionHash,
       );
 
-      if (user && !transactionEntity) {
-        const transaction = await this.transactionsService.create({
-          contractAddress: event.address,
-          gas: receipt?.gasUsed,
-          receipt: JSON.stringify(receipt),
-          blockNumber: receipt?.blockNumber,
-          walletAddress: receipt?.from,
-          txId: event.transactionHash,
-        });
+      if (user && !eventEntity) {
+        if (!transactionEntity) {
+          transactionEntity = await this.transactionsService.create({
+            contractAddress: event.address,
+            gas: receipt?.gasUsed,
+            receipt: JSON.stringify(receipt),
+            blockNumber: receipt?.blockNumber,
+            walletAddress: receipt?.from,
+            txId: event.transactionHash,
+          });
+        }
         const { data: result } = await axios.get(event.returnValues.datas);
         console.log(result, 'Line #80 contracts.console.ts');
 
@@ -75,7 +80,7 @@ export class ContractConsole {
           deadline: new Date(event.returnValues.deadlineTime * 1000),
           endTime: new Date(event.returnValues.endTime * 1000),
           odds: JSON.stringify(event.returnValues.odds),
-          transactionId: transaction.id,
+          transactionId: transactionEntity.id,
           options: result.options,
           name: result.name,
           thumbnailUrl: result.thumbnailUrl,
