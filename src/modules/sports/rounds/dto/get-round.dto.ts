@@ -1,1 +1,3 @@
-export class GetRoundDto {}
+export class GetRoundDto {
+  leaugeId: number;
+}

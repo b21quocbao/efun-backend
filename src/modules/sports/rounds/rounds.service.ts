@@ -34,7 +34,7 @@ export class RoundsService {
   }
 
   async findAll(
-    {}: GetRoundDto,
+    { leaugeId }: GetRoundDto,
     pageNumber?: number,
     pageSize?: number,
   ): Promise<Response<RoundEntity[]>> {
@@ -42,6 +42,10 @@ export class RoundsService {
 
     if (pageSize && pageNumber) {
       qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
+    }
+
+    if (leaugeId || leaugeId === 0) {
+      qb.where('rounds."leaugeId" = :leaugeId', { leaugeId });
     }
 
     const [rs, total] = await Promise.all([qb.getMany(), qb.getCount()]);
