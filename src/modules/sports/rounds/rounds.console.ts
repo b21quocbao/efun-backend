@@ -18,7 +18,9 @@ export class RoundsConsole {
     command: 'crawl-rounds',
   })
   async roundSchedule() {
-    const leagueIds = [4];
+    const leagueIds = process.env.SPORT_LEAGUES.split(',').map((x) =>
+      Number(x),
+    );
     const seasonStart = 2020;
 
     try {

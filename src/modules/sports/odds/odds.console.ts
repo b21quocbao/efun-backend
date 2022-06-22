@@ -1,8 +1,9 @@
+// eslint-disable-next-line
+const moment = require('moment');
 import { axiosInstance } from 'helpers/axios';
 import { Command, Console } from 'nestjs-console';
 import { Injectable } from '@nestjs/common';
 import { OddsService } from './odds.service';
-import moment from 'moment';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FixtureEntity } from '../fixtures/entities/fixture.entity';
 import { MoreThan, Repository } from 'typeorm';

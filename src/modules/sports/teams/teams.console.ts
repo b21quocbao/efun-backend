@@ -20,7 +20,9 @@ export class TeamsConsole {
   async teamSchedule() {
     try {
       // BEGIN - cron team
-      const leagueIds = [4];
+      const leagueIds = process.env.SPORT_LEAGUES.split(',').map((x) =>
+        Number(x),
+      );
       const seasonStart = 2020;
 
       const allTeams = await this.seasonsService.findAll({

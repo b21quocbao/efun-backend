@@ -104,6 +104,7 @@ export const eventABI = [
       { internalType: 'address', name: '_helperAddress', type: 'address' },
       { internalType: 'uint256[]', name: '_odds', type: 'uint256[]' },
       { internalType: 'string', name: '_datas', type: 'string' },
+      { internalType: 'address', name: '_creator', type: 'address' },
     ],
     name: 'createSingleEvent',
     outputs: [{ internalType: 'uint256', name: '_idx', type: 'uint256' }],
