@@ -1,3 +1,3 @@
 export class GetRoundDto {
-  leaugeId: number;
+  leagueId: number;
 }

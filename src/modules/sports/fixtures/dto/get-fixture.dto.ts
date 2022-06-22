@@ -1,1 +1,6 @@
-export class GetFixtureDto {}
+import { ApiPropertyOptional } from '@nestjs/swagger';
+
+export class GetFixtureDto {
+  @ApiPropertyOptional()
+  leagueId?: number;
+}

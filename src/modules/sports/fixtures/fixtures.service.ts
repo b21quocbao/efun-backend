@@ -53,7 +53,7 @@ export class FixturesService {
   }
 
   async findAll(
-    {}: GetFixtureDto,
+    { leagueId }: GetFixtureDto,
     pageNumber?: number,
     pageSize?: number,
   ): Promise<Response<FixtureEntity[]>> {
@@ -61,6 +61,10 @@ export class FixturesService {
 
     if (pageSize && pageNumber) {
       qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
+    }
+
+    if (leagueId || leagueId === 0) {
+      qb.where('fixtures."leagueId" = :leagueId', { leagueId });
     }
 
     const [rs, total] = await Promise.all([qb.getMany(), qb.getCount()]);

@@ -34,7 +34,7 @@ export class RoundsService {
   }
 
   async findAll(
-    { leaugeId }: GetRoundDto,
+    { leagueId }: GetRoundDto,
     pageNumber?: number,
     pageSize?: number,
   ): Promise<Response<RoundEntity[]>> {
@@ -44,8 +44,8 @@ export class RoundsService {
       qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
     }
 
-    if (leaugeId || leaugeId === 0) {
-      qb.where('rounds."leaugeId" = :leaugeId', { leaugeId });
+    if (leagueId || leagueId === 0) {
+      qb.where('rounds."leagueId" = :leagueId', { leagueId });
     }
 
     const [rs, total] = await Promise.all([qb.getMany(), qb.getCount()]);
