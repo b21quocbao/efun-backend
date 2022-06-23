@@ -5,6 +5,7 @@ import { Response } from 'src/shares/interceptors/response.interceptor';
 import { EventEntity } from './entities/event.entity';
 import { GetAllEventDto, GetOtherEventDto } from './dto/get-event.dto';
 import { UpdateResultProofDto } from './dto/update-result-proof.dto';
+import { UpdateStreamUrlDto } from './dto/update-stream-url.dto';
 
 @ApiTags('Events')
 @Controller('events')
@@ -43,6 +44,17 @@ export class EventsController {
     return this.eventsService.updateResultProof(
       +id,
       updateResultProofDto.resultProofUrl,
+    );
+  }
+
+  @Put('streamUrl/:id')
+  async updateStreamUrl(
+    @Param('id') id: string,
+    @Body() updateStreamUrlDto: UpdateStreamUrlDto,
+  ): Promise<void> {
+    return this.eventsService.updateStreamUrl(
+      +id,
+      updateStreamUrlDto.streamUrl,
     );
   }
 }

@@ -251,6 +251,10 @@ export class EventsService {
     await this.eventRepository.update(id, { resultProofUrl });
   }
 
+  async updateStreamUrl(id: number, streamUrl: string): Promise<void> {
+    await this.eventRepository.update(id, { streamUrl });
+  }
+
   async remove(id: number): Promise<void> {
     await this.eventRepository.delete(id);
   }
