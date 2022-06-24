@@ -88,15 +88,6 @@ export class ContractConsole {
           subCategoryId: result.subCategoryId.length
             ? Number(result.subCategoryId)
             : undefined,
-          totalScore: result.totalScore.length
-            ? Number(result.totalScore)
-            : undefined,
-          scoreOne: result.scoreOne.length
-            ? Number(result.scoreOne)
-            : undefined,
-          scoreTwo: result.scoreTwo.length
-            ? Number(result.scoreTwo)
-            : undefined,
           competitionId: Number(result.competitionId),
           type: result.type,
           marketType: result.marketType.length ? result.marketType : undefined,

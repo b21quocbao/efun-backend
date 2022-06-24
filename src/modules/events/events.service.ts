@@ -255,6 +255,15 @@ export class EventsService {
     await this.eventRepository.update(id, { streamUrl });
   }
 
+  async updateScores(
+    id: number,
+    totalScore: number,
+    scoreOne: number,
+    scoreTwo: number,
+  ): Promise<void> {
+    await this.eventRepository.update(id, { totalScore, scoreOne, scoreTwo });
+  }
+
   async remove(id: number): Promise<void> {
     await this.eventRepository.delete(id);
   }

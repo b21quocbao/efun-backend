@@ -6,6 +6,7 @@ import { EventEntity } from './entities/event.entity';
 import { GetAllEventDto, GetOtherEventDto } from './dto/get-event.dto';
 import { UpdateResultProofDto } from './dto/update-result-proof.dto';
 import { UpdateStreamUrlDto } from './dto/update-stream-url.dto';
+import { UpdateScoresDto } from './dto/update-scores.dto';
 
 @ApiTags('Events')
 @Controller('events')
@@ -55,6 +56,19 @@ export class EventsController {
     return this.eventsService.updateStreamUrl(
       +id,
       updateStreamUrlDto.streamUrl,
+    );
+  }
+
+  @Put('scores/:id')
+  async updateScores(
+    @Param('id') id: string,
+    @Body() updateScoresDto: UpdateScoresDto,
+  ): Promise<void> {
+    return this.eventsService.updateScores(
+      +id,
+      updateScoresDto.totalScore,
+      updateScoresDto.scoreOne,
+      updateScoresDto.scoreTwo,
     );
   }
 }
