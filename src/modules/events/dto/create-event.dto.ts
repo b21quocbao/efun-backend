@@ -86,4 +86,13 @@ export class CreateEventDto {
   @IsString()
   @IsOptional()
   streamUrl?: string;
+
+  @ApiPropertyOptional()
+  totalScore?: number;
+
+  @ApiPropertyOptional()
+  scoreOne?: number;
+
+  @ApiPropertyOptional()
+  scoreTwo?: number;
 }

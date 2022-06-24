@@ -109,6 +109,15 @@ export class EventEntity {
   @Column({ default: false })
   isHot: boolean;
 
+  @Column({ nullable: true })
+  totalScore: number;
+
+  @Column({ nullable: true })
+  scoreOne: number;
+
+  @Column({ nullable: true })
+  scoreTwo: number;
+
   @OneToOne(() => TransactionEntity)
   @JoinColumn()
   transaction?: TransactionEntity;
