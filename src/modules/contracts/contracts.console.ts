@@ -72,7 +72,6 @@ export class ContractConsole {
           });
         }
         const { data: result } = await axios.get(event.returnValues.datas);
-        console.log(result, 'Line #80 contracts.console.ts');
 
         await this.eventsService.create(user.id, {
           id: event.returnValues.idx,
@@ -88,6 +87,15 @@ export class ContractConsole {
           categoryId: Number(result.categoryId),
           subCategoryId: result.subCategoryId.length
             ? Number(result.subCategoryId)
+            : undefined,
+          totalScore: result.totalScore.length
+            ? Number(result.totalScore)
+            : undefined,
+          scoreOne: result.scoreOne.length
+            ? Number(result.scoreOne)
+            : undefined,
+          scoreTwo: result.scoreTwo.length
+            ? Number(result.scoreTwo)
             : undefined,
           competitionId: Number(result.competitionId),
           type: result.type,
@@ -513,27 +521,6 @@ export class ContractConsole {
       ],
     );
   }
-
-  // @Command({
-  //   command: 'seed-event',
-  // })
-  // async seedEvent(): Promise<void> {
-  //   await this.eventsService.create(1, {
-  //     name: 'PL Winner',
-  //     metadata: '',
-  //     thumbnailUrl:
-  //       'https://media.bongda.com.vn/files/hai.phan/2022/05/18/man-city-vs-liverpool-0843.jpg',
-  //     categoryId: 2,
-  //     type: EventType.GroupPredict,
-  //     startTime: new Date(Date.now() + 5 * 60 * 1000),
-  //     deadline: new Date(Date.now() + 7 * 24 * 3600 * 1000),
-  //     endTime: new Date(Date.now() + 10 * 24 * 3600 * 1000),
-  //     options: '["Liverpool","Man City"]',
-  //     odds: '[0,0]',
-  //     description: 'Which team will be PL Winner',
-  //     shortDescription: 'PL Winner Team',
-  //   });
-  // }
 
   @Command({
     command: 'receipt',
