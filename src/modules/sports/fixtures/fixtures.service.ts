@@ -1,3 +1,5 @@
+// eslint-disable-next-line
+const moment = require('moment');
 import { Injectable } from '@nestjs/common';
 import { Response } from 'src/shares/interceptors/response.interceptor';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -53,11 +55,12 @@ export class FixturesService {
   }
 
   async findAll(
-    { leagueId }: GetFixtureDto,
+    getFixtureDto: GetFixtureDto,
     pageNumber?: number,
     pageSize?: number,
   ): Promise<Response<FixtureEntity[]>> {
     const qb = this.fixtureRepository.createQueryBuilder('fixtures');
+    const { leagueId, notFinised } = plainToClass(GetFixtureDto, getFixtureDto);
 
     if (pageSize && pageNumber) {
       qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
@@ -65,6 +68,15 @@ export class FixturesService {
 
     if (leagueId || leagueId === 0) {
       qb.where('fixtures."leagueId" = :leagueId', { leagueId });
+    }
+
+    if (notFinised) {
+      const currentTime = moment.utc().unix();
+      qb.andWhere('fixtures."timestamp" > :currentTime', { currentTime });
+      qb.andWhere('fixtures."statusLong" = :statusLong', {
+        statusLong: 'Not Started',
+      });
+      qb.andWhere('fixtures."bcResult" = :bcResult', { bcResult: false });
     }
 
     const [rs, total] = await Promise.all([qb.getMany(), qb.getCount()]);

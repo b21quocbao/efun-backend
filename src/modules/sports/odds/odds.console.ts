@@ -66,7 +66,6 @@ export class OddsConsole {
     const currentTime = moment.utc().unix();
     const fixtures = await this.fixtureRepository.find({
       where: {
-        bcMatchId: MoreThan(0),
         timestamp: MoreThan(currentTime),
         statusLong: 'Not Started',
         bcResult: false,
