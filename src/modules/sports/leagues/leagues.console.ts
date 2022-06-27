@@ -23,7 +23,7 @@ export class LeaguesConsole {
       const leagueIds = process.env.SPORT_LEAGUES.split(',').map((x) =>
         Number(x),
       );
-      const seasonStart = 2020;
+      const seasonStart = Number(process.env.SEASON_START);
 
       const allSeasons = await this.seasonsService.findAll({ seasonStart });
 

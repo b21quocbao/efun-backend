@@ -12,7 +12,7 @@ export class SeasonsConsole {
     command: 'crawl-seasons',
   })
   async seasonSchedule() {
-    const seasonStart = 2020;
+    const seasonStart = Number(process.env.SEASON_START);
 
     try {
       const seasons = await axiosInstance.get('/leagues/seasons');
