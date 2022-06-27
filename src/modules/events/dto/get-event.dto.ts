@@ -67,6 +67,9 @@ export class GetAllEventDto extends PaginationInput {
   @IsBoolean()
   outOfEndTime?: boolean;
 
+  @ApiPropertyOptional()
+  biggestToken?: string;
+
   @ApiPropertyOptional({
     enum: EventStatus,
   })

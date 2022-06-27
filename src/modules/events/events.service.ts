@@ -59,6 +59,7 @@ export class EventsService {
       outOfEndTime,
       subCategoryId,
       competitionId,
+      biggestToken,
     } = plainToClass(GetAllEventDto, request);
     const qb = this.eventRepository
       .createQueryBuilder('events')
@@ -134,8 +135,6 @@ export class EventsService {
     }
     if (orderBy == ESortEvent.UPCOMING) {
       qb.orderBy('deadline');
-    } else if (orderBy == ESortEvent.BIGGEST_EFUN_POOL) {
-      qb.orderBy('"totalAmount"', 'DESC');
     } else if (orderBy == ESortEvent.LATEST) {
       qb.orderBy('"createdAt"', 'DESC');
     }
@@ -191,6 +190,16 @@ export class EventsService {
         return event;
       }),
     );
+
+    if (orderBy == ESortEvent.BIGGEST_EFUN_POOL) {
+      processedRs.sort((a: any, b: any) => {
+        return new BigNumber(a.poolTokenAmounts[biggestToken] || '0').gt(
+          b.poolTokenAmounts[biggestToken] || '0',
+        )
+          ? -1
+          : 1;
+      });
+    }
 
     return {
       data: processedRs.map((row) => {
