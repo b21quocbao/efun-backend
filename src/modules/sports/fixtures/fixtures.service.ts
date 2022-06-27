@@ -77,6 +77,7 @@ export class FixturesService {
         statusLong: 'Not Started',
       });
       qb.andWhere('fixtures."bcResult" = :bcResult', { bcResult: false });
+      qb.andWhere('fixtures."asianHandicapMeta" is not null');
     }
 
     const [rs, total] = await Promise.all([qb.getMany(), qb.getCount()]);

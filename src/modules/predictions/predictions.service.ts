@@ -135,7 +135,7 @@ export class PredictionsService {
               status = 'Lost';
             }
           }
-          const sponsor = await this.predictionContract.methods
+          let sponsor = await this.predictionContract.methods
             .estimateRewardSponsor(
               prediction.eventId,
               prediction.userAddress,
@@ -144,6 +144,20 @@ export class PredictionsService {
             )
             .call()
             .catch(() => '0');
+          if (status === 'Lost') {
+            sponsor = '0';
+          }
+          const resultIndex = JSON.parse(prediction.eventOptions).indexOf(
+            prediction.eventResult,
+          );
+
+          if (
+            resultIndex == 2 ||
+            (resultIndex == 3 && prediction.optionIndex == 0) ||
+            (resultIndex == 1 && prediction.optionIndex == 4)
+          ) {
+            sponsor = '0';
+          }
 
           return {
             ...prediction,
