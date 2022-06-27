@@ -111,7 +111,7 @@ export class PredictionsService {
               : 'Claim Cashback';
           }
 
-          const estimateReward = await this.predictionContract.methods
+          let estimateReward = await this.predictionContract.methods
             .estimateReward(
               prediction.eventId,
               prediction.userAddress,
@@ -123,7 +123,7 @@ export class PredictionsService {
           if (status == 'Unknown') {
             status = 'Claim';
             try {
-              await this.predictionContract.methods
+              estimateReward = await this.predictionContract.methods
                 .validateEstimateReward(
                   prediction.eventId,
                   prediction.userAddress,
