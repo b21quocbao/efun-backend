@@ -70,14 +70,19 @@ export class FixturesService {
       qb.where('fixtures."leagueId" = :leagueId', { leagueId });
     }
 
-    if (notFinised) {
-      const currentTime = moment.utc().unix();
-      qb.andWhere('fixtures."timestamp" > :currentTime', { currentTime });
-      qb.andWhere('fixtures."statusLong" = :statusLong', {
-        statusLong: 'Not Started',
-      });
-      qb.andWhere('fixtures."bcResult" = :bcResult', { bcResult: false });
-      qb.andWhere('fixtures."asianHandicapMeta" is not null');
+    if (notFinised === true || notFinised === false) {
+      if (notFinised) {
+        const currentTime = moment.utc().unix();
+        qb.andWhere('fixtures."timestamp" > :currentTime', { currentTime });
+        qb.andWhere('fixtures."statusLong" = :statusLong', {
+          statusLong: 'Not Started',
+        });
+        qb.andWhere('fixtures."bcResult" = :bcResult', { bcResult: false });
+        qb.andWhere('fixtures."asianHandicapMeta" is not null');
+      } else {
+        const currentTime = moment.utc().unix();
+        qb.andWhere('fixtures."timestamp" <= :currentTime', { currentTime });
+      }
     }
 
     const [rs, total] = await Promise.all([qb.getMany(), qb.getCount()]);
