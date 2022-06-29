@@ -193,8 +193,8 @@ export class EventsService {
 
     if (orderBy == ESortEvent.BIGGEST_EFUN_POOL) {
       processedRs.sort((a: any, b: any) => {
-        return new BigNumber(a.poolTokenAmounts[biggestToken] || '0').gt(
-          b.poolTokenAmounts[biggestToken] || '0',
+        return new BigNumber(a.predictionTokenAmounts[biggestToken] || '0').gt(
+          b.predictionTokenAmounts[biggestToken] || '0',
         )
           ? -1
           : 1;
