@@ -30,9 +30,5 @@ export class CreateFixtureDto {
   goalsMeta?: string;
   scoreMeta?: string;
   meta?: string;
-  homeHandicap?: number;
-  awayHandicap?: number;
-  homeOdd?: number;
-  awayOdd?: number;
-  asianHandicapMeta?: string;
+  oddMeta?: string;
 }

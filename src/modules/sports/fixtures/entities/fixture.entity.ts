@@ -129,19 +129,7 @@ export class FixtureEntity {
   meta?: string;
 
   @Column({ nullable: true })
-  homeHandicap?: number;
-
-  @Column({ nullable: true })
-  awayHandicap?: number;
-
-  @Column({ nullable: true })
-  homeOdd?: number;
-
-  @Column({ nullable: true })
-  awayOdd?: number;
-
-  @Column({ nullable: true })
-  asianHandicapMeta?: string;
+  oddMeta?: string;
 
   @OneToMany(() => GoalEntity, (goal) => goal.fixture)
   goals: GoalEntity[];

@@ -78,7 +78,7 @@ export class FixturesService {
           statusLong: 'Not Started',
         });
         qb.andWhere('fixtures."bcResult" = :bcResult', { bcResult: false });
-        qb.andWhere('fixtures."asianHandicapMeta" is not null');
+        qb.andWhere('fixtures."oddMeta" is not null');
       } else {
         const currentTime = moment.utc().unix();
         qb.andWhere('fixtures."timestamp" <= :currentTime', { currentTime });

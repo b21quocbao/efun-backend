@@ -8,7 +8,14 @@ import { FixtureEntity } from './entities/fixture.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LeagueEntity } from '../leagues/entities/league.entity';
 import { SeasonEntity } from '../seasons/entities/season.entity';
-import { LessThanOrEqual, Not, Repository } from 'typeorm';
+import {
+  LessThanOrEqual,
+  MoreThan,
+  Not,
+  Repository,
+  Between,
+  LessThan,
+} from 'typeorm';
 import { RoundEntity } from '../rounds/entities/round.entity';
 import { TeamEntity } from '../teams/entities/team.entity';
 import { SUB_TYPE, TYPE } from './entities/goal.entity';
@@ -325,6 +332,49 @@ export class FixturesConsole {
       // END - cron fixture h2h
     } catch (err) {
       console.log(err);
+    }
+  }
+
+  @Command({
+    command: 'crawl-fixture-results',
+  })
+  async fixtureResultSchedule() {
+    const fromTime = moment.utc().subtract(1, 'week');
+    const currentTime = moment.utc().unix();
+    const fixtures = await this.fixtureRepository.find({
+      where: {
+        bcMatchId: MoreThan(0),
+        timestamp: Between(fromTime.unix(), currentTime.unix()),
+        statusLong: 'Match Finished',
+        bcResult: false,
+      },
+    });
+
+    for (const fixture of fixtures) {
+      const goals = JSON.parse(fixture.scoreMeta);
+      const goalHome =
+        typeof goals.fulltime.home != 'undefined' &&
+        goals.fulltime.home != '' &&
+        goals.fulltime.home != null
+          ? goals.fulltime.home
+          : 0;
+      const goalAway =
+        typeof goals.fulltime.away != 'undefined' &&
+        goals.fulltime.away != '' &&
+        goals.fulltime.away != null
+          ? goals.fulltime.away
+          : 0;
+
+      return await this.fixtureRepository.update(fixture.id, {
+        bcResult: true,
+        bcResultMeta: JSON.stringify({
+          id: fixture.id,
+          matchId: fixture.bcMatchId,
+          goalHome: goalHome,
+          goalAway: goalAway,
+          status: 2,
+        }),
+      });
     }
   }
 }
