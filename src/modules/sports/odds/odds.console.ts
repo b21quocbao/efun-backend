@@ -72,6 +72,9 @@ export class OddsConsole {
         statusLong: 'Not Started',
         bcResult: false,
       },
+      order: {
+        timestamp: 'ASC',
+      },
     });
 
     if (fixtures.length > 0) {
