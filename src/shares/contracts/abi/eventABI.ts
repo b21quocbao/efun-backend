@@ -2,6 +2,30 @@ export const eventABI = [
   {
     anonymous: false,
     inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'id', type: 'bytes32' },
+    ],
+    name: 'ChainlinkCancelled',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'id', type: 'bytes32' },
+    ],
+    name: 'ChainlinkFulfilled',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'id', type: 'bytes32' },
+    ],
+    name: 'ChainlinkRequested',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
       { indexed: false, internalType: 'uint256', name: 'idx', type: 'uint256' },
       {
         indexed: false,
@@ -40,6 +64,7 @@ export const eventABI = [
         type: 'uint256[]',
       },
       { indexed: false, internalType: 'string', name: 'datas', type: 'string' },
+      { indexed: false, internalType: 'uint256', name: 'pro', type: 'uint256' },
     ],
     name: 'EventCreated',
     type: 'event',
@@ -97,6 +122,16 @@ export const eventABI = [
     type: 'event',
   },
   {
+    inputs: [{ internalType: 'bytes', name: '', type: 'bytes' }],
+    name: 'checkUpkeep',
+    outputs: [
+      { internalType: 'bool', name: 'upkeepNeeded', type: 'bool' },
+      { internalType: 'bytes', name: 'performData', type: 'bytes' },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [
       { internalType: 'uint256', name: '_startTime', type: 'uint256' },
       { internalType: 'uint256', name: '_deadlineTime', type: 'uint256' },
@@ -105,6 +140,7 @@ export const eventABI = [
       { internalType: 'uint256[]', name: '_odds', type: 'uint256[]' },
       { internalType: 'string', name: '_datas', type: 'string' },
       { internalType: 'address', name: '_creator', type: 'address' },
+      { internalType: 'uint256', name: '_pro', type: 'uint256' },
     ],
     name: 'createSingleEvent',
     outputs: [{ internalType: 'uint256', name: '_idx', type: 'uint256' }],
@@ -127,8 +163,19 @@ export const eventABI = [
       { internalType: 'address', name: 'helperAddress', type: 'address' },
       { internalType: 'address', name: 'creator', type: 'address' },
       { internalType: 'string', name: '_datas', type: 'string' },
+      { internalType: 'uint256', name: 'pro', type: 'uint256' },
     ],
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'bytes32', name: '_requestId', type: 'bytes32' },
+      { internalType: 'string', name: '_data', type: 'string' },
+    ],
+    name: 'fulfill',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
@@ -150,6 +197,7 @@ export const eventABI = [
           { internalType: 'address', name: 'creator', type: 'address' },
           { internalType: 'uint256[]', name: 'odds', type: 'uint256[]' },
           { internalType: 'string', name: '_datas', type: 'string' },
+          { internalType: 'uint256', name: 'pro', type: 'uint256' },
         ],
         internalType: 'struct EDataTypes.Event',
         name: '_event',
@@ -181,8 +229,25 @@ export const eventABI = [
     type: 'function',
   },
   {
+    inputs: [{ internalType: 'bytes', name: 'performData', type: 'bytes' }],
+    name: 'performUpkeep',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
     inputs: [],
     name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: '_token', type: 'address' },
+      { internalType: 'address', name: '_oracle', type: 'address' },
+    ],
+    name: 'setOracle',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -200,6 +265,13 @@ export const eventABI = [
       { internalType: 'uint256', name: '_index', type: 'uint256' },
     ],
     name: 'updateEventResult',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'withdrawLink',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
