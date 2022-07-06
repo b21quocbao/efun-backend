@@ -34,6 +34,14 @@ export class CreateEventDto {
   @IsNumber()
   subCategoryId?: number;
 
+  @ApiPropertyOptional()
+  @IsNumber()
+  pro?: number;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  fixtureId?: number;
+
   @ApiProperty()
   @IsNumber()
   competitionId: number;

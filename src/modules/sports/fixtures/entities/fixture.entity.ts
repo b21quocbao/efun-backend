@@ -1,3 +1,4 @@
+import { EventEntity } from 'src/modules/events/entities/event.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -133,6 +134,9 @@ export class FixtureEntity {
 
   @OneToMany(() => GoalEntity, (goal) => goal.fixture)
   goals: GoalEntity[];
+
+  @OneToMany(() => EventEntity, (event) => event.fixture)
+  events: EventEntity[];
 
   @CreateDateColumn()
   createdAt: Date;

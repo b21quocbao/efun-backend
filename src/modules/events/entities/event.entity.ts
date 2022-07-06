@@ -2,6 +2,7 @@ import { CategoryEntity } from 'src/modules/categories/entities/category.entity'
 import { CompetitionEntity } from 'src/modules/competitions/entities/competition.entity';
 import { PoolEntity } from 'src/modules/pools/entities/pool.entity';
 import { PredictionEntity } from 'src/modules/predictions/entities/prediction.entity';
+import { FixtureEntity } from 'src/modules/sports/fixtures/entities/fixture.entity';
 import { TransactionEntity } from 'src/modules/transactions/entities/transaction.entity';
 import { UserEntity } from 'src/modules/users/entities/user.entity';
 import {
@@ -48,6 +49,9 @@ export class EventEntity {
 
   @ManyToOne(() => CompetitionEntity, (competition) => competition.events)
   competition: CompetitionEntity;
+
+  @ManyToOne(() => FixtureEntity, (fixture) => fixture.events)
+  fixture: FixtureEntity;
 
   @OneToMany(() => PoolEntity, (pool) => pool.event)
   pools: PoolEntity[];
@@ -96,6 +100,12 @@ export class EventEntity {
 
   @Column()
   userId: number;
+
+  @Column({ default: 0 })
+  pro: number;
+
+  @Column({ nullable: true })
+  fixtureId: number;
 
   @Column()
   categoryId: number;
