@@ -19,6 +19,9 @@ export class ReportEntity {
   @Column()
   content: string;
 
+  @Column({ nullable: true })
+  status: string;
+
   @ManyToOne(() => UserEntity, (user) => user.reports)
   user: UserEntity;
 
