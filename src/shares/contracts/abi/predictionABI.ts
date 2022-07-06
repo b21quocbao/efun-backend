@@ -74,7 +74,7 @@ export const predictionABI = [
       {
         indexed: false,
         internalType: 'uint256',
-        name: '_pro',
+        name: 'pro',
         type: 'uint256',
       },
     ],
