@@ -88,9 +88,10 @@ export class ContractConsole {
           pro: event.returnValues.pro
             ? Number(event.returnValues.pro)
             : undefined,
-          fixtureId: result.fixtureId.length
-            ? Number(result.fixtureId)
-            : undefined,
+          fixtureId:
+            result.fixtureId && result.fixtureId.length
+              ? Number(result.fixtureId)
+              : undefined,
           subCategoryId: result.subCategoryId.length
             ? Number(result.subCategoryId)
             : undefined,
