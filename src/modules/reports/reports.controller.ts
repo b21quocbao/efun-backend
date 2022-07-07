@@ -41,17 +41,4 @@ export class ReportsController {
   async findOne(@Param('id') id: string): Promise<ReportEntity> {
     return this.reportsService.findOne(+id);
   }
-
-  @Patch(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() updateReportDto: UpdateReportDto,
-  ): Promise<ReportEntity> {
-    return this.reportsService.update(+id, updateReportDto);
-  }
-
-  @Delete(':id')
-  async remove(@Param('id') id: string): Promise<void> {
-    return this.reportsService.remove(+id);
-  }
 }
