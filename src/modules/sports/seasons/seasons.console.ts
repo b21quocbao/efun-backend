@@ -12,33 +12,33 @@ export class SeasonsConsole implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    this.schedulerRegistry.addCronJob(
-      'seasonSchedule',
-      new CronJob(process.env.CRONT_SEASON, this.seasonSchedule),
-    );
-    this.schedulerRegistry.getCronJob('seasonSchedule').start();
-  }
+    const seasonSchedule = async () => {
+      const seasonStart = Number(process.env.SEASON_START);
 
-  async seasonSchedule() {
-    const seasonStart = Number(process.env.SEASON_START);
+      try {
+        const seasons = await axiosInstance.get('/leagues/seasons');
 
-    try {
-      const seasons = await axiosInstance.get('/leagues/seasons');
-
-      if (seasons.data && seasons.data.response) {
-        for (const item of seasons.data.response) {
-          if (item >= seasonStart) {
-            const seasonRecord = { year: item };
-            await this.seasonsService.updateOrCreate(
-              seasonRecord,
-              seasonRecord,
-            );
+        if (seasons.data && seasons.data.response) {
+          for (const item of seasons.data.response) {
+            if (item >= seasonStart) {
+              const seasonRecord = { year: item };
+              await this.seasonsService.updateOrCreate(
+                seasonRecord,
+                seasonRecord,
+              );
+            }
           }
         }
+        // END - cron season
+      } catch (err) {
+        console.log(err);
       }
-      // END - cron season
-    } catch (err) {
-      console.log(err);
-    }
+    };
+
+    this.schedulerRegistry.addCronJob(
+      'seasonSchedule',
+      new CronJob(process.env.CRONT_SEASON, seasonSchedule),
+    );
+    this.schedulerRegistry.getCronJob('seasonSchedule').start();
   }
 }

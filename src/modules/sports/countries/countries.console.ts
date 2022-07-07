@@ -12,33 +12,33 @@ export class CountriesConsole implements OnModuleInit {
   ) {}
 
   onModuleInit() {
+    const countrySchedule = async () => {
+      try {
+        const countries = await axiosInstance.get('/countries');
+
+        if (countries.data && countries.data.response) {
+          for (const item of countries.data.response) {
+            await this.countriesService.updateOrCreate(
+              {
+                name: item.name,
+                code: item.code,
+                flag: item.flag,
+              },
+              {
+                name: item.name,
+              },
+            );
+          }
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
     this.schedulerRegistry.addCronJob(
       'countrySchedule',
-      new CronJob(process.env.CRONT_COUNTRY, this.countrySchedule),
+      new CronJob(process.env.CRONT_COUNTRY, countrySchedule),
     );
     this.schedulerRegistry.getCronJob('countrySchedule').start();
-  }
-
-  async countrySchedule() {
-    try {
-      const countries = await axiosInstance.get('/countries');
-
-      if (countries.data && countries.data.response) {
-        for (const item of countries.data.response) {
-          await this.countriesService.updateOrCreate(
-            {
-              name: item.name,
-              code: item.code,
-              flag: item.flag,
-            },
-            {
-              name: item.name,
-            },
-          );
-        }
-      }
-    } catch (err) {
-      console.log(err);
-    }
   }
 }

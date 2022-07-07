@@ -21,90 +21,90 @@ export class OddsConsole implements OnModuleInit {
   ) {}
 
   onModuleInit() {
+    const betSchedule = async () => {
+      const bets = await axiosInstance.get('/odds/bets');
+
+      if (bets.data && bets.data.response) {
+        for (const item of bets.data.response) {
+          await this.oddsService.updateOrCreateBet(
+            {
+              remoteId: item.id,
+              name: item.name,
+            },
+            {
+              remoteId: item.id,
+            },
+          );
+        }
+      }
+    };
+
+    const bookmakerSchedule = async () => {
+      const bookmakers = await axiosInstance.get('/odds/bookmakers');
+
+      if (bookmakers.data && bookmakers.data.response) {
+        for (const item of bookmakers.data.response) {
+          await this.oddsService.updateOrCreateBookmaker(
+            {
+              remoteId: item.id,
+              name: item.name,
+            },
+            {
+              remoteId: item.id,
+            },
+          );
+        }
+      }
+    };
+
+    const oddSchedule = async () => {
+      const currentTime = moment.utc().unix();
+      const fixtures = await this.fixtureRepository.find({
+        where: {
+          timestamp: MoreThan(currentTime),
+          statusLong: 'Not Started',
+          bcResult: false,
+        },
+        order: {
+          timestamp: 'ASC',
+        },
+      });
+
+      if (fixtures.length > 0) {
+        for (const fixture of fixtures) {
+          const meta = JSON.parse(fixture.meta);
+
+          const odds = await axiosInstance.get(
+            '/odds?season=' +
+              meta.league.season +
+              '&bookmaker=13&fixture=' +
+              meta.fixture.id +
+              '&league=' +
+              meta.league.id,
+          );
+
+          if (odds.data && odds.data.response) {
+            fixture.oddMeta = JSON.stringify(odds.data);
+            await this.fixtureRepository.save(fixture);
+          }
+        }
+      }
+    };
+
     this.schedulerRegistry.addCronJob(
       'betSchedule',
-      new CronJob(process.env.CRONT_COUNTRY, this.betSchedule),
+      new CronJob(process.env.CRONT_COUNTRY, betSchedule),
     );
     this.schedulerRegistry.addCronJob(
       'bookmakerSchedule',
-      new CronJob(process.env.CRONT_COUNTRY, this.bookmakerSchedule),
+      new CronJob(process.env.CRONT_COUNTRY, bookmakerSchedule),
     );
     this.schedulerRegistry.addCronJob(
       'oddSchedule',
-      new CronJob(process.env.CRONT_FIXTURE_H2H, this.oddSchedule),
+      new CronJob(process.env.CRONT_FIXTURE_H2H, oddSchedule),
     );
     this.schedulerRegistry.getCronJob('betSchedule').start();
     this.schedulerRegistry.getCronJob('bookmakerSchedule').start();
     this.schedulerRegistry.getCronJob('oddSchedule').start();
-  }
-
-  async betSchedule() {
-    const bets = await axiosInstance.get('/odds/bets');
-
-    if (bets.data && bets.data.response) {
-      for (const item of bets.data.response) {
-        await this.oddsService.updateOrCreateBet(
-          {
-            remoteId: item.id,
-            name: item.name,
-          },
-          {
-            remoteId: item.id,
-          },
-        );
-      }
-    }
-  }
-
-  async bookmakerSchedule() {
-    const bookmakers = await axiosInstance.get('/odds/bookmakers');
-
-    if (bookmakers.data && bookmakers.data.response) {
-      for (const item of bookmakers.data.response) {
-        await this.oddsService.updateOrCreateBookmaker(
-          {
-            remoteId: item.id,
-            name: item.name,
-          },
-          {
-            remoteId: item.id,
-          },
-        );
-      }
-    }
-  }
-
-  async oddSchedule() {
-    const currentTime = moment.utc().unix();
-    const fixtures = await this.fixtureRepository.find({
-      where: {
-        timestamp: MoreThan(currentTime),
-        statusLong: 'Not Started',
-        bcResult: false,
-      },
-      order: {
-        timestamp: 'ASC',
-      },
-    });
-
-    if (fixtures.length > 0) {
-      for (const fixture of fixtures) {
-        const meta = JSON.parse(fixture.meta);
-
-        const odds = await axiosInstance.get(
-          '/odds?season=' +
-            meta.league.season +
-            '&bookmaker=13&fixture=' +
-            meta.fixture.id +
-            '&league=' +
-            meta.league.id,
-        );
-
-        if (odds.data && odds.data.response) {
-          fixture.oddMeta = JSON.stringify(odds.data);
-          await this.fixtureRepository.save(fixture);
-        }
-      }
-    }
   }
 }
