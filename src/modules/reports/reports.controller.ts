@@ -15,6 +15,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'src/shares/interceptors/response.interceptor';
 import { PaginationInput } from 'src/shares/pagination/pagination.dto';
 import { ReportEntity } from './entities/report.entity';
+import { UserID } from 'src/shares/decorators/get-user-id.decorator';
 
 @ApiTags('Reports')
 @Controller('reports')
@@ -23,9 +24,10 @@ export class ReportsController {
 
   @Post()
   async create(
+    @UserID() userId: number,
     @Body() createReportDto: CreateReportDto,
   ): Promise<ReportEntity> {
-    return this.reportsService.create(createReportDto);
+    return this.reportsService.create({ ...createReportDto, userId });
   }
 
   @Get()
