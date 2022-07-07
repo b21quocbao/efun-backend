@@ -13,7 +13,7 @@ import { TeamEntity } from '../teams/entities/team.entity';
 import { SUB_TYPE, TYPE } from './entities/goal.entity';
 import { CreateFixtureDto } from './dto/create-fixture.dto';
 import { UpdateFixtureDto } from './dto/update-fixture.dto';
-import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { CronJob } from 'cron';
 
 @Injectable()
@@ -39,12 +39,10 @@ export class FixturesConsole implements OnModuleInit {
       'fixtureSchedule',
       new CronJob(process.env.CRONT_FIXTURE, this.fixtureSchedule),
     );
-    // console.log(process.env.CRONT_FIXTURE_H2H, 'Line #42 fixtures.console.ts');
-
-    // this.schedulerRegistry.addCronJob(
-    //   'h2hFixtureSchedule',
-    //   new CronJob(process.env.CRONT_FIXTURE_H2H, this.h2hFixtureSchedule),
-    // );
+    this.schedulerRegistry.addCronJob(
+      'h2hFixtureSchedule',
+      new CronJob(process.env.CRONT_FIXTURE_H2H, this.h2hFixtureSchedule),
+    );
   }
 
   async fixtureSchedule() {
@@ -210,15 +208,7 @@ export class FixturesConsole implements OnModuleInit {
     }
   }
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
-  handleCron() {
-    console.log('Called every 10 seconds');
-  }
-
-  @Cron('*/10 * * * *')
   async h2hFixtureSchedule() {
-    console.log('xcoviuxcv', 'Line #214 fixtures.console.ts');
-
     try {
       // BEGIN - cron fixture h2h
       const destTime = moment.utc().add(300, 'minutes');
