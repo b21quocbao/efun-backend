@@ -33,6 +33,9 @@ export class OddsConsole implements OnModuleInit {
       'oddSchedule',
       new CronJob(process.env.CRONT_FIXTURE_H2H, this.oddSchedule),
     );
+    this.schedulerRegistry.getCronJob('betSchedule').start();
+    this.schedulerRegistry.getCronJob('bookmakerSchedule').start();
+    this.schedulerRegistry.getCronJob('oddSchedule').start();
   }
 
   async betSchedule() {

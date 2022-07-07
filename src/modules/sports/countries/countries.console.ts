@@ -16,6 +16,7 @@ export class CountriesConsole implements OnModuleInit {
       'countrySchedule',
       new CronJob(process.env.CRONT_COUNTRY, this.countrySchedule),
     );
+    this.schedulerRegistry.getCronJob('countrySchedule').start();
   }
 
   async countrySchedule() {

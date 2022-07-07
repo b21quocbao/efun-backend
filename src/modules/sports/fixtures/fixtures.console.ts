@@ -43,6 +43,8 @@ export class FixturesConsole implements OnModuleInit {
       'h2hFixtureSchedule',
       new CronJob(process.env.CRONT_FIXTURE_H2H, this.h2hFixtureSchedule),
     );
+    this.schedulerRegistry.getCronJob('fixtureSchedule').start();
+    this.schedulerRegistry.getCronJob('h2hFixtureSchedule').start();
   }
 
   async fixtureSchedule() {

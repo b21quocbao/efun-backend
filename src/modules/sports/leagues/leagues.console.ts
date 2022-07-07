@@ -20,6 +20,7 @@ export class LeaguesConsole implements OnModuleInit {
       'leagueSchedule',
       new CronJob(process.env.CRONT_LEAGUE, this.leagueSchedule),
     );
+    this.schedulerRegistry.getCronJob('leagueSchedule').start();
   }
 
   async leagueSchedule() {

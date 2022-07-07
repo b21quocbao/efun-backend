@@ -16,6 +16,7 @@ export class SeasonsConsole implements OnModuleInit {
       'seasonSchedule',
       new CronJob(process.env.CRONT_SEASON, this.seasonSchedule),
     );
+    this.schedulerRegistry.getCronJob('seasonSchedule').start();
   }
 
   async seasonSchedule() {

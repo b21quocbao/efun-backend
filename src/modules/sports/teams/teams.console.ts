@@ -20,6 +20,7 @@ export class TeamsConsole implements OnModuleInit {
       'teamSchedule',
       new CronJob(process.env.CRONT_TEAM, this.teamSchedule),
     );
+    this.schedulerRegistry.getCronJob('teamSchedule').start();
   }
 
   async teamSchedule() {

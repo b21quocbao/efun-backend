@@ -20,6 +20,7 @@ export class RoundsConsole implements OnModuleInit {
       'roundSchedule',
       new CronJob(process.env.CRONT_ROUND, this.roundSchedule),
     );
+    this.schedulerRegistry.getCronJob('roundSchedule').start();
   }
 
   async roundSchedule() {
