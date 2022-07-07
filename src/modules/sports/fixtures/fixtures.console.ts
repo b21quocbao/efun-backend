@@ -1,30 +1,23 @@
 // eslint-disable-next-line
 const moment = require('moment');
 import { axiosInstance } from 'helpers/axios';
-import { Command, Console } from 'nestjs-console';
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { FixturesService } from './fixtures.service';
 import { FixtureEntity } from './entities/fixture.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LeagueEntity } from '../leagues/entities/league.entity';
 import { SeasonEntity } from '../seasons/entities/season.entity';
-import {
-  LessThanOrEqual,
-  MoreThan,
-  Not,
-  Repository,
-  Between,
-  LessThan,
-} from 'typeorm';
+import { LessThanOrEqual, Not, Repository } from 'typeorm';
 import { RoundEntity } from '../rounds/entities/round.entity';
 import { TeamEntity } from '../teams/entities/team.entity';
 import { SUB_TYPE, TYPE } from './entities/goal.entity';
 import { CreateFixtureDto } from './dto/create-fixture.dto';
 import { UpdateFixtureDto } from './dto/update-fixture.dto';
+import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
+import { CronJob } from 'cron';
 
-@Console()
 @Injectable()
-export class FixturesConsole {
+export class FixturesConsole implements OnModuleInit {
   constructor(
     // BEGIN - cron fixture
     @InjectRepository(LeagueEntity)
@@ -38,11 +31,22 @@ export class FixturesConsole {
     @InjectRepository(FixtureEntity)
     private fixtureRepository: Repository<FixtureEntity>,
     private readonly fixturesService: FixturesService,
+    private schedulerRegistry: SchedulerRegistry,
   ) {}
 
-  @Command({
-    command: 'crawl-fixtures',
-  })
+  onModuleInit() {
+    this.schedulerRegistry.addCronJob(
+      'fixtureSchedule',
+      new CronJob(process.env.CRONT_FIXTURE, this.fixtureSchedule),
+    );
+    // console.log(process.env.CRONT_FIXTURE_H2H, 'Line #42 fixtures.console.ts');
+
+    // this.schedulerRegistry.addCronJob(
+    //   'h2hFixtureSchedule',
+    //   new CronJob(process.env.CRONT_FIXTURE_H2H, this.h2hFixtureSchedule),
+    // );
+  }
+
   async fixtureSchedule() {
     try {
       const allLeagues = await this.leagueRepository.find();
@@ -206,10 +210,15 @@ export class FixturesConsole {
     }
   }
 
-  @Command({
-    command: 'crawl-h2h-fixtures',
-  })
+  @Cron(CronExpression.EVERY_10_SECONDS)
+  handleCron() {
+    console.log('Called every 10 seconds');
+  }
+
+  @Cron('*/10 * * * *')
   async h2hFixtureSchedule() {
+    console.log('xcoviuxcv', 'Line #214 fixtures.console.ts');
+
     try {
       // BEGIN - cron fixture h2h
       const destTime = moment.utc().add(300, 'minutes');
@@ -335,22 +344,8 @@ export class FixturesConsole {
     }
   }
 
-  @Command({
-    command: 'crawl-fixture-results',
-  })
-  async fixtureResultSchedule() {
-    const fromTime = moment.utc().subtract(1, 'week');
-    const currentTime = moment.utc().unix();
-    const fixtures = await this.fixtureRepository.find({
-      where: {
-        bcMatchId: MoreThan(0),
-        timestamp: Between(fromTime.unix(), currentTime.unix()),
-        statusLong: 'Match Finished',
-        bcResult: false,
-      },
-    });
-
-    for (const fixture of fixtures) {
+  async runUpdateMatchResult(fixture: FixtureEntity) {
+    if (fixture.statusLong == 'Match Finished' && fixture.bcResult == false) {
       const goals = JSON.parse(fixture.scoreMeta);
       const goalHome =
         typeof goals.fulltime.home != 'undefined' &&
@@ -369,7 +364,6 @@ export class FixturesConsole {
         bcResult: true,
         bcResultMeta: JSON.stringify({
           id: fixture.id,
-          matchId: fixture.bcMatchId,
           goalHome: goalHome,
           goalAway: goalAway,
           status: 2,

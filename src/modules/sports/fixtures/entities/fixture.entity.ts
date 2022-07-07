@@ -21,9 +21,6 @@ export class FixtureEntity {
   id: number;
 
   @Column({ nullable: true })
-  bcMatchId?: number;
-
-  @Column({ nullable: true })
   bcMatchMeta?: string;
 
   @Column({ nullable: true, default: false })

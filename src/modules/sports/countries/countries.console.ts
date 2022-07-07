@@ -1,16 +1,23 @@
 import { axiosInstance } from 'helpers/axios';
-import { Command, Console } from 'nestjs-console';
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { CountriesService } from './countries.service';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { CronJob } from 'cron';
 
-@Console()
 @Injectable()
-export class CountriesConsole {
-  constructor(private readonly countriesService: CountriesService) {}
+export class CountriesConsole implements OnModuleInit {
+  constructor(
+    private readonly countriesService: CountriesService,
+    private schedulerRegistry: SchedulerRegistry,
+  ) {}
 
-  @Command({
-    command: 'crawl-countries',
-  })
+  onModuleInit() {
+    this.schedulerRegistry.addCronJob(
+      'countrySchedule',
+      new CronJob(process.env.CRONT_COUNTRY, this.countrySchedule),
+    );
+  }
+
   async countrySchedule() {
     try {
       const countries = await axiosInstance.get('/countries');

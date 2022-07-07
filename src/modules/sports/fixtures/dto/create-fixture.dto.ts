@@ -1,5 +1,4 @@
 export class CreateFixtureDto {
-  bcMatchId?: number;
   bcMatchMeta?: string;
   bcResult?: boolean;
   bcResultMeta?: string;

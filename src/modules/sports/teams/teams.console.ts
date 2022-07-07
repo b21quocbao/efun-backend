@@ -1,22 +1,27 @@
 import { axiosInstance } from 'helpers/axios';
-import { Command, Console } from 'nestjs-console';
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { TeamsService } from './teams.service';
 import { CountriesService } from '../countries/countries.service';
 import { SeasonsService } from '../seasons/seasons.service';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { CronJob } from 'cron';
 
-@Console()
 @Injectable()
-export class TeamsConsole {
+export class TeamsConsole implements OnModuleInit {
   constructor(
     private readonly teamsService: TeamsService,
     private readonly seasonsService: SeasonsService,
     private readonly countriesService: CountriesService,
+    private schedulerRegistry: SchedulerRegistry,
   ) {}
 
-  @Command({
-    command: 'crawl-teams',
-  })
+  onModuleInit() {
+    this.schedulerRegistry.addCronJob(
+      'teamSchedule',
+      new CronJob(process.env.CRONT_TEAM, this.teamSchedule),
+    );
+  }
+
   async teamSchedule() {
     try {
       // BEGIN - cron team

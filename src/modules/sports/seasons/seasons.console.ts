@@ -1,16 +1,23 @@
 import { axiosInstance } from 'helpers/axios';
-import { Command, Console } from 'nestjs-console';
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { SeasonsService } from './seasons.service';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { CronJob } from 'cron';
 
-@Console()
 @Injectable()
-export class SeasonsConsole {
-  constructor(private readonly seasonsService: SeasonsService) {}
+export class SeasonsConsole implements OnModuleInit {
+  constructor(
+    private readonly seasonsService: SeasonsService,
+    private schedulerRegistry: SchedulerRegistry,
+  ) {}
 
-  @Command({
-    command: 'crawl-seasons',
-  })
+  onModuleInit() {
+    this.schedulerRegistry.addCronJob(
+      'seasonSchedule',
+      new CronJob(process.env.CRONT_SEASON, this.seasonSchedule),
+    );
+  }
+
   async seasonSchedule() {
     const seasonStart = Number(process.env.SEASON_START);
 

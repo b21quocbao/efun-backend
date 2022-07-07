@@ -1,27 +1,40 @@
 // eslint-disable-next-line
 const moment = require('moment');
 import { axiosInstance } from 'helpers/axios';
-import { Command, Console } from 'nestjs-console';
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { OddsService } from './odds.service';
 import { SeasonsService } from '../seasons/seasons.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FixtureEntity } from '../fixtures/entities/fixture.entity';
 import { MoreThan, Repository } from 'typeorm';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { CronJob } from 'cron';
 
-@Console()
 @Injectable()
-export class OddsConsole {
+export class OddsConsole implements OnModuleInit {
   constructor(
     private readonly oddsService: OddsService,
     private readonly seasonsService: SeasonsService,
     @InjectRepository(FixtureEntity)
     private fixtureRepository: Repository<FixtureEntity>,
+    private schedulerRegistry: SchedulerRegistry,
   ) {}
 
-  @Command({
-    command: 'crawl-bets',
-  })
+  onModuleInit() {
+    this.schedulerRegistry.addCronJob(
+      'betSchedule',
+      new CronJob(process.env.CRONT_COUNTRY, this.betSchedule),
+    );
+    this.schedulerRegistry.addCronJob(
+      'bookmakerSchedule',
+      new CronJob(process.env.CRONT_COUNTRY, this.bookmakerSchedule),
+    );
+    this.schedulerRegistry.addCronJob(
+      'oddSchedule',
+      new CronJob(process.env.CRONT_FIXTURE_H2H, this.oddSchedule),
+    );
+  }
+
   async betSchedule() {
     const bets = await axiosInstance.get('/odds/bets');
 
@@ -40,9 +53,6 @@ export class OddsConsole {
     }
   }
 
-  @Command({
-    command: 'crawl-bookmakers',
-  })
   async bookmakerSchedule() {
     const bookmakers = await axiosInstance.get('/odds/bookmakers');
 
@@ -61,9 +71,6 @@ export class OddsConsole {
     }
   }
 
-  @Command({
-    command: 'crawl-odds',
-  })
   async oddSchedule() {
     const currentTime = moment.utc().unix();
     const fixtures = await this.fixtureRepository.find({

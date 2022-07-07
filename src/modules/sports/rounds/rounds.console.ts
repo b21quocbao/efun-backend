@@ -1,22 +1,27 @@
 import { axiosInstance } from 'helpers/axios';
-import { Command, Console } from 'nestjs-console';
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { RoundsService } from './rounds.service';
 import { SeasonsService } from '../seasons/seasons.service';
 import { LeaguesService } from '../leagues/leagues.service';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { CronJob } from 'cron';
 
-@Console()
 @Injectable()
-export class RoundsConsole {
+export class RoundsConsole implements OnModuleInit {
   constructor(
     private readonly roundsService: RoundsService,
     private readonly seasonsService: SeasonsService,
     private readonly leaguesService: LeaguesService,
+    private schedulerRegistry: SchedulerRegistry,
   ) {}
 
-  @Command({
-    command: 'crawl-rounds',
-  })
+  onModuleInit() {
+    this.schedulerRegistry.addCronJob(
+      'roundSchedule',
+      new CronJob(process.env.CRONT_ROUND, this.roundSchedule),
+    );
+  }
+
   async roundSchedule() {
     const leagueIds = process.env.SPORT_LEAGUES.split(',').map((x) =>
       Number(x),
