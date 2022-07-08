@@ -477,29 +477,11 @@ export class ContractConsole {
     command: 'crawl-all <statingBlock>',
   })
   async crawlAll(statingBlock = 0): Promise<void> {
-    const contract1 = new this.web3.eth.Contract(
-      eventABI as AbiItem[],
-      process.env.EVENT_PROXY,
-    );
-
-    const contract2 = new this.web3.eth.Contract(
-      predictionABI as AbiItem[],
-      process.env.PREDICTION_PROXY,
-    );
-
     await crawlSmartcontractEventsBatch(
       Number(statingBlock),
       this.web3,
       this.latestBlockService,
-      [
-        contract2,
-        contract1,
-        contract2,
-        contract2,
-        contract2,
-        contract2,
-        contract2,
-      ],
+      [false, true, false, false, false, false, false],
       [
         ContractEvent.EventCreated,
         ContractEvent.EventResultUpdated,

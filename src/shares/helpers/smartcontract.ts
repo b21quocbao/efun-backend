@@ -1,9 +1,14 @@
+// eslint-disable-next-line
+const Web3 = require('web3');
 import {
   BLOCK_TIME,
   LatestBlockNetwork,
   STEP_BLOCK,
 } from 'src/modules/latest-block/latest-block.const';
 import { LatestBlockService } from 'src/modules/latest-block/latest-block.service';
+import { eventABI } from '../contracts/abi/eventABI';
+import { predictionABI } from '../contracts/abi/predictionABI';
+import { AbiItem } from 'web3-utils';
 
 async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -58,13 +63,37 @@ export async function crawlSmartcontractEventsBatch(
     'crawl-all',
   );
   if (latestBlock.block) cursor = Number(latestBlock.block);
+  let alter = false;
 
   while (true) {
+    const hour = new Date().getUTCHours();
+    const day = new Date().getUTCDay();
+    if (
+      process.env.RPC_URL_2 &&
+      process.env.RPC_URL_2.length &&
+      (hour >= 12 || day == 6 || day == 0)
+    ) {
+      if (!alter) {
+        web3.setProvider(
+          new Web3.providers.HttpProvider(process.env.RPC_URL_2),
+        );
+        alter = true;
+      }
+    } else {
+      if (alter) {
+        web3.setProvider(new Web3.providers.HttpProvider(process.env.RPC_URL));
+        alter = false;
+      }
+    }
+
     const to = Math.min(cursor + STEP_BLOCK, await web3.eth.getBlockNumber());
     const params = { fromBlock: cursor + 1, toBlock: to };
     const eventsBatch = [];
     for (let idx = 0; idx < contracts.length; ++idx) {
-      const contract = contracts[idx];
+      const contract = new this.web3.eth.Contract(
+        contracts[idx] ? (eventABI as AbiItem[]) : (predictionABI as AbiItem[]),
+        contracts[idx] ? process.env.EVENT_PROXY : process.env.PREDICTION_PROXY,
+      );
       eventsBatch.push(await contract.getPastEvents(eventNames[idx], params));
     }
 
