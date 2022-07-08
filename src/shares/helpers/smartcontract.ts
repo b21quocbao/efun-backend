@@ -74,6 +74,7 @@ export async function crawlSmartcontractEventsBatch(
       (hour >= 12 || day == 6 || day == 0)
     ) {
       if (!alter) {
+        console.log(`Alter to ${process.env.RPC_URL_2} at ${new Date()}`);
         web3.setProvider(
           new Web3.providers.HttpProvider(process.env.RPC_URL_2),
         );
@@ -81,6 +82,7 @@ export async function crawlSmartcontractEventsBatch(
       }
     } else {
       if (alter) {
+        console.log(`Alter to ${process.env.RPC_URL} at ${new Date()}`);
         web3.setProvider(new Web3.providers.HttpProvider(process.env.RPC_URL));
         alter = false;
       }
@@ -90,7 +92,7 @@ export async function crawlSmartcontractEventsBatch(
     const params = { fromBlock: cursor + 1, toBlock: to };
     const eventsBatch = [];
     for (let idx = 0; idx < contracts.length; ++idx) {
-      const contract = new this.web3.eth.Contract(
+      const contract = new web3.eth.Contract(
         contracts[idx] ? (eventABI as AbiItem[]) : (predictionABI as AbiItem[]),
         contracts[idx] ? process.env.EVENT_PROXY : process.env.PREDICTION_PROXY,
       );
