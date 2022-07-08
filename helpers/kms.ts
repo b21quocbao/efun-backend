@@ -24,7 +24,7 @@ export class KMSSigner {
   sig: any;
   recoveredPubAddr: any;
   constructor(key_id: string, providerURL: string) {
-    this.kms = new KMSClient({});
+    this.kms = new KMSClient({ region: process.env.AWS_REGION });
 
     this.web3 = new Web3(new Web3.providers.HttpProvider(providerURL));
     this.keyId = key_id;
