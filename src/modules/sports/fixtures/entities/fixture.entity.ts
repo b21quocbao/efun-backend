@@ -129,6 +129,9 @@ export class FixtureEntity {
   @Column({ nullable: true })
   oddMeta?: string;
 
+  @Column({ default: new Date() })
+  lastUpdateOdd: Date;
+
   @OneToMany(() => GoalEntity, (goal) => goal.fixture)
   goals: GoalEntity[];
 

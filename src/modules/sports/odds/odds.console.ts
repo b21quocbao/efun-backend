@@ -66,8 +66,9 @@ export class OddsConsole implements OnModuleInit {
           bcResult: false,
         },
         order: {
-          timestamp: 'ASC',
+          lastUpdateOdd: 'ASC',
         },
+        take: 30,
       });
 
       if (fixtures.length > 0) {
@@ -86,6 +87,7 @@ export class OddsConsole implements OnModuleInit {
           if (odds.data && odds.data.response) {
             await this.fixtureRepository.update(fixture.id, {
               oddMeta: JSON.stringify(odds.data),
+              lastUpdateOdd: new Date(),
             });
           }
         }
