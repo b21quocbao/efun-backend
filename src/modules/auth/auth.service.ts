@@ -17,22 +17,27 @@ export class AuthService {
   async validateUser(
     address: string,
     signature: string,
+    isAdmin?: boolean,
   ): Promise<Partial<UserEntity>> {
     try {
-      let sameAddress = false;
-      const payload: any = jwt.verify(
-        signature,
-        '4560ede97f76ee16cc61e81f4b406b04',
-      );
-
-      if (payload.username == address) {
-        sameAddress = true;
-      }
-      if (!sameAddress) {
-        throw new HttpException(
-          { key: 'WRONG_SIGNATURE' },
-          HttpStatus.BAD_REQUEST,
+      if (isAdmin) {
+        await this.adminLogin(address, signature);
+      } else {
+        let sameAddress = false;
+        const payload: any = jwt.verify(
+          signature,
+          '4560ede97f76ee16cc61e81f4b406b04',
         );
+
+        if (payload.username == address) {
+          sameAddress = true;
+        }
+        if (!sameAddress) {
+          throw new HttpException(
+            { key: 'WRONG_SIGNATURE' },
+            HttpStatus.BAD_REQUEST,
+          );
+        }
       }
     } catch (err) {
       throw new HttpException(
@@ -125,6 +130,13 @@ export class AuthService {
     return {
       accessToken: this.jwtService.sign(payload),
     };
+  }
+
+  async adminLogin(address: string, signature: string) {
+    const user = await this.userService.findByAddress(address);
+    if (!this.comparePassword(signature, user.password)) {
+      throw new Error();
+    }
   }
 
   private comparePassword(password: string, hashPassword: string) {

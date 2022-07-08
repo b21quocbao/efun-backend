@@ -84,8 +84,9 @@ export class OddsConsole implements OnModuleInit {
           );
 
           if (odds.data && odds.data.response) {
-            fixture.oddMeta = JSON.stringify(odds.data);
-            await this.fixtureRepository.save(fixture);
+            await this.fixtureRepository.update(fixture.id, {
+              oddMeta: JSON.stringify(odds.data),
+            });
           }
         }
       }

@@ -13,4 +13,11 @@ export class LoginUserDto {
   })
   @IsNotEmpty()
   readonly password: string;
+
+  @ApiProperty({
+    type: Boolean,
+  })
+  @IsOptional()
+  @IsBoolean()
+  readonly isAdmin?: boolean;
 }

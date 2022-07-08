@@ -47,6 +47,9 @@ export class UserEntity {
   isBlocked: boolean;
 
   @Column({ nullable: true })
+  password?: string;
+
+  @Column({ nullable: true })
   country?: string;
 
   @Column({ nullable: true })

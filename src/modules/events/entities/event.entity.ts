@@ -138,6 +138,12 @@ export class EventEntity {
   @Column({ default: '' })
   metadata: string;
 
+  @Column({ default: false })
+  isBlock: boolean;
+
+  @Column({ nullable: true })
+  finalTime: Date;
+
   @CreateDateColumn()
   createdAt: Date;
 

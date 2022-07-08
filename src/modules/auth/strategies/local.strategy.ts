@@ -16,7 +16,12 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     address: string,
     signature: string,
   ): Promise<Partial<UserEntity>> {
-    const user = await this.authService.validateUser(address, signature);
+    const { isAdmin } = req.body;
+    const user = await this.authService.validateUser(
+      address,
+      signature,
+      isAdmin,
+    );
     if (!user) {
       throw new UnauthorizedException();
     }

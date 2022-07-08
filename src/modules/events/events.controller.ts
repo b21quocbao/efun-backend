@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { EventsService } from './events.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Response } from 'src/shares/interceptors/response.interceptor';
@@ -7,6 +16,8 @@ import { GetAllEventDto, GetOtherEventDto } from './dto/get-event.dto';
 import { UpdateResultProofDto } from './dto/update-result-proof.dto';
 import { UpdateStreamUrlDto } from './dto/update-stream-url.dto';
 import { UpdateScoresDto } from './dto/update-scores.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuardAdmin } from 'src/shares/decorators/is-admin.decorator';
 
 @ApiTags('Events')
 @Controller('events')
@@ -46,6 +57,18 @@ export class EventsController {
       +id,
       updateResultProofDto.resultProofUrl,
     );
+  }
+
+  @Put('block-event/:id')
+  @UseGuards(JwtAuthGuard, RolesGuardAdmin)
+  async blockEvent(@Param('id') id: string): Promise<void> {
+    return this.eventsService.blockEvent(+id);
+  }
+
+  @Put('unblock-event/:id')
+  @UseGuards(JwtAuthGuard, RolesGuardAdmin)
+  async unblockEvent(@Param('id') id: string): Promise<void> {
+    return this.eventsService.unblockEvent(+id);
   }
 
   @Put('streamUrl/:id')

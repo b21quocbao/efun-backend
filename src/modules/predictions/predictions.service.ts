@@ -102,7 +102,7 @@ export class PredictionsService {
             : 'Unknown';
 
           if (
-            new Date(prediction.endTime).getTime() + 2 * 86400 * 1000 <
+            new Date(prediction.endTime).getTime() + 172800 * 1000 <
               Date.now() &&
             prediction.eventStatus != EventStatus.FINISH
           ) {
@@ -117,6 +117,7 @@ export class PredictionsService {
               prediction.userAddress,
               prediction.token,
               prediction.predictNum,
+              false,
             )
             .call()
             .catch(() => '0');
@@ -124,11 +125,12 @@ export class PredictionsService {
             status = 'Claim';
             try {
               estimateReward = await this.predictionContract.methods
-                .validateEstimateReward(
+                .estimateReward(
                   prediction.eventId,
                   prediction.userAddress,
                   prediction.token,
                   prediction.predictNum,
+                  true,
                 )
                 .call();
             } catch (err) {

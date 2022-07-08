@@ -1,6 +1,6 @@
 // eslint-disable-next-line
 const Web3 = require('web3');
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Response } from 'src/shares/interceptors/response.interceptor';
 import { Brackets, MoreThanOrEqual, Not, Repository } from 'typeorm';
@@ -15,12 +15,17 @@ import { PredictionsService } from '../predictions/predictions.service';
 import { PredictionEntity } from '../predictions/entities/prediction.entity';
 import { predictionABI } from 'src/shares/contracts/abi/predictionABI';
 import { plainToClass } from 'class-transformer';
+import { eventABI } from 'src/shares/contracts/abi/eventABI';
+import { TxData } from 'ethereumjs-tx';
+import { KMSSigner } from 'helpers/kms';
 BigNumber.config({ EXPONENTIAL_AT: 100 });
 
 @Injectable()
-export class EventsService {
+export class EventsService implements OnModuleInit {
   private web3;
   private predictionContract;
+  private eventContract;
+  private signer: KMSSigner;
 
   constructor(
     @InjectRepository(EventEntity)
@@ -34,6 +39,15 @@ export class EventsService {
       predictionABI,
       process.env.PREDICTION_PROXY,
     );
+    this.eventContract = new this.web3.eth.Contract(
+      eventABI,
+      process.env.EVENT_PROXY,
+    );
+    this.signer = new KMSSigner(process.env.KMS_ID, process.env.RPC_URL);
+  }
+
+  async onModuleInit() {
+    await this.signer.setMetadata();
   }
 
   async create(
@@ -271,6 +285,38 @@ export class EventsService {
     scoreTwo: number,
   ): Promise<void> {
     await this.eventRepository.update(id, { totalScore, scoreOne, scoreTwo });
+  }
+
+  async blockEvent(id: number): Promise<void> {
+    const encodeAbi = await this.eventContract.methods
+      .blockEvent(id)
+      .encodeABI();
+
+    // The payload we want to sign with the private
+    const payload: TxData = {
+      gasPrice: Number(await this.web3.eth.getGasPrice()),
+      gasLimit: 160000,
+      to: process.env.EVENT_PROXY,
+      data: encodeAbi,
+    };
+    await this.signer.sendPayload(payload);
+    await this.update(id, { isBlock: true });
+  }
+
+  async unblockEvent(id: number): Promise<void> {
+    const encodeAbi = await this.eventContract.methods
+      .unblockEvent(id)
+      .encodeABI();
+
+    // The payload we want to sign with the private
+    const payload: TxData = {
+      gasPrice: Number(await this.web3.eth.getGasPrice()),
+      gasLimit: 160000,
+      to: process.env.EVENT_PROXY,
+      data: encodeAbi,
+    };
+    await this.signer.sendPayload(payload);
+    await this.update(id, { isBlock: false });
   }
 
   async remove(id: number): Promise<void> {

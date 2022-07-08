@@ -6,5 +6,7 @@ export class UpdateEventDto extends PartialType(CreateEventDto) {
   status?: EventStatus;
   userId?: number;
   result?: string;
+  isBlock?: boolean;
+  finalTime?: Date;
   proofOfResult?: string;
 }
