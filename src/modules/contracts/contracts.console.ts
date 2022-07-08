@@ -44,65 +44,71 @@ export class ContractConsole {
     this.web3.setProvider(new Web3.providers.HttpProvider(process.env.RPC_URL));
 
     this.eventHandler1 = async (event): Promise<void> => {
-      console.log(`Processing event ${JSON.stringify(event.returnValues)}`);
-      console.log(`Handle item with id ${event.returnValues.idx}`);
+      try {
+        console.log(`Processing event ${JSON.stringify(event.returnValues)}`);
+        console.log(`Handle item with id ${event.returnValues.idx}`);
 
-      const user = await this.usersService.findByAddress(
-        event.returnValues.creator,
-      );
-      const eventEntity = await this.eventsService.findOne(
-        event.returnValues.idx,
-      );
-      const receipt = await this.web3.eth.getTransactionReceipt(
-        event.transactionHash,
-      );
-      let transactionEntity = await this.transactionsService.findOneByHash(
-        event.transactionHash,
-      );
+        const user = await this.usersService.findByAddress(
+          event.returnValues.creator,
+        );
+        const eventEntity = await this.eventsService.findOne(
+          event.returnValues.idx,
+        );
+        const receipt = await this.web3.eth.getTransactionReceipt(
+          event.transactionHash,
+        );
+        let transactionEntity = await this.transactionsService.findOneByHash(
+          event.transactionHash,
+        );
 
-      if (user && !eventEntity) {
-        if (!transactionEntity) {
-          transactionEntity = await this.transactionsService.create({
-            contractAddress: event.address,
-            gas: receipt?.gasUsed,
-            receipt: JSON.stringify(receipt),
-            blockNumber: receipt?.blockNumber,
-            walletAddress: receipt?.from,
-            txId: event.transactionHash,
+        if (user && !eventEntity) {
+          if (!transactionEntity) {
+            transactionEntity = await this.transactionsService.create({
+              contractAddress: event.address,
+              gas: receipt?.gasUsed,
+              receipt: JSON.stringify(receipt),
+              blockNumber: receipt?.blockNumber,
+              walletAddress: receipt?.from,
+              txId: event.transactionHash,
+            });
+          }
+          const { data: result } = await axios.get(event.returnValues.datas);
+
+          await this.eventsService.create(user.id, {
+            id: event.returnValues.idx,
+            startTime: new Date(event.returnValues.startTime * 1000),
+            deadline: new Date(event.returnValues.deadlineTime * 1000),
+            endTime: new Date(event.returnValues.endTime * 1000),
+            odds: JSON.stringify(event.returnValues.odds),
+            transactionId: transactionEntity.id,
+            options: result.options,
+            name: result.name,
+            thumbnailUrl: result.thumbnailUrl,
+            bannerUrl: result.bannerUrl.length ? result.bannerUrl : undefined,
+            categoryId: Number(result.categoryId),
+            pro: event.returnValues.pro
+              ? Number(event.returnValues.pro)
+              : undefined,
+            fixtureId:
+              result.fixtureId && result.fixtureId.length
+                ? Number(result.fixtureId)
+                : undefined,
+            subCategoryId: result.subCategoryId.length
+              ? Number(result.subCategoryId)
+              : undefined,
+            competitionId: Number(result.competitionId),
+            type: result.type,
+            marketType: result.marketType.length
+              ? result.marketType
+              : undefined,
+            description: result.description,
+            metadata: result.metadata,
+            shortDescription: result.shortDescription,
+            streamUrl: result.streamUrl.length ? result.streamUrl : undefined,
           });
         }
-        const { data: result } = await axios.get(event.returnValues.datas);
-
-        await this.eventsService.create(user.id, {
-          id: event.returnValues.idx,
-          startTime: new Date(event.returnValues.startTime * 1000),
-          deadline: new Date(event.returnValues.deadlineTime * 1000),
-          endTime: new Date(event.returnValues.endTime * 1000),
-          odds: JSON.stringify(event.returnValues.odds),
-          transactionId: transactionEntity.id,
-          options: result.options,
-          name: result.name,
-          thumbnailUrl: result.thumbnailUrl,
-          bannerUrl: result.bannerUrl.length ? result.bannerUrl : undefined,
-          categoryId: Number(result.categoryId),
-          pro: event.returnValues.pro
-            ? Number(event.returnValues.pro)
-            : undefined,
-          fixtureId:
-            result.fixtureId && result.fixtureId.length
-              ? Number(result.fixtureId)
-              : undefined,
-          subCategoryId: result.subCategoryId.length
-            ? Number(result.subCategoryId)
-            : undefined,
-          competitionId: Number(result.competitionId),
-          type: result.type,
-          marketType: result.marketType.length ? result.marketType : undefined,
-          description: result.description,
-          metadata: result.metadata,
-          shortDescription: result.shortDescription,
-          streamUrl: result.streamUrl.length ? result.streamUrl : undefined,
-        });
+      } catch (err) {
+        console.error(err);
       }
     };
 
