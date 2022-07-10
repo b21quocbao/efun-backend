@@ -64,6 +64,8 @@ export async function crawlSmartcontractEventsBatch(
   );
   if (latestBlock.block) cursor = Number(latestBlock.block);
   let alter = false;
+  let switched = true;
+  let eventContract, predictionContract;
 
   while (true) {
     const hour = new Date().getUTCHours();
@@ -79,23 +81,33 @@ export async function crawlSmartcontractEventsBatch(
           new Web3.providers.HttpProvider(process.env.RPC_URL_2),
         );
         alter = true;
+        switched = true;
       }
     } else {
       if (alter) {
         console.log(`Alter to ${process.env.RPC_URL} at ${new Date()}`);
         web3.setProvider(new Web3.providers.HttpProvider(process.env.RPC_URL));
         alter = false;
+        switched = true;
       }
+    }
+    if (switched) {
+      eventContract = new web3.eth.Contract(
+        eventABI as AbiItem[],
+        process.env.EVENT_PROXY,
+      );
+      predictionContract = new web3.eth.Contract(
+        predictionABI as AbiItem[],
+        process.env.PREDICTION_PROXY,
+      );
+      switched = false;
     }
 
     const to = Math.min(cursor + STEP_BLOCK, await web3.eth.getBlockNumber());
     const params = { fromBlock: cursor + 1, toBlock: to };
     const eventsBatch = [];
     for (let idx = 0; idx < contracts.length; ++idx) {
-      const contract = new web3.eth.Contract(
-        contracts[idx] ? (eventABI as AbiItem[]) : (predictionABI as AbiItem[]),
-        contracts[idx] ? process.env.EVENT_PROXY : process.env.PREDICTION_PROXY,
-      );
+      const contract = contracts[idx] ? eventContract : predictionContract;
       eventsBatch.push(await contract.getPastEvents(eventNames[idx], params));
     }
 
