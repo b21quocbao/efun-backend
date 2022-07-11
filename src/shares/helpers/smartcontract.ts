@@ -73,7 +73,7 @@ export async function crawlSmartcontractEventsBatch(
     if (
       process.env.RPC_URL_2 &&
       process.env.RPC_URL_2.length &&
-      (hour >= 12 || day == 6 || day == 0)
+      (hour >= 11 || day == 6 || day == 0 || hour <= 1)
     ) {
       if (!alter) {
         console.log(`Alter to ${process.env.RPC_URL_2} at ${new Date()}`);
