@@ -25,8 +25,7 @@ export class ReportEntity {
   @ManyToOne(() => UserEntity, (user) => user.reports)
   user: UserEntity;
 
-  @OneToOne(() => PredictionEntity)
-  @JoinColumn()
+  @ManyToOne(() => PredictionEntity, (prediction) => prediction.reports)
   prediction: PredictionEntity;
 
   @Column()

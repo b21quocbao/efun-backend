@@ -1,4 +1,5 @@
 import { EventEntity } from 'src/modules/events/entities/event.entity';
+import { ReportEntity } from 'src/modules/reports/entities/report.entity';
 import { TransactionEntity } from 'src/modules/transactions/entities/transaction.entity';
 import { UserEntity } from 'src/modules/users/entities/user.entity';
 import {
@@ -11,6 +12,7 @@ import {
   OneToOne,
   JoinColumn,
   Unique,
+  OneToMany,
 } from 'typeorm';
 
 @Entity('predictions')
@@ -24,6 +26,9 @@ export class PredictionEntity {
 
   @ManyToOne(() => UserEntity, (user) => user.predictions)
   user: UserEntity;
+
+  @OneToMany(() => ReportEntity, (report) => report.prediction)
+  reports: ReportEntity[];
 
   @OneToOne(() => TransactionEntity)
   @JoinColumn()

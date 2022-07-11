@@ -83,7 +83,7 @@ export class EventsService implements OnModuleInit {
       .leftJoin('events.user', 'user')
       .leftJoin('events.competition', 'competition')
       .leftJoin('events.pools', 'pools')
-      .leftJoin('events.reports', 'reports')
+      .leftJoin('predictions.reports', 'reports')
       .select([
         'events.*',
         'array_agg(pools.amount) as "poolAmounts"',
@@ -94,6 +94,7 @@ export class EventsService implements OnModuleInit {
         '"subCategory".name as "subCategory"',
         'user.isVerified as "isUserVerified"',
         'user.address as address',
+        'array_agg(distinct reports.id) as reports',
         'array_agg(distinct predictions.userId) as "participants"',
       ])
       .groupBy('events.id')
@@ -220,6 +221,7 @@ export class EventsService implements OnModuleInit {
       data: processedRs.map((row) => {
         return {
           ...row,
+          reports: row.participants.filter((x: any) => x !== null),
           participants: row.participants.filter((x: any) => x !== null),
           numParticipants: row.participants.filter((x: any) => x !== null)
             .length,
