@@ -70,6 +70,7 @@ export class EventsService implements OnModuleInit {
       status,
       eventId,
       outOfTime,
+      canBlock,
       outOfEndTime,
       subCategoryId,
       competitionId,
@@ -137,6 +138,20 @@ export class EventsService implements OnModuleInit {
     }
     if (userId) {
       qb.andWhere('events.userId = :userId', { userId });
+    }
+    if (canBlock === true || canBlock === false) {
+      if (canBlock) {
+        qb.andWhere('events.finalTime >= NOW()');
+        qb.andWhere("events.finalTime <= NOW() + interval '1 day'");
+      } else {
+        qb.andWhere(
+          new Brackets((qb) => {
+            qb.andWhere('events.finalTime < NOW()')
+              .orWhere("events.finalTime > NOW() + interval '1 day'")
+              .orWhere('events.finalTime is null');
+          }),
+        );
+      }
     }
     if (outOfTime === true || outOfTime === false) {
       qb.andWhere(
