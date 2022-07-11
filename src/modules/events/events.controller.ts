@@ -38,11 +38,9 @@ export class EventsController {
     return this.eventsService.findOtherEvents(request);
   }
 
-  @Get('results')
-  async getResults(@Query() request: GetEventResultDto, @Body() body: any) {
-    console.log(body, 'Line #43 events.controller.ts');
-    console.log(request, 'Line #43 events.controller.ts');
-    return this.eventsService.getResults(request.eventIds);
+  @Post('results')
+  async getResults(@Body() body: GetEventResultDto): Promise<string> {
+    return this.eventsService.getResults(body.eventIds);
   }
 
   @Get(':id')

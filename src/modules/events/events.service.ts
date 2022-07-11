@@ -18,6 +18,7 @@ import { plainToClass } from 'class-transformer';
 import { eventABI } from 'src/shares/contracts/abi/eventABI';
 import { TxData } from 'ethereumjs-tx';
 import { KMSSigner } from 'helpers/kms';
+import { getResult } from 'helpers/get-result';
 BigNumber.config({ EXPONENTIAL_AT: 100 });
 
 @Injectable()
@@ -84,6 +85,7 @@ export class EventsService implements OnModuleInit {
       .leftJoin('events.user', 'user')
       .leftJoin('events.competition', 'competition')
       .leftJoin('events.pools', 'pools')
+      .leftJoin('events.fixture', 'fixture')
       .leftJoin('predictions.reports', 'reports')
       .select([
         'events.*',
@@ -92,6 +94,7 @@ export class EventsService implements OnModuleInit {
         'array_agg(pools."claimAmount") as "poolClaimAmounts"',
         'competition.name as competition',
         'category.name as category',
+        'fixture.goalsMeta as "goalsMeta"',
         '"subCategory".name as "subCategory"',
         'user.isVerified as "isUserVerified"',
         'user.address as address',
@@ -103,6 +106,7 @@ export class EventsService implements OnModuleInit {
       .groupBy('events.id')
       .addGroupBy('competition.id')
       .addGroupBy('category.id')
+      .addGroupBy('fixture.id')
       .addGroupBy('"subCategory".id')
       .addGroupBy('user.id');
     if (status) {
@@ -369,7 +373,17 @@ export class EventsService implements OnModuleInit {
     };
   }
 
-  async getResults(ids: string[]) {
-    console.log(ids, 'Line #356 events.service.ts');
+  async getResults(data: string): Promise<string> {
+    const eventIds = data.split(',');
+    eventIds.pop();
+    const arr = [];
+    for (const eventId of eventIds) {
+      const { data } = await this.findAll({ eventId: +eventId });
+      const event = data[0];
+      const goalsMeta = JSON.parse(event.goalsMeta);
+      arr.push(+eventId);
+      arr.push(await getResult(event, goalsMeta.home, goalsMeta.away));
+    }
+    return JSON.stringify(arr);
   }
 }
