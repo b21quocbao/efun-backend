@@ -83,6 +83,7 @@ export class EventsService implements OnModuleInit {
       .leftJoin('events.user', 'user')
       .leftJoin('events.competition', 'competition')
       .leftJoin('events.pools', 'pools')
+      .leftJoin('events.reports', 'reports')
       .select([
         'events.*',
         'array_agg(pools.amount) as "poolAmounts"',
