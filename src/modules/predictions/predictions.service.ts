@@ -53,8 +53,10 @@ export class PredictionsService {
       .leftJoin('event.user', 'user')
       .leftJoin('event.category', 'category')
       .leftJoin('event.subCategory', 'subCategory')
+      .leftJoin('predictions.reports', 'reports')
       .select([
         'predictions.*',
+        'reports.id as "reportId"',
         'event.id as "eventId"',
         'event.name as name',
         'event.endTime as "endTime"',
@@ -64,6 +66,8 @@ export class PredictionsService {
         'event.marketType as "marketType"',
         'event.metadata as metadata',
         'event.status as "eventStatus"',
+        'event.finalTime as "eventFinalTime"',
+        'event.isBlock as "eventIsBlock"',
         'event.result as "eventResult"',
         'event.options as "eventOptions"',
         'category.name as category',
@@ -74,7 +78,6 @@ export class PredictionsService {
         'transaction."txId" as "transactionNumber"',
         'transaction."blockNumber" as "blockNumber"',
       ]);
-
     if (pageSize && pageNumber) {
       qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
     }
