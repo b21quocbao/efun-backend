@@ -18,6 +18,7 @@ import { UpdateStreamUrlDto } from './dto/update-stream-url.dto';
 import { UpdateScoresDto } from './dto/update-scores.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuardAdmin } from 'src/shares/decorators/is-admin.decorator';
+import { GetEventResultDto } from './dto/get-event-result.dto';
 
 @ApiTags('Events')
 @Controller('events')
@@ -35,6 +36,11 @@ export class EventsController {
   @Get('others')
   async findOtherEvent(@Query() request: GetOtherEventDto) {
     return this.eventsService.findOtherEvents(request);
+  }
+
+  @Get('results')
+  async getResults(@Query() request: GetEventResultDto) {
+    return this.eventsService.getResults(request.eventIds);
   }
 
   @Get(':id')

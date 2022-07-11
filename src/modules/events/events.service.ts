@@ -95,6 +95,8 @@ export class EventsService implements OnModuleInit {
         'user.isVerified as "isUserVerified"',
         'user.address as address',
         'array_agg(distinct reports.id) as reports',
+        'array_agg(distinct reports.content) as "reportContents"',
+        'array_agg(distinct reports.status) as "reportStatus"',
         'array_agg(distinct predictions.userId) as "participants"',
       ])
       .groupBy('events.id')
@@ -350,5 +352,9 @@ export class EventsService implements OnModuleInit {
       pageSize: Number(pageSize),
       total,
     };
+  }
+
+  async getResults(ids: string[]) {
+    console.log(ids, 'Line #356 events.service.ts');
   }
 }
