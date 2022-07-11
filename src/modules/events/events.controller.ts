@@ -40,6 +40,7 @@ export class EventsController {
 
   @Get('results')
   async getResults(@Query() request: GetEventResultDto) {
+    console.log(request, 'Line #43 events.controller.ts');
     return this.eventsService.getResults(request.eventIds);
   }
 
