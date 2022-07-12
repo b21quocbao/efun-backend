@@ -20,7 +20,7 @@ export class PoolEntity {
 
   @ManyToOne(() => EventEntity, (event) => event.pools)
   @JoinColumn()
-  event: EventEntity;
+  event?: EventEntity;
 
   @ManyToOne(() => TransactionEntity)
   @JoinColumn({ name: 'transactionId' })
@@ -33,8 +33,11 @@ export class PoolEntity {
   @Column()
   token: string;
 
-  @Column()
-  eventId: number;
+  @Column({ nullable: true })
+  eventId?: number;
+
+  @Column({ default: false })
+  affiliate: boolean;
 
   @Column()
   transactionId: number;

@@ -50,6 +50,14 @@ export class PoolsService {
       .getOne();
   }
 
+  async findByAffiliate(token: string): Promise<PoolEntity> {
+    return this.poolRepository
+      .createQueryBuilder('pools')
+      .where('pools."affiliate" = :affiliate', { affiliate: true })
+      .andWhere('pools.token = :token', { token })
+      .getOne();
+  }
+
   async totalAmount(eventId: number, token: string): Promise<number> {
     const qb = this.poolRepository
       .createQueryBuilder('pools')

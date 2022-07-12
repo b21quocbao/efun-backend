@@ -86,9 +86,7 @@ export class ContractConsole {
             thumbnailUrl: result.thumbnailUrl,
             bannerUrl: result.bannerUrl.length ? result.bannerUrl : undefined,
             categoryId: Number(result.categoryId),
-            pro: event.returnValues.pro
-              ? Number(event.returnValues.pro)
-              : undefined,
+            pro: event.returnValues.pro,
             fixtureId:
               result.fixtureId && result.fixtureId.length
                 ? Number(result.fixtureId)
@@ -238,6 +236,37 @@ export class ContractConsole {
       let transactionEntity = await this.transactionsService.findOneByHash(
         event.transactionHash,
       );
+
+      if (event.returnValues.eventId == 0) {
+        const pool = await this.poolsService.findByAffiliate(
+          event.returnValues.token,
+        );
+        if (!transactionEntity) {
+          transactionEntity = await this.transactionsService.create({
+            contractAddress: event.address,
+            gas: receipt?.gasUsed,
+            receipt: JSON.stringify(receipt),
+            blockNumber: receipt?.blockNumber,
+            walletAddress: receipt?.from,
+            txId: event.transactionHash,
+          });
+        }
+
+        if (pool) {
+          await this.poolsService.update(pool.id, {
+            amount: event.returnValues.amount,
+          });
+        } else {
+          await this.poolsService.create({
+            affiliate: true,
+            transactionId: transactionEntity.id,
+            token: event.returnValues.token,
+            amount: event.returnValues.amount,
+          });
+        }
+        return;
+      }
+
       const eventEntity = await this.eventsService.findOne(
         event.returnValues.eventId,
       );
