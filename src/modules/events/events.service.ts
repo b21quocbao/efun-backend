@@ -373,7 +373,7 @@ export class EventsService implements OnModuleInit {
     };
   }
 
-  async getResults(data: string): Promise<string> {
+  async getResults(data: string): Promise<{ data: string }> {
     const eventIds = data.split(',');
     eventIds.pop();
     const arr = [];
@@ -388,6 +388,6 @@ export class EventsService implements OnModuleInit {
       const goalsMeta = JSON.parse(event.goalsMeta);
       arr.push(await getResult(event, goalsMeta.home, goalsMeta.away));
     }
-    return arr.join(',');
+    return { data: arr.join(',') + ',' };
   }
 }

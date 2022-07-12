@@ -39,7 +39,7 @@ export class EventsController {
   }
 
   @Post('results')
-  async getResults(@Body() body: GetEventResultDto): Promise<string> {
+  async getResults(@Body() body: GetEventResultDto): Promise<{ data: string }> {
     return this.eventsService.getResults(body.eventIds);
   }
 
