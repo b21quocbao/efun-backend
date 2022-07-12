@@ -89,5 +89,5 @@ export async function getResult(
       Number(scoreTeamTwo),
     );
   }
-  return result;
+  return result + 1;
 }

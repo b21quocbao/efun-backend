@@ -378,12 +378,16 @@ export class EventsService implements OnModuleInit {
     eventIds.pop();
     const arr = [];
     for (const eventId of eventIds) {
+      arr.push(+eventId);
       const { data } = await this.findAll({ eventId: +eventId });
       const event = data[0];
+      if (!event || !event.goalsMeta) {
+        arr.push(0);
+        continue;
+      }
       const goalsMeta = JSON.parse(event.goalsMeta);
-      arr.push(+eventId);
       arr.push(await getResult(event, goalsMeta.home, goalsMeta.away));
     }
-    return JSON.stringify(arr);
+    return arr.join(',');
   }
 }
