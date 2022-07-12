@@ -144,6 +144,9 @@ export class EventEntity {
   @Column({ nullable: true })
   finalTime: Date;
 
+  @Column({ nullable: true })
+  claimTime: Date;
+
   @CreateDateColumn()
   createdAt: Date;
 

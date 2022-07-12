@@ -8,5 +8,6 @@ export class UpdateEventDto extends PartialType(CreateEventDto) {
   result?: string;
   isBlock?: boolean;
   finalTime?: Date;
+  claimTime?: Date;
   proofOfResult?: string;
 }

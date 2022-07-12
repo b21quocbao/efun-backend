@@ -145,13 +145,13 @@ export class EventsService implements OnModuleInit {
     }
     if (canBlock === true || canBlock === false) {
       if (canBlock) {
-        qb.andWhere('events.finalTime >= NOW()');
-        qb.andWhere("events.finalTime <= NOW() + interval '1 day'");
+        qb.andWhere('events.finalTime <= NOW()');
+        qb.andWhere('events.claimTime >= NOW()');
       } else {
         qb.andWhere(
           new Brackets((qb) => {
-            qb.andWhere('events.finalTime < NOW()')
-              .orWhere("events.finalTime > NOW() + interval '1 day'")
+            qb.andWhere('events.finalTime > NOW()')
+              .orWhere('events.claimTime < NOW()')
               .orWhere('events.finalTime is null');
           }),
         );

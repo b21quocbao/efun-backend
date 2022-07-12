@@ -67,6 +67,7 @@ export class PredictionsService {
         'event.metadata as metadata',
         'event.status as "eventStatus"',
         'event.finalTime as "eventFinalTime"',
+        'event.claimTime as "eventClaimTime"',
         'event.isBlock as "eventIsBlock"',
         'event.result as "eventResult"',
         'event.options as "eventOptions"',
