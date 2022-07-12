@@ -26,52 +26,6 @@ export const eventABI = [
   {
     anonymous: false,
     inputs: [
-      { indexed: false, internalType: 'uint256', name: 'idx', type: 'uint256' },
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'startTime',
-        type: 'uint256',
-      },
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'deadlineTime',
-        type: 'uint256',
-      },
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'endTime',
-        type: 'uint256',
-      },
-      {
-        indexed: false,
-        internalType: 'address',
-        name: 'helperAddress',
-        type: 'address',
-      },
-      {
-        indexed: false,
-        internalType: 'address',
-        name: 'creator',
-        type: 'address',
-      },
-      {
-        indexed: false,
-        internalType: 'uint256[]',
-        name: 'odds',
-        type: 'uint256[]',
-      },
-      { indexed: false, internalType: 'string', name: 'datas', type: 'string' },
-      { indexed: false, internalType: 'uint256', name: 'pro', type: 'uint256' },
-    ],
-    name: 'EventCreated',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
       {
         indexed: false,
         internalType: 'address',
@@ -152,14 +106,13 @@ export const eventABI = [
   },
   {
     inputs: [
-      { internalType: 'uint256', name: '_startTime', type: 'uint256' },
-      { internalType: 'uint256', name: '_deadlineTime', type: 'uint256' },
-      { internalType: 'uint256', name: '_endTime', type: 'uint256' },
+      { internalType: 'uint256[3]', name: '_times', type: 'uint256[3]' },
       { internalType: 'address', name: '_helperAddress', type: 'address' },
       { internalType: 'uint256[]', name: '_odds', type: 'uint256[]' },
       { internalType: 'string', name: '_datas', type: 'string' },
       { internalType: 'address', name: '_creator', type: 'address' },
       { internalType: 'uint256', name: '_pro', type: 'uint256' },
+      { internalType: 'bool', name: '_affiliate', type: 'bool' },
     ],
     name: 'createSingleEvent',
     outputs: [{ internalType: 'uint256', name: '_idx', type: 'uint256' }],
@@ -186,6 +139,7 @@ export const eventABI = [
       { internalType: 'bool', name: 'isBlock', type: 'bool' },
       { internalType: 'uint256', name: 'finalTime', type: 'uint256' },
       { internalType: 'uint256', name: 'claimTime', type: 'uint256' },
+      { internalType: 'bool', name: 'affiliate', type: 'bool' },
     ],
     stateMutability: 'view',
     type: 'function',
@@ -223,6 +177,7 @@ export const eventABI = [
           { internalType: 'bool', name: 'isBlock', type: 'bool' },
           { internalType: 'uint256', name: 'finalTime', type: 'uint256' },
           { internalType: 'uint256', name: 'claimTime', type: 'uint256' },
+          { internalType: 'bool', name: 'affiliate', type: 'bool' },
         ],
         internalType: 'struct EDataTypes.Event',
         name: '_event',
