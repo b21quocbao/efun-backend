@@ -128,6 +128,9 @@ export class EventEntity {
   @Column({ nullable: true })
   scoreTwo: number;
 
+  @Column({ default: false })
+  affiliate: boolean;
+
   @OneToOne(() => TransactionEntity)
   @JoinColumn()
   transaction?: TransactionEntity;

@@ -103,6 +103,7 @@ export class ContractConsole {
               : undefined,
             description: result.description,
             metadata: result.metadata,
+            affiliate: event.returnValues.affiliate,
             shortDescription: result.shortDescription,
             streamUrl: result.streamUrl.length ? result.streamUrl : undefined,
           });
