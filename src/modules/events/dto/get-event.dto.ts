@@ -71,6 +71,12 @@ export class GetAllEventDto extends PaginationInput {
   @Transform(({ value }) => value.toLowerCase() === 'true')
   @IsOptional()
   @IsBoolean()
+  haveReport?: boolean;
+
+  @ApiPropertyOptional()
+  @Transform(({ value }) => value.toLowerCase() === 'true')
+  @IsOptional()
+  @IsBoolean()
   outOfEndTime?: boolean;
 
   @ApiPropertyOptional()

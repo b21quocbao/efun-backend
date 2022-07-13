@@ -75,6 +75,7 @@ export class EventsService implements OnModuleInit {
       outOfEndTime,
       subCategoryId,
       competitionId,
+      haveReport,
       biggestToken,
     } = plainToClass(GetAllEventDto, request);
     const qb = this.eventRepository
@@ -98,9 +99,7 @@ export class EventsService implements OnModuleInit {
         '"subCategory".name as "subCategory"',
         'user.isVerified as "isUserVerified"',
         'user.address as address',
-        'array_agg(distinct reports.id) as reports',
         'array_agg(distinct reports.content) as "reportContents"',
-        'array_agg(distinct reports.status) as "reportStatus"',
         'array_agg(distinct predictions.userId) as "participants"',
       ])
       .groupBy('events.id')
@@ -127,6 +126,13 @@ export class EventsService implements OnModuleInit {
             });
         }),
       );
+    }
+    if (haveReport === true || haveReport === false) {
+      if (haveReport) {
+        qb.andWhere('reports.id is not null');
+      } else {
+        qb.andWhere('reports.id is null');
+      }
     }
     if (categoryId) {
       qb.andWhere('events.categoryId = :categoryId', { categoryId });
@@ -180,7 +186,7 @@ export class EventsService implements OnModuleInit {
     }
 
     const [rs, total] = await Promise.all([qb.getRawMany(), qb.getCount()]);
-    const processedRs = await Promise.all(
+    let processedRs = await Promise.all(
       rs.map(async (event) => {
         event.poolTokens = event.poolTokens.filter((x: any, index) => {
           if (!x) {
@@ -238,16 +244,17 @@ export class EventsService implements OnModuleInit {
       });
     }
 
+    processedRs = processedRs.map((row) => {
+      return {
+        ...row,
+        reportContents: row.reportContents.filter((x: any) => x !== null),
+        participants: row.participants.filter((x: any) => x !== null),
+        numParticipants: row.participants.filter((x: any) => x !== null).length,
+      };
+    });
+
     return {
-      data: processedRs.map((row) => {
-        return {
-          ...row,
-          reports: row.participants.filter((x: any) => x !== null),
-          participants: row.participants.filter((x: any) => x !== null),
-          numParticipants: row.participants.filter((x: any) => x !== null)
-            .length,
-        };
-      }),
+      data: processedRs,
       pageNumber: Number(pageNumber),
       pageSize: Number(pageSize),
       total: total,
