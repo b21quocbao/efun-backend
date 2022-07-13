@@ -55,7 +55,6 @@ export class PredictionsService {
       .leftJoin('event.subCategory', 'subCategory')
       .select([
         'predictions.*',
-        'reports.id as "reportId"',
         'event.id as "eventId"',
         'event.name as name',
         'event.endTime as "endTime"',
