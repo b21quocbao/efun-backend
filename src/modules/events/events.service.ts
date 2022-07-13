@@ -331,7 +331,7 @@ export class EventsService implements OnModuleInit {
       data: encodeAbi,
     };
     await this.signer.sendPayload(payload);
-    await this.update(id, { isBlock: true });
+    await this.update(id, { isBlock: true, claimTime: new Date() });
   }
 
   async unblockEvent(id: number): Promise<void> {
@@ -347,7 +347,7 @@ export class EventsService implements OnModuleInit {
       data: encodeAbi,
     };
     await this.signer.sendPayload(payload);
-    await this.update(id, { isBlock: false });
+    await this.update(id, { isBlock: false, claimTime: new Date() });
   }
 
   async remove(id: number): Promise<void> {
