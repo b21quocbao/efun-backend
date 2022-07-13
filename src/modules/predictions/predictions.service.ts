@@ -120,9 +120,10 @@ export class PredictionsService {
             : 'Unknown';
 
           if (
-            new Date(prediction.endTime).getTime() + 172800 * 1000 <
+            (new Date(prediction.endTime).getTime() + 172800 * 1000 <
               Date.now() &&
-            prediction.eventStatus != EventStatus.FINISH
+              prediction.eventStatus != EventStatus.FINISH) ||
+            prediction.eventIsBlock
           ) {
             status = prediction.cashBackTransactionId
               ? 'Claimed Cashback'
