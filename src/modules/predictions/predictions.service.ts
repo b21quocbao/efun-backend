@@ -54,6 +54,8 @@ export class PredictionsService {
       .leftJoin('event.category', 'category')
       .leftJoin('event.subCategory', 'subCategory')
       .leftJoin('predictions.report', 'report')
+      .leftJoin('event.predictions', 'predictionss')
+      .leftJoin('predictionss.report', 'reports')
       .select([
         'predictions.*',
         'event.id as "eventId"',
@@ -75,10 +77,19 @@ export class PredictionsService {
         '"subCategory".name as "subCategory"',
         'user.isVerified as "isUserVerified"',
         'user.address as address',
+        'array_agg(distinct reports.content) as "reportContents"',
         '"predictUser".address as "userAddress"',
         'transaction."txId" as "transactionNumber"',
         'transaction."blockNumber" as "blockNumber"',
-      ]);
+      ])
+      .groupBy('predictions.id')
+      .addGroupBy('event.id')
+      .addGroupBy('report.id')
+      .addGroupBy('category.id')
+      .addGroupBy('"subCategory".id')
+      .addGroupBy('user.id')
+      .addGroupBy('"predictUser".id')
+      .addGroupBy('transaction.id');
     if (pageSize && pageNumber) {
       qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
     }
@@ -99,6 +110,9 @@ export class PredictionsService {
     return {
       data: await Promise.all(
         rs.map(async (prediction) => {
+          prediction.reportContents = prediction.reportContents.filter(
+            (x: any) => x !== null,
+          );
           let status = !prediction.eventResult
             ? 'Predicted'
             : isNumber(prediction.rewardTransactionId)
