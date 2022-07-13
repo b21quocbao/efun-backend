@@ -53,6 +53,7 @@ export class PredictionsService {
       .leftJoin('event.user', 'user')
       .leftJoin('event.category', 'category')
       .leftJoin('event.subCategory', 'subCategory')
+      .leftJoin('predictions.report', 'report')
       .select([
         'predictions.*',
         'event.id as "eventId"',
@@ -69,6 +70,7 @@ export class PredictionsService {
         'event.isBlock as "eventIsBlock"',
         'event.result as "eventResult"',
         'event.options as "eventOptions"',
+        'report.content as "reportContent"',
         'category.name as category',
         '"subCategory".name as "subCategory"',
         'user.isVerified as "isUserVerified"',
