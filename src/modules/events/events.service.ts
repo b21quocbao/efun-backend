@@ -87,7 +87,7 @@ export class EventsService implements OnModuleInit {
       .leftJoin('events.competition', 'competition')
       .leftJoin('events.pools', 'pools')
       .leftJoin('events.fixture', 'fixture')
-      .leftJoin('predictions.reports', 'reports')
+      .leftJoin('predictions.report', 'report')
       .select([
         'events.*',
         'array_agg(pools.amount) as "poolAmounts"',
@@ -99,7 +99,7 @@ export class EventsService implements OnModuleInit {
         '"subCategory".name as "subCategory"',
         'user.isVerified as "isUserVerified"',
         'user.address as address',
-        'array_agg(distinct reports.content) as "reportContents"',
+        'array_agg(distinct report.content) as "reportContents"',
         'array_agg(distinct predictions.userId) as "participants"',
       ])
       .groupBy('events.id')
@@ -129,9 +129,9 @@ export class EventsService implements OnModuleInit {
     }
     if (haveReport === true || haveReport === false) {
       if (haveReport) {
-        qb.andWhere('reports.id is not null');
+        qb.andWhere('report.id is not null');
       } else {
-        qb.andWhere('reports.id is null');
+        qb.andWhere('report.id is null');
       }
     }
     if (categoryId) {
