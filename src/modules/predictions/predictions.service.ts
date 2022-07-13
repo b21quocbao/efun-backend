@@ -53,7 +53,6 @@ export class PredictionsService {
       .leftJoin('event.user', 'user')
       .leftJoin('event.category', 'category')
       .leftJoin('event.subCategory', 'subCategory')
-      .leftJoin('predictions.reports', 'reports')
       .select([
         'predictions.*',
         'reports.id as "reportId"',
