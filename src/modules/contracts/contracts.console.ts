@@ -94,7 +94,6 @@ export class ContractConsole {
             subCategoryId: result.subCategoryId.length
               ? Number(result.subCategoryId)
               : undefined,
-            competitionId: Number(result.competitionId),
             type: result.type,
             marketType: result.marketType.length
               ? result.marketType

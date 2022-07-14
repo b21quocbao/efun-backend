@@ -1,4 +1,3 @@
-import { CompetitionEntity } from 'src/modules/competitions/entities/competition.entity';
 import { EventEntity } from 'src/modules/events/entities/event.entity';
 import { NotificationEntity } from 'src/modules/notifications/entities/notification.entity';
 import { PredictionEntity } from 'src/modules/predictions/entities/prediction.entity';
@@ -33,9 +32,6 @@ export class UserEntity {
 
   @OneToMany(() => NotificationEntity, (notification) => notification.user)
   notifications: NotificationEntity[];
-
-  @OneToMany(() => CompetitionEntity, (competition) => competition.user)
-  competitions: CompetitionEntity[];
 
   @Column({ nullable: true })
   refreshToken?: string;

@@ -6,8 +6,6 @@ import { ConsoleModule } from 'nestjs-console';
 import { AuthModule } from '../auth/auth.module';
 import { CategoriesModule } from '../categories/categories.module';
 import { CategoryEntity } from '../categories/entities/category.entity';
-import { CompetitionsModule } from '../competitions/competitions.module';
-import { CompetitionEntity } from '../competitions/entities/competition.entity';
 import { ContractsModule } from '../contracts/contracts.module';
 import { EventEntity } from '../events/entities/event.entity';
 import { EventsModule } from '../events/events.module';
@@ -67,7 +65,6 @@ import { AppService } from './app.service';
           PredictionEntity,
           ReportEntity,
           TransactionEntity,
-          CompetitionEntity,
           UserEntity,
           CountryEntity,
           SeasonEntity,
@@ -103,7 +100,6 @@ import { AppService } from './app.service';
     UsersModule,
     AuthModule,
     ContractsModule,
-    CompetitionsModule,
     CountriesModule,
     SeasonsModule,
     LeaguesModule,

@@ -74,7 +74,6 @@ export class EventsService implements OnModuleInit {
       canBlock,
       outOfEndTime,
       subCategoryId,
-      competitionId,
       haveReport,
       biggestToken,
     } = plainToClass(GetAllEventDto, request);
@@ -84,7 +83,6 @@ export class EventsService implements OnModuleInit {
       .leftJoin('events.category', 'category')
       .leftJoin('events.subCategory', 'subCategory')
       .leftJoin('events.user', 'user')
-      .leftJoin('events.competition', 'competition')
       .leftJoin('events.pools', 'pools')
       .leftJoin('events.fixture', 'fixture')
       .leftJoin('predictions.report', 'report')
@@ -93,7 +91,6 @@ export class EventsService implements OnModuleInit {
         'array_agg(pools.amount) as "poolAmounts"',
         'array_agg(pools.token) as "poolTokens"',
         'array_agg(pools."claimAmount") as "poolClaimAmounts"',
-        'competition.name as competition',
         'category.name as category',
         'fixture.goalsMeta as "goalsMeta"',
         '"subCategory".name as "subCategory"',
@@ -103,7 +100,6 @@ export class EventsService implements OnModuleInit {
         'array_agg(distinct predictions.userId) as "participants"',
       ])
       .groupBy('events.id')
-      .addGroupBy('competition.id')
       .addGroupBy('category.id')
       .addGroupBy('fixture.id')
       .addGroupBy('"subCategory".id')
@@ -139,9 +135,6 @@ export class EventsService implements OnModuleInit {
     }
     if (subCategoryId) {
       qb.andWhere('events.subCategoryId = :subCategoryId', { subCategoryId });
-    }
-    if (competitionId) {
-      qb.andWhere('events.competitionId = :competitionId', { competitionId });
     }
     if (eventId || eventId === 0) {
       qb.andWhere('events.id = :eventId', { eventId });

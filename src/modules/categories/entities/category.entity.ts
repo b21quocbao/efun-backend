@@ -1,4 +1,3 @@
-import { CompetitionEntity } from 'src/modules/competitions/entities/competition.entity';
 import { EventEntity } from 'src/modules/events/entities/event.entity';
 import {
   Entity,
@@ -30,9 +29,6 @@ export class CategoryEntity {
 
   @OneToMany(() => EventEntity, (event) => event.subCategory)
   subEvents: EventEntity[];
-
-  @OneToMany(() => CompetitionEntity, (competition) => competition.category)
-  competitions: CompetitionEntity[];
 
   @ManyToOne(() => CategoryEntity, (category) => category.children)
   @JoinColumn({ name: 'fatherId' })
