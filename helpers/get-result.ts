@@ -88,6 +88,13 @@ export async function getResult(
       Number(scoreTeamOne),
       Number(scoreTeamTwo),
     );
+  } else if (event.pro == 4) {
+    const options = JSON.parse(event.options) as string[];
+    options.forEach((option, index) => {
+      if (option == `${scoreTeamOne}-${scoreTeamTwo}`) {
+        result = index;
+      }
+    });
   }
   return result + 1;
 }
