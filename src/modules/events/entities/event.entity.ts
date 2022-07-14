@@ -1,4 +1,5 @@
 import { CategoryEntity } from 'src/modules/categories/entities/category.entity';
+import { CompetitionEntity } from 'src/modules/competitions/entities/competition.entity';
 import { PoolEntity } from 'src/modules/pools/entities/pool.entity';
 import { PredictionEntity } from 'src/modules/predictions/entities/prediction.entity';
 import { FixtureEntity } from 'src/modules/sports/fixtures/entities/fixture.entity';
@@ -45,6 +46,9 @@ export class EventEntity {
   @ManyToOne(() => CategoryEntity, (category) => category.subEvents)
   @JoinColumn({ name: 'subCategoryId' })
   subCategory: CategoryEntity;
+
+  @ManyToOne(() => CompetitionEntity, (competition) => competition.events)
+  competition: CompetitionEntity;
 
   @ManyToOne(() => FixtureEntity, (fixture) => fixture.events)
   fixture: FixtureEntity;
@@ -108,6 +112,9 @@ export class EventEntity {
 
   @Column({ nullable: true })
   subCategoryId?: number;
+
+  @Column({ nullable: true })
+  competitionId?: number;
 
   @Column({ default: false })
   isHot: boolean;
