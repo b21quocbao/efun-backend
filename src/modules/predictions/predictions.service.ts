@@ -147,16 +147,7 @@ export class PredictionsService {
               status = 'Lost';
             }
           } else if (status == 'Claimed') {
-            estimateReward = await this.predictionContract.methods
-              .estimateReward(
-                prediction.eventId,
-                prediction.userAddress,
-                prediction.token,
-                prediction.predictNum,
-                true,
-              )
-              .call()
-              .catch(() => '0');
+            estimateReward = prediction.rewardAmount;
           } else {
             estimateReward = await this.predictionContract.methods
               .estimateReward(
