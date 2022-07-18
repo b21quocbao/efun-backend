@@ -156,6 +156,16 @@ export class PredictionsService {
               status = 'Lost';
             }
           }
+          if (status == 'Claimed') {
+            estimateReward =
+              await this.predictionContract.methods.estimateReward(
+                prediction.eventId,
+                prediction.userAddress,
+                prediction.token,
+                prediction.predictNum,
+                true,
+              );
+          }
           let sponsor = await this.predictionContract.methods
             .estimateRewardSponsor(
               prediction.eventId,
