@@ -1,28 +1,21 @@
 // eslint-disable-next-line
 const Web3 = require('web3');
-import { Injectable } from '@nestjs/common';
-import { Command, Console } from 'nestjs-console';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ContractEvent } from 'src/shares/contracts/constant';
-import {
-  crawlSmartcontractEvents,
-  crawlSmartcontractEventsBatch,
-} from 'src/shares/helpers/smartcontract';
+import { crawlSmartcontractEventsBatch } from 'src/shares/helpers/smartcontract';
 import { LatestBlockService } from '../latest-block/latest-block.service';
 import { TransactionsService } from '../transactions/transactions.service';
 import { UsersService } from '../users/users.service';
-import { AbiItem } from 'web3-utils';
-import { eventABI } from 'src/shares/contracts/abi/eventABI';
 import { EventsService } from '../events/events.service';
 import { PredictionsService } from '../predictions/predictions.service';
-import { predictionABI } from 'src/shares/contracts/abi/predictionABI';
-import { EventType } from '../events/enums/event-type.enum';
 import { EventStatus } from '../events/enums/event-status.enum';
 import { PoolsService } from '../pools/pools.service';
 import axios from 'axios';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { CronJob } from 'cron';
 
-@Console()
 @Injectable()
-export class ContractConsole {
+export class ContractConsole implements OnModuleInit {
   private web3;
   private eventHandler1;
   private eventHandler2;
@@ -39,6 +32,7 @@ export class ContractConsole {
     private readonly usersService: UsersService,
     private readonly latestBlockService: LatestBlockService,
     private readonly poolsService: PoolsService,
+    private schedulerRegistry: SchedulerRegistry,
   ) {
     this.web3 = new Web3();
     this.web3.setProvider(new Web3.providers.HttpProvider(process.env.RPC_URL));
@@ -377,183 +371,41 @@ export class ContractConsole {
     };
   }
 
-  @Command({
-    command: 'create-events <statingBlock>',
-  })
-  async createEvents(statingBlock = 0): Promise<void> {
-    const contract = new this.web3.eth.Contract(
-      predictionABI as AbiItem[],
-      process.env.PREDICTION_PROXY,
-    );
-
-    await crawlSmartcontractEvents(
-      Number(statingBlock),
-      this.web3,
-      this.latestBlockService,
-      contract,
-      ContractEvent.EventCreated,
-      this.eventHandler1,
-    );
-  }
-
-  @Command({
-    command: 'update-result <statingBlock>',
-  })
-  async updateResult(statingBlock = 0): Promise<void> {
-    const contract = new this.web3.eth.Contract(
-      eventABI as AbiItem[],
-      process.env.EVENT_PROXY,
-    );
-
-    await crawlSmartcontractEvents(
-      Number(statingBlock),
-      this.web3,
-      this.latestBlockService,
-      contract,
-      ContractEvent.EventResultUpdated,
-      this.eventHandler2,
-    );
-  }
-
-  @Command({
-    command: 'create-prediction <statingBlock>',
-  })
-  async createPrediction(statingBlock = 0): Promise<void> {
-    const contract = new this.web3.eth.Contract(
-      predictionABI as AbiItem[],
-      process.env.PREDICTION_PROXY,
-    );
-
-    await crawlSmartcontractEvents(
-      Number(statingBlock),
-      this.web3,
-      this.latestBlockService,
-      contract,
-      ContractEvent.PredictionCreated,
-      this.eventHandler3,
-    );
-  }
-
-  @Command({
-    command: 'create-reward <statingBlock>',
-  })
-  async createReward(statingBlock = 0): Promise<void> {
-    const contract = new this.web3.eth.Contract(
-      predictionABI as AbiItem[],
-      process.env.PREDICTION_PROXY,
-    );
-
-    await crawlSmartcontractEvents(
-      Number(statingBlock),
-      this.web3,
-      this.latestBlockService,
-      contract,
-      ContractEvent.RewardClaimed,
-      this.eventHandler4,
-    );
-  }
-
-  @Command({
-    command: 'create-lp <statingBlock>',
-  })
-  async createLP(statingBlock = 0): Promise<void> {
-    const contract = new this.web3.eth.Contract(
-      predictionABI as AbiItem[],
-      process.env.PREDICTION_PROXY,
-    );
-
-    await crawlSmartcontractEvents(
-      Number(statingBlock),
-      this.web3,
-      this.latestBlockService,
-      contract,
-      ContractEvent.LPDeposited,
-      this.eventHandler5,
-    );
-  }
-
-  @Command({
-    command: 'claim-lp <statingBlock>',
-  })
-  async claimLP(statingBlock = 0): Promise<void> {
-    const contract = new this.web3.eth.Contract(
-      predictionABI as AbiItem[],
-      process.env.PREDICTION_PROXY,
-    );
-
-    await crawlSmartcontractEvents(
-      Number(statingBlock),
-      this.web3,
-      this.latestBlockService,
-      contract,
-      ContractEvent.LPClaimed,
-      this.eventHandler6,
-    );
-  }
-
-  @Command({
-    command: 'create-cashback <statingBlock>',
-  })
-  async createCashBack(statingBlock = 0): Promise<void> {
-    const contract = new this.web3.eth.Contract(
-      predictionABI as AbiItem[],
-      process.env.PREDICTION_PROXY,
-    );
-
-    await crawlSmartcontractEvents(
-      Number(statingBlock),
-      this.web3,
-      this.latestBlockService,
-      contract,
-      ContractEvent.CashBackClaimed,
-      this.eventHandler7,
-    );
-  }
-
-  @Command({
-    command: 'crawl-all <statingBlock>',
-  })
-  async crawlAll(statingBlock = 0): Promise<void> {
-    await crawlSmartcontractEventsBatch(
-      Number(statingBlock),
-      this.web3,
-      this.latestBlockService,
-      [false, true, false, false, false, false, false],
-      [
-        ContractEvent.EventCreated,
-        ContractEvent.EventResultUpdated,
-        ContractEvent.PredictionCreated,
-        ContractEvent.RewardClaimed,
-        ContractEvent.LPDeposited,
-        ContractEvent.LPClaimed,
-        ContractEvent.CashBackClaimed,
-      ],
-      [
-        this.eventHandler1,
-        this.eventHandler2,
-        this.eventHandler3,
-        this.eventHandler4,
-        this.eventHandler5,
-        this.eventHandler6,
-        this.eventHandler7,
-      ],
-    );
-  }
-
-  @Command({
-    command: 'receipt',
-  })
-  async receipt(): Promise<void> {
-    const transactions = await this.transactionsService.findAll();
-    for (const transaction of transactions.data)
-      if (transaction.id >= 2057) {
-        const receipt = await this.web3.eth.getTransactionReceipt(
-          transaction.txId,
+  onModuleInit() {
+    const contractSchedule = async () => {
+      try {
+        await crawlSmartcontractEventsBatch(
+          this.web3,
+          this.latestBlockService,
+          [false, true, false, false, false, false, false],
+          [
+            ContractEvent.EventCreated,
+            ContractEvent.EventResultUpdated,
+            ContractEvent.PredictionCreated,
+            ContractEvent.RewardClaimed,
+            ContractEvent.LPDeposited,
+            ContractEvent.LPClaimed,
+            ContractEvent.CashBackClaimed,
+          ],
+          [
+            this.eventHandler1,
+            this.eventHandler2,
+            this.eventHandler3,
+            this.eventHandler4,
+            this.eventHandler5,
+            this.eventHandler6,
+            this.eventHandler7,
+          ],
         );
-        await this.transactionsService.update(transaction.id, {
-          receipt: JSON.stringify(receipt),
-          blockNumber: receipt?.blockNumber,
-        });
+      } catch (err) {
+        console.log(err);
       }
+    };
+
+    this.schedulerRegistry.addCronJob(
+      'contractSchedule',
+      new CronJob(process.env.CRONT_CONTRACT, contractSchedule),
+    );
+    this.schedulerRegistry.getCronJob('contractSchedule').start();
   }
 }
