@@ -130,16 +130,7 @@ export class PredictionsService {
               : 'Claim Cashback';
           }
 
-          let estimateReward = await this.predictionContract.methods
-            .estimateReward(
-              prediction.eventId,
-              prediction.userAddress,
-              prediction.token,
-              prediction.predictNum,
-              false,
-            )
-            .call()
-            .catch(() => '0');
+          let estimateReward;
           if (status == 'Unknown') {
             status = 'Claim';
             try {
@@ -155,16 +146,28 @@ export class PredictionsService {
             } catch (err) {
               status = 'Lost';
             }
-          }
-          if (status == 'Claimed') {
-            estimateReward =
-              await this.predictionContract.methods.estimateReward(
+          } else if (status == 'Claimed') {
+            estimateReward = await this.predictionContract.methods
+              .estimateReward(
                 prediction.eventId,
                 prediction.userAddress,
                 prediction.token,
                 prediction.predictNum,
                 true,
-              );
+              )
+              .call()
+              .catch(() => '0');
+          } else {
+            estimateReward = await this.predictionContract.methods
+              .estimateReward(
+                prediction.eventId,
+                prediction.userAddress,
+                prediction.token,
+                prediction.predictNum,
+                false,
+              )
+              .call()
+              .catch(() => '0');
           }
           let sponsor = await this.predictionContract.methods
             .estimateRewardSponsor(
