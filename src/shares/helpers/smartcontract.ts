@@ -17,8 +17,6 @@ export async function crawlSmartcontractEventsBatch(
   eventNames: string[],
   callbacks: ((event: any) => Promise<void>)[],
 ): Promise<void> {
-  console.log('start', 'Line #20 smartcontract.ts');
-
   let cursor = Number(process.env.START_BLOCK);
   const latestBlock = await latestBlockService.getLatestBlock(
     LatestBlockNetwork.BSC,
@@ -67,5 +65,4 @@ export async function crawlSmartcontractEventsBatch(
     'crawl-all',
     to.toString(),
   );
-  console.log('end', 'Line #20 smartcontract.ts');
 }
