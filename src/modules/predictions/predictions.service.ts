@@ -120,8 +120,9 @@ export class PredictionsService {
             : 'Unknown';
 
           if (
-            (new Date(prediction.endTime).getTime() + 172800 * 1000 <
-              Date.now() &&
+            (prediction.endTime > 0 &&
+              new Date(prediction.endTime).getTime() + 172800 * 1000 <
+                Date.now() &&
               prediction.eventStatus != EventStatus.FINISH) ||
             prediction.eventIsBlock
           ) {
