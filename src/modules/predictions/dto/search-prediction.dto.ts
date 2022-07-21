@@ -10,12 +10,15 @@ export class SearchPredictionDto {
   @IsOptional()
   orderBy?: PSortEvent;
 
+  @ApiPropertyOptional()
   @IsOptional()
   userId?: number;
 
+  @ApiPropertyOptional()
   @IsOptional()
   eventId?: number;
 
+  @ApiPropertyOptional()
   @IsOptional()
   predictionId?: number;
 }
