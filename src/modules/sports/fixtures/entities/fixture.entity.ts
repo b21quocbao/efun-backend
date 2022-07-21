@@ -13,6 +13,7 @@ import { CountryEntity } from '../../countries/entities/country.entity';
 import { LeagueEntity } from '../../leagues/entities/league.entity';
 import { RoundEntity } from '../../rounds/entities/round.entity';
 import { SeasonEntity } from '../../seasons/entities/season.entity';
+import { TeamEntity } from '../../teams/entities/team.entity';
 import { GoalEntity } from './goal.entity';
 
 @Entity('fixtures')
@@ -96,6 +97,14 @@ export class FixtureEntity {
   @JoinColumn({ name: 'roundId' })
   round?: RoundEntity;
 
+  @ManyToOne(() => TeamEntity)
+  @JoinColumn({ name: 'teamHomeId' })
+  teamHome?: TeamEntity;
+
+  @ManyToOne(() => TeamEntity)
+  @JoinColumn({ name: 'teamAwayId' })
+  teamAway?: TeamEntity;
+
   @Column({ nullable: true })
   roundId?: number;
 
@@ -125,6 +134,9 @@ export class FixtureEntity {
 
   @Column({ nullable: true })
   meta?: string;
+
+  @Column({ default: 'Football' })
+  sport?: string;
 
   @Column({ nullable: true })
   oddMeta?: string;

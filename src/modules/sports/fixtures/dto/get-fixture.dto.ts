@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsBoolean, IsOptional } from 'class-validator';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class GetFixtureDto {
   @ApiPropertyOptional()
@@ -11,4 +11,9 @@ export class GetFixtureDto {
   @IsOptional()
   @IsBoolean()
   notFinised?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  search?: string;
 }

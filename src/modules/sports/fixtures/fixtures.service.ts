@@ -3,7 +3,7 @@ const moment = require('moment');
 import { Injectable } from '@nestjs/common';
 import { Response } from 'src/shares/interceptors/response.interceptor';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { FixtureEntity } from './entities/fixture.entity';
 import { CreateFixtureDto } from './dto/create-fixture.dto';
 import { plainToClass } from 'class-transformer';
@@ -59,8 +59,15 @@ export class FixturesService {
     pageNumber?: number,
     pageSize?: number,
   ): Promise<Response<FixtureEntity[]>> {
-    const qb = this.fixtureRepository.createQueryBuilder('fixtures');
-    const { leagueId, notFinised } = plainToClass(GetFixtureDto, getFixtureDto);
+    const qb = this.fixtureRepository
+      .createQueryBuilder('fixtures')
+      .leftJoinAndSelect('fixtures.league', 'league')
+      .leftJoinAndSelect('fixtures.teamAway', 'teamAway')
+      .leftJoinAndSelect('fixtures.teamHome', 'teamHome');
+    const { leagueId, notFinised, search } = plainToClass(
+      GetFixtureDto,
+      getFixtureDto,
+    );
 
     if (pageSize && pageNumber) {
       qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
@@ -78,6 +85,26 @@ export class FixturesService {
         const currentTime = moment.utc().unix();
         qb.andWhere('fixtures."timestamp" <= :currentTime', { currentTime });
       }
+    }
+
+    if (search) {
+      qb.andWhere(
+        new Brackets((qb) => {
+          qb.andWhere('league.name ILIKE :search', { search: `%${search}%` })
+            .orWhere('fixtures.sport ILIKE :search', {
+              search: `%${search}%`,
+            })
+            .orWhere('teamAway.name ILIKE :search', {
+              search: `%${search}%`,
+            })
+            .orWhere('teamHome.name ILIKE :search', {
+              search: `%${search}%`,
+            })
+            .orWhere('fixtures."venueName" ILIKE :search', {
+              search: `%${search}%`,
+            });
+        }),
+      );
     }
 
     const [rs, total] = await Promise.all([qb.getMany(), qb.getCount()]);
