@@ -37,6 +37,8 @@ import { SeasonEntity } from '../sports/seasons/entities/season.entity';
 import { SeasonsModule } from '../sports/seasons/seasons.module';
 import { TeamEntity } from '../sports/teams/entities/team.entity';
 import { TeamsModule } from '../sports/teams/teams.module';
+import { TokenEntity } from '../tokens/entities/token.entity';
+import { TokensModule } from '../tokens/tokens.module';
 import { TransactionEntity } from '../transactions/entities/transaction.entity';
 import { TransactionsModule } from '../transactions/transactions.module';
 import { UserEntity } from '../users/entities/user.entity';
@@ -60,6 +62,7 @@ import { AppService } from './app.service';
         database: configService.get<string>('DB_DATABASE'),
         entities: [
           CategoryEntity,
+          TokenEntity,
           EventEntity,
           LatestBlockEntity,
           NotificationEntity,
@@ -111,6 +114,7 @@ import { AppService } from './app.service';
     TeamsModule,
     FixturesModule,
     OddsModule,
+    TokensModule,
   ],
   controllers: [AppController],
   providers: [AppService],
