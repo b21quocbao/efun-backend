@@ -131,6 +131,9 @@ export class EventEntity {
   @Column({ default: false })
   affiliate: boolean;
 
+  @Column({ default: 0 })
+  hostFee: number;
+
   @OneToOne(() => TransactionEntity)
   @JoinColumn()
   transaction?: TransactionEntity;

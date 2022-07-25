@@ -96,6 +96,7 @@ export class ContractConsole implements OnModuleInit {
             description: result.description,
             metadata: result.metadata,
             affiliate: event.returnValues.affiliate,
+            hostFee: event.returnValues.hostFee,
             shortDescription: result.shortDescription,
             streamUrl: result.streamUrl.length ? result.streamUrl : undefined,
           });

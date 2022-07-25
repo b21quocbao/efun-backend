@@ -75,6 +75,9 @@ export class CreateEventDto {
   @IsBoolean()
   affiliate: boolean;
 
+  @IsNumber()
+  hostFee: number;
+
   @IsString()
   shortDescription: string;
 
