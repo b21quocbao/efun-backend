@@ -412,16 +412,6 @@ export const predictionABI = [
     inputs: [
       { internalType: 'uint256', name: '_eventId', type: 'uint256' },
       { internalType: 'address', name: '_token', type: 'address' },
-    ],
-    name: 'getLiquidityPool',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      { internalType: 'uint256', name: '_eventId', type: 'uint256' },
-      { internalType: 'address', name: '_token', type: 'address' },
       { internalType: 'uint256', name: '_index', type: 'uint256' },
     ],
     name: 'getMaxPayout',
@@ -496,17 +486,6 @@ export const predictionABI = [
     type: 'function',
   },
   {
-    inputs: [
-      { internalType: 'address', name: '', type: 'address' },
-      { internalType: 'address', name: '', type: 'address' },
-      { internalType: 'uint256', name: '', type: 'uint256' },
-    ],
-    name: 'numPredicts',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
     inputs: [],
     name: 'owner',
     outputs: [{ internalType: 'address', name: '', type: 'address' }],
@@ -527,30 +506,19 @@ export const predictionABI = [
   },
   {
     inputs: [
+      { internalType: 'uint256', name: '', type: 'uint256' },
       { internalType: 'address', name: '', type: 'address' },
-      { internalType: 'uint256', name: '', type: 'uint256' },
-      { internalType: 'uint256', name: '', type: 'uint256' },
-    ],
-    name: 'predictOptionStats',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      { internalType: 'address', name: '', type: 'address' },
-      { internalType: 'uint256', name: '', type: 'uint256' },
     ],
     name: 'predictStats',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    outputs: [{ internalType: 'uint256', name: 'value', type: 'uint256' }],
     stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [
-      { internalType: 'address', name: '', type: 'address' },
-      { internalType: 'address', name: '', type: 'address' },
       { internalType: 'uint256', name: '', type: 'uint256' },
+      { internalType: 'address', name: '', type: 'address' },
+      { internalType: 'address', name: '', type: 'address' },
       { internalType: 'uint256', name: '', type: 'uint256' },
     ],
     name: 'predictions',
