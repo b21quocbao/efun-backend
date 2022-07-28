@@ -39,7 +39,8 @@ export class CreateEventDto {
   fixtureId?: number;
 
   @IsNumber()
-  competitionId: number;
+  @IsOptional()
+  competitionId?: number;
 
   @IsString()
   type: EventType;

@@ -88,7 +88,9 @@ export class ContractConsole implements OnModuleInit {
             subCategoryId: result.subCategoryId.length
               ? Number(result.subCategoryId)
               : undefined,
-            competitionId: Number(result.competitionId),
+            competitionId: result.competitionId.length
+              ? Number(result.competitionId)
+              : undefined,
             type: result.type,
             marketType: result.marketType.length
               ? result.marketType
