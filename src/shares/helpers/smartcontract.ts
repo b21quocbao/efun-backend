@@ -29,7 +29,10 @@ export async function crawlSmartcontractEventsBatch(
   if (
     process.env.RPC_URL_2 &&
     process.env.RPC_URL_2.length &&
-    (hour >= 11 || day == 6 || day == 0 || hour <= 1 || hour == 5)
+    ((hour >= 11 && !(hour >= 14 && hour <= 17)) ||
+      day == 6 ||
+      day == 0 ||
+      hour <= 1)
   ) {
     web3.setProvider(new Web3.providers.HttpProvider(process.env.RPC_URL_2));
   }
