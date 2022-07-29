@@ -41,7 +41,7 @@ export class EventEntity {
   bannerUrl: string;
 
   @ManyToOne(() => CategoryEntity, (category) => category.events)
-  category: CategoryEntity;
+  category?: CategoryEntity;
 
   @ManyToOne(() => CategoryEntity, (category) => category.subEvents)
   @JoinColumn({ name: 'subCategoryId' })
@@ -107,7 +107,7 @@ export class EventEntity {
   @Column({ nullable: true })
   fixtureId: number;
 
-  @Column()
+  @Column({ nullable: true })
   categoryId: number;
 
   @Column({ nullable: true })

@@ -24,12 +24,14 @@ export class CreateEventDto {
   bannerUrl?: string;
 
   @IsNumber()
-  categoryId: number;
+  @IsOptional()
+  categoryId?: number;
 
   @IsNumber()
   transactionId: number;
 
   @IsNumber()
+  @IsOptional()
   subCategoryId?: number;
 
   @IsNumber()

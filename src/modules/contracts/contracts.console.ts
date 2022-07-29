@@ -79,7 +79,9 @@ export class ContractConsole implements OnModuleInit {
             name: result.name,
             thumbnailUrl: result.thumbnailUrl,
             bannerUrl: result.bannerUrl.length ? result.bannerUrl : undefined,
-            categoryId: Number(result.categoryId),
+            categoryId: result.categoryId.length
+              ? Number(result.categoryId)
+              : undefined,
             pro: event.returnValues.pro,
             fixtureId:
               result.fixtureId && result.fixtureId.length
