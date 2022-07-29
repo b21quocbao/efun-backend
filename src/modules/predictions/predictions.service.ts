@@ -66,6 +66,7 @@ export class PredictionsService {
         'event.type as type',
         'event.marketType as "marketType"',
         'event.metadata as metadata',
+        'event.hostFee as "hostFee"',
         'event.status as "eventStatus"',
         'event.finalTime as "eventFinalTime"',
         'event.claimTime as "eventClaimTime"',
