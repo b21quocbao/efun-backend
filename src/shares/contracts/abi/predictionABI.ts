@@ -286,6 +286,16 @@ export const predictionABI = [
   },
   {
     inputs: [
+      { internalType: 'uint256', name: '', type: 'uint256' },
+      { internalType: 'address', name: '', type: 'address' },
+    ],
+    name: 'claimedLiquidityPool',
+    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
       { internalType: 'uint256[3]', name: '_times', type: 'uint256[3]' },
       { internalType: 'address', name: '_helperAddress', type: 'address' },
       { internalType: 'uint256[]', name: '_odds', type: 'uint256[]' },
@@ -477,6 +487,17 @@ export const predictionABI = [
   },
   {
     inputs: [
+      { internalType: 'address', name: '_helperAddress', type: 'address' },
+      { internalType: 'address', name: '_eventDataAddress', type: 'address' },
+      { internalType: 'uint256', name: '_eventId', type: 'uint256' },
+    ],
+    name: 'hostFee',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
       { internalType: 'uint256', name: '_participateRate', type: 'uint256' },
       { internalType: 'uint256', name: '_oneHundredPrecent', type: 'uint256' },
     ],
@@ -486,9 +507,47 @@ export const predictionABI = [
     type: 'function',
   },
   {
+    inputs: [
+      { internalType: 'address', name: '', type: 'address' },
+      { internalType: 'address', name: '', type: 'address' },
+    ],
+    name: 'liquidityPool',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'uint256', name: '', type: 'uint256' },
+      { internalType: 'address', name: '', type: 'address' },
+    ],
+    name: 'liquidityPoolEvent',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [],
     name: 'owner',
     outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: '_helperAddress', type: 'address' },
+    ],
+    name: 'platFormfeeBefore',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: '_helperAddress', type: 'address' },
+    ],
+    name: 'platformFee',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
     stateMutability: 'view',
     type: 'function',
   },
