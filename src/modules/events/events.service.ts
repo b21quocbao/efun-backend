@@ -77,6 +77,7 @@ export class EventsService implements OnModuleInit {
       competitionId,
       haveReport,
       biggestToken,
+      outOfTimeBeforeEnd,
     } = plainToClass(GetAllEventDto, request);
     const qb = this.eventRepository
       .createQueryBuilder('events')
@@ -172,6 +173,10 @@ export class EventsService implements OnModuleInit {
       qb.andWhere(
         outOfEndTime ? 'events."endTime" >= now()' : 'events."endTime" < now()',
       );
+    }
+    if (outOfTimeBeforeEnd === true) {
+      qb.andWhere('events.deadline < now()');
+      qb.andWhere('events."endTime" > now()');
     }
     if (isHot) {
       qb.andWhere('events.isHot = :isHot', { isHot });

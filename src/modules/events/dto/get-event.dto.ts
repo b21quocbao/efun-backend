@@ -80,6 +80,12 @@ export class GetAllEventDto extends PaginationInput {
   outOfEndTime?: boolean;
 
   @ApiPropertyOptional()
+  @Transform(({ value }) => value.toLowerCase() === 'true')
+  @IsOptional()
+  @IsBoolean()
+  outOfTimeBeforeEnd?: boolean;
+
+  @ApiPropertyOptional()
   biggestToken?: string;
 
   @ApiPropertyOptional({
