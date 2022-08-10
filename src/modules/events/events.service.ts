@@ -78,6 +78,7 @@ export class EventsService implements OnModuleInit {
       haveReport,
       biggestToken,
       outOfTimeBeforeEnd,
+      outOfEndTime7day,
     } = plainToClass(GetAllEventDto, request);
     const qb = this.eventRepository
       .createQueryBuilder('events')
@@ -172,6 +173,13 @@ export class EventsService implements OnModuleInit {
     if (outOfEndTime === true || outOfEndTime === false) {
       qb.andWhere(
         outOfEndTime ? 'events."endTime" >= now()' : 'events."endTime" < now()',
+      );
+    }
+    if (outOfEndTime7day === true || outOfEndTime7day === false) {
+      qb.andWhere(
+        outOfEndTime7day
+          ? `events."endTime" >= now()  - INTERVAL '7 DAY'`
+          : `events."endTime" < now()  - INTERVAL '7 DAY'`,
       );
     }
     if (outOfTimeBeforeEnd === true) {
