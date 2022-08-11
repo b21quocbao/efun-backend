@@ -79,6 +79,7 @@ export class EventsService implements OnModuleInit {
       biggestToken,
       outOfTimeBeforeEnd,
       outOfEndTime7day,
+      homeList,
     } = plainToClass(GetAllEventDto, request);
     const qb = this.eventRepository
       .createQueryBuilder('events')
@@ -194,11 +195,36 @@ export class EventsService implements OnModuleInit {
     } else if (orderBy == ESortEvent.LATEST) {
       qb.orderBy('"createdAt"', 'DESC');
     }
-    if (pageSize && pageNumber) {
+    if (pageSize && pageNumber && !homeList) {
       qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
     }
 
-    const [rs, total] = await Promise.all([qb.getRawMany(), qb.getCount()]);
+    // eslint-disable-next-line
+    let [rs, total] = await Promise.all([qb.getRawMany(), qb.getCount()]);
+    if (homeList) {
+      rs.sort((a: EventEntity, b: EventEntity) => {
+        const priorityA =
+          a.deadline.getTime() > Date.now()
+            ? 1
+            : a.endTime.getTime() > Date.now()
+            ? 2
+            : 3;
+        const priorityB =
+          b.deadline.getTime() > Date.now()
+            ? 1
+            : b.endTime.getTime() > Date.now()
+            ? 2
+            : 3;
+        return priorityA == priorityB
+          ? priorityA == 1
+            ? a.deadline.getTime() - b.deadline.getTime()
+            : priorityA == 2
+            ? b.deadline.getTime() - a.deadline.getTime()
+            : b.endTime.getTime() - a.endTime.getTime()
+          : priorityA - priorityB;
+      });
+      rs = rs.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+    }
     let processedRs = await Promise.all(
       rs.map(async (event) => {
         event.poolTokens = event.poolTokens.filter((x: any, index) => {
