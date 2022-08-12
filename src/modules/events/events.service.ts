@@ -202,33 +202,6 @@ export class EventsService implements OnModuleInit {
 
     // eslint-disable-next-line
     let [rs, total] = await Promise.all([qb.getRawMany(), qb.getCount()]);
-    if (homeList) {
-      rs.sort((a: EventEntity, b: EventEntity) => {
-        const priorityA =
-          a.deadline.getTime() > Date.now()
-            ? 1
-            : a.endTime.getTime() > Date.now()
-            ? 2
-            : 3;
-        const priorityB =
-          b.deadline.getTime() > Date.now()
-            ? 1
-            : b.endTime.getTime() > Date.now()
-            ? 2
-            : 3;
-        if (!homeListTime) {
-          return priorityA - priorityB;
-        }
-        return priorityA == priorityB
-          ? priorityA == 1
-            ? a.deadline.getTime() - b.deadline.getTime()
-            : priorityA == 2
-            ? b.deadline.getTime() - a.deadline.getTime()
-            : b.endTime.getTime() - a.endTime.getTime()
-          : priorityA - priorityB;
-      });
-      rs = rs.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
-    }
     let processedRs = await Promise.all(
       rs.map(async (event) => {
         event.poolTokens = event.poolTokens.filter((x: any, index) => {
@@ -295,6 +268,44 @@ export class EventsService implements OnModuleInit {
         numParticipants: row.participants.filter((x: any) => x !== null).length,
       };
     });
+
+    for (let i = 0; i < processedRs.length; ++i) {
+      processedRs[i].index = i;
+    }
+    if (homeList) {
+      processedRs.sort((a: any, b: any) => {
+        const priorityA =
+          a.deadline.getTime() > Date.now()
+            ? 1
+            : a.endTime.getTime() > Date.now()
+            ? 2
+            : 3;
+        const priorityB =
+          b.deadline.getTime() > Date.now()
+            ? 1
+            : b.endTime.getTime() > Date.now()
+            ? 2
+            : 3;
+        if (!homeListTime) {
+          return priorityA == priorityB
+            ? a.index - b.index
+            : priorityA - priorityB;
+        }
+
+        return priorityA == priorityB
+          ? priorityA == 1
+            ? a.deadline.getTime() - b.deadline.getTime()
+            : priorityA == 2
+            ? b.deadline.getTime() - a.deadline.getTime()
+            : b.endTime.getTime() - a.endTime.getTime()
+          : priorityA - priorityB;
+      });
+
+      processedRs = processedRs.slice(
+        (pageNumber - 1) * pageSize,
+        pageNumber * pageSize,
+      );
+    }
 
     return {
       data: processedRs,
