@@ -95,6 +95,12 @@ export class GetAllEventDto extends PaginationInput {
   @Transform(({ value }) => value.toLowerCase() === 'true')
   @IsOptional()
   @IsBoolean()
+  homeListTime?: boolean;
+
+  @ApiPropertyOptional()
+  @Transform(({ value }) => value.toLowerCase() === 'true')
+  @IsOptional()
+  @IsBoolean()
   outOfTimeBeforeEnd?: boolean;
 
   @ApiPropertyOptional()

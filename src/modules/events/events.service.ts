@@ -80,6 +80,7 @@ export class EventsService implements OnModuleInit {
       outOfTimeBeforeEnd,
       outOfEndTime7day,
       homeList,
+      homeListTime,
     } = plainToClass(GetAllEventDto, request);
     const qb = this.eventRepository
       .createQueryBuilder('events')
@@ -215,6 +216,9 @@ export class EventsService implements OnModuleInit {
             : b.endTime.getTime() > Date.now()
             ? 2
             : 3;
+        if (!homeListTime) {
+          return priorityA - priorityB;
+        }
         return priorityA == priorityB
           ? priorityA == 1
             ? a.deadline.getTime() - b.deadline.getTime()
