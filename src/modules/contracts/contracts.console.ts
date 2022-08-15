@@ -77,8 +77,13 @@ export class ContractConsole implements OnModuleInit {
             transactionId: transactionEntity.id,
             options: result.options,
             name: result.name,
-            thumbnailUrl: result.thumbnailUrl,
-            bannerUrl: result.bannerUrl.length ? result.bannerUrl : undefined,
+            thumbnailUrl: result.thumbnailUrl.replace(
+              'ipfs.infura.io',
+              'cf-ipfs.com',
+            ),
+            bannerUrl: result.bannerUrl.length
+              ? result.bannerUrl.replace('ipfs.infura.io', 'cf-ipfs.com')
+              : undefined,
             categoryId: result.categoryId.length
               ? Number(result.categoryId)
               : undefined,
