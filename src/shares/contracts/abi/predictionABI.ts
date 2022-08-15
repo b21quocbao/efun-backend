@@ -436,7 +436,9 @@ export const predictionABI = [
       { internalType: 'uint256[]', name: '_indexs', type: 'uint256[]' },
     ],
     name: 'getMaxPayoutBatch',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    outputs: [
+      { internalType: 'uint256[]', name: 'results', type: 'uint256[]' },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
