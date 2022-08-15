@@ -431,6 +431,17 @@ export const predictionABI = [
   },
   {
     inputs: [
+      { internalType: 'uint256[]', name: '_eventIds', type: 'uint256[]' },
+      { internalType: 'address[]', name: '_tokens', type: 'address[]' },
+      { internalType: 'uint256[]', name: '_indexs', type: 'uint256[]' },
+    ],
+    name: 'getMaxPayoutBatch',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
       { internalType: 'uint256', name: '_eventId', type: 'uint256' },
       { internalType: 'address', name: '_token', type: 'address' },
       { internalType: 'uint256', name: '_index', type: 'uint256' },
