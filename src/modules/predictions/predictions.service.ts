@@ -99,7 +99,7 @@ export class PredictionsService {
     }
     if (orderBy == PSortEvent.USER) {
       qb.orderBy(
-        `(CASE WHEN predictions."userId" = ${userId} THEN 1 ELSE 0 END)`,
+        `(CASE WHEN predictions."userId" = ${userId} THEN 0 ELSE 1 END)`,
       );
       qb.addOrderBy('"createdAt"', 'DESC');
     }
