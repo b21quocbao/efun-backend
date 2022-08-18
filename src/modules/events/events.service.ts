@@ -219,6 +219,7 @@ export class EventsService implements OnModuleInit {
         event.poolTokenEstimateClaimAmounts = {};
         event.poolTokenClaimAmounts = {};
         event.predictionTokenAmounts = {};
+        event.predictionTokenOptionAmounts = {};
 
         for (let idx = 0; idx < event.poolTokens.length; ++idx) {
           event.poolTokenAmounts[event.poolTokens[idx]] =
@@ -241,6 +242,41 @@ export class EventsService implements OnModuleInit {
           )
             .plus(prediction.amount)
             .toString();
+
+          if (!event.predictionTokenOptionAmounts[prediction.token]) {
+            event.predictionTokenOptionAmounts[prediction.token] = {};
+          }
+          if (
+            !event.predictionTokenOptionAmounts[prediction.token][
+              prediction.optionIndex
+            ]
+          ) {
+            event.predictionTokenOptionAmounts[prediction.token][
+              prediction.optionIndex
+            ] = new BigNumber(0);
+          }
+          event.predictionTokenOptionAmounts[prediction.token][
+            prediction.optionIndex
+          ] = event.predictionTokenOptionAmounts[prediction.token][
+            prediction.optionIndex
+          ].plus(prediction.amount);
+        }
+        for (const token of Object.keys(event.predictionTokenOptionAmounts)) {
+          let sum = new BigNumber(0);
+          for (const index of Object.keys(
+            event.predictionTokenOptionAmounts[token],
+          )) {
+            sum = sum.plus(event.predictionTokenOptionAmounts[token][index]);
+          }
+          for (const index of Object.keys(
+            event.predictionTokenOptionAmounts[token],
+          )) {
+            event.predictionTokenOptionAmounts[token][index] = Math.round(
+              event.predictionTokenOptionAmounts[token][index]
+                .div(sum)
+                .toNumber() * 100,
+            );
+          }
         }
 
         delete event.poolAmounts;
