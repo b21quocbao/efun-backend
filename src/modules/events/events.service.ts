@@ -272,6 +272,7 @@ export class EventsService implements OnModuleInit {
     for (let i = 0; i < processedRs.length; ++i) {
       processedRs[i].index = i;
     }
+
     if (homeList) {
       processedRs.sort((a: any, b: any) => {
         const priorityA =
@@ -286,12 +287,25 @@ export class EventsService implements OnModuleInit {
             : b.endTime.getTime() > Date.now()
             ? 2
             : 3;
-        if (!homeListTime) {
+        if (orderBy == ESortEvent.BIGGEST_EFUN_POOL) {
+          const biggestTokenAmountA = new BigNumber(
+            a.predictionTokenAmounts[biggestToken] || '0',
+          );
+          const biggestTokenAmountB = new BigNumber(
+            b.predictionTokenAmounts[biggestToken] || '0',
+          );
           return priorityA == priorityB
-            ? a.index - b.index
+            ? biggestTokenAmountA.gt(biggestTokenAmountB)
+              ? -1
+              : biggestTokenAmountA.lt(biggestTokenAmountB)
+              ? 1
+              : priorityA == 1
+              ? a.deadline.getTime() - b.deadline.getTime()
+              : priorityA == 2
+              ? b.deadline.getTime() - a.deadline.getTime()
+              : b.endTime.getTime() - a.endTime.getTime()
             : priorityA - priorityB;
         }
-
         return priorityA == priorityB
           ? priorityA == 1
             ? a.deadline.getTime() - b.deadline.getTime()
