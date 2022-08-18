@@ -97,10 +97,16 @@ export class PredictionsService {
     if (orderBy == PSortEvent.LATEST) {
       qb.orderBy('"createdAt"', 'DESC');
     }
+    if (orderBy == PSortEvent.USER) {
+      qb.orderBy(
+        `(CASE WHEN predictions."userId" = ${userId} THEN 1 ELSE 0 END)`,
+      );
+      qb.addOrderBy('"createdAt"', 'DESC');
+    }
     if (eventId) {
       qb.andWhere('predictions."eventId" = :eventId', { eventId });
     }
-    if (userId) {
+    if (userId && orderBy != PSortEvent.USER) {
       qb.andWhere('predictions."userId" = :userId', { userId });
     }
     if (predictionId) {
