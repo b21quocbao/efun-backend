@@ -39,4 +39,9 @@ export class UsersController {
   ): Promise<Response<UserEntity[]>> {
     return this.usersService.findAll(pageNumber, pageSize);
   }
+
+  @Get(':address')
+  async getUserByAddress(@Param('address') address: string) {
+    return this.usersService.findByAddress(address);
+  }
 }
