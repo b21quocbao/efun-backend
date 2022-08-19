@@ -35,6 +35,10 @@ export class CategoriesService {
       qb.where({ fatherId: searchCategoryDto.fatherId });
     }
 
+    if (searchCategoryDto.userId || searchCategoryDto.userId == 0) {
+      qb.where({ userId: searchCategoryDto.userId });
+    }
+
     if (searchCategoryDto.name) {
       qb.where({ name: searchCategoryDto.name });
     }

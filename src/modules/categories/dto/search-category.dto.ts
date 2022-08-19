@@ -16,6 +16,12 @@ export class SearchCategoryDto {
   fatherId?: number;
 
   @ApiPropertyOptional()
+  @IsNumber()
+  @Transform(({ value }) => Number(value))
+  @IsOptional()
+  userId?: number;
+
+  @ApiPropertyOptional()
   @IsString()
   @IsOptional()
   name?: string;
