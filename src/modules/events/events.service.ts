@@ -81,6 +81,9 @@ export class EventsService implements OnModuleInit {
       outOfEndTime7day,
       homeList,
       homeListTime,
+      tokenIds,
+      eventTypes,
+      listingStatuses,
     } = plainToClass(GetAllEventDto, request);
     const qb = this.eventRepository
       .createQueryBuilder('events')
@@ -350,11 +353,6 @@ export class EventsService implements OnModuleInit {
             : b.endTime.getTime() - a.endTime.getTime()
           : priorityA - priorityB;
       });
-
-      processedRs = processedRs.slice(
-        (pageNumber - 1) * pageSize,
-        pageNumber * pageSize,
-      );
     }
 
     for (const event of processedRs) {
@@ -374,6 +372,32 @@ export class EventsService implements OnModuleInit {
       } else {
         event.listingStatus = event.result ? 'Ended' : 'Pending result';
       }
+    }
+
+    if (tokenIds) {
+      processedRs.filter((rs) => {
+        const intersection = JSON.parse(rs.metadata).tokens.filter((x) =>
+          tokenIds.includes(x),
+        );
+        return intersection.length > 0;
+      });
+    }
+    if (eventTypes) {
+      processedRs.filter((rs) => {
+        return eventTypes.includes(JSON.parse(rs.metadata).eventType);
+      });
+    }
+    if (listingStatuses) {
+      processedRs.filter((rs) => {
+        return listingStatuses.includes(rs.listingStatus);
+      });
+    }
+
+    if (homeList) {
+      processedRs = processedRs.slice(
+        (pageNumber - 1) * pageSize,
+        pageNumber * pageSize,
+      );
     }
 
     return {

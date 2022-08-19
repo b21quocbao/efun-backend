@@ -106,6 +106,15 @@ export class GetAllEventDto extends PaginationInput {
   @ApiPropertyOptional()
   biggestToken?: string;
 
+  @ApiPropertyOptional()
+  tokenIds?: string[];
+
+  @ApiPropertyOptional()
+  eventTypes?: string[];
+
+  @ApiPropertyOptional()
+  listingStatuses?: string[];
+
   @ApiPropertyOptional({
     enum: EventStatus,
   })
