@@ -364,12 +364,12 @@ export class EventsService implements OnModuleInit {
           : event.endTime.getTime() > Date.now()
           ? 2
           : 3;
-      if (event.priority == 1) {
+      if (event.groupType == 1) {
         event.listingStatus =
           Object.keys(event.predictionTokenAmounts).length > 0
             ? 'Predicted'
             : 'No status';
-      } else if (event.priority == 2) {
+      } else if (event.groupType == 2) {
         event.listingStatus = 'Locked';
       } else {
         event.listingStatus = event.result ? 'Ended' : 'Pending result';
