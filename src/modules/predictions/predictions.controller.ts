@@ -19,7 +19,7 @@ export class PredictionsController {
     @Query() request: SearchPredictionDto,
     @Query() { pageNumber, pageSize }: PaginationInput,
   ): Promise<Response<PredictionEntity[]>> {
-    return this.predictionsService.findAll(
+    return this.predictionsService.findAllAPI(
       { ...request, userId },
       pageNumber,
       pageSize,
@@ -31,7 +31,7 @@ export class PredictionsController {
     @Query() request: SearchPredictionDto,
     @Query() { pageNumber, pageSize }: PaginationInput,
   ): Promise<Response<PredictionEntity[]>> {
-    return this.predictionsService.findAll(
+    return this.predictionsService.findAllAPI(
       { ...request },
       pageNumber,
       pageSize,
@@ -43,7 +43,7 @@ export class PredictionsController {
     @UserID() userId: number,
     @Param('id') id: string,
   ): Promise<PredictionEntity> {
-    const { data } = await this.predictionsService.findAll({
+    const { data } = await this.predictionsService.findAllAPI({
       predictionId: +id,
       userId,
     });

@@ -206,6 +206,58 @@ export class PredictionsService {
     };
   }
 
+  async findAllAPI(
+    filter: SearchPredictionDto,
+    pageNumber?: number,
+    pageSize?: number,
+  ): Promise<Response<PredictionEntity[]>> {
+    const res = await this.findAll(filter, pageNumber, pageSize);
+    for (const rs of res.data) {
+      rs.predictionTokenOptionAmounts = {};
+
+      const predictions = await this.predictionRepository.find({
+        eventId: rs.eventId,
+      });
+
+      for (const prediction of predictions) {
+        if (!rs.predictionTokenOptionAmounts[prediction.token]) {
+          rs.predictionTokenOptionAmounts[prediction.token] = {};
+        }
+        if (
+          !rs.predictionTokenOptionAmounts[prediction.token][
+            prediction.optionIndex
+          ]
+        ) {
+          rs.predictionTokenOptionAmounts[prediction.token][
+            prediction.optionIndex
+          ] = new BigNumber(0);
+        }
+        rs.predictionTokenOptionAmounts[prediction.token][
+          prediction.optionIndex
+        ] = rs.predictionTokenOptionAmounts[prediction.token][
+          prediction.optionIndex
+        ].plus(prediction.amount);
+      }
+      for (const token of Object.keys(rs.predictionTokenOptionAmounts)) {
+        let sum = new BigNumber(0);
+        for (const index of Object.keys(
+          rs.predictionTokenOptionAmounts[token],
+        )) {
+          sum = sum.plus(rs.predictionTokenOptionAmounts[token][index]);
+        }
+        for (const index of Object.keys(
+          rs.predictionTokenOptionAmounts[token],
+        )) {
+          rs.predictionTokenOptionAmounts[token][index] = Math.round(
+            rs.predictionTokenOptionAmounts[token][index].div(sum).toNumber() *
+              100,
+          );
+        }
+      }
+    }
+    return res;
+  }
+
   async findOne(userId: number, id: number): Promise<PredictionEntity> {
     return this.predictionRepository
       .createQueryBuilder('predictions')

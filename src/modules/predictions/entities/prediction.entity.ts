@@ -80,4 +80,6 @@ export class PredictionEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  predictionTokenOptionAmounts: any;
 }
