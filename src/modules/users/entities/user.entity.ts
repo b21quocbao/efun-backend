@@ -22,6 +22,9 @@ export class UserEntity {
   @Column({ unique: true })
   address: string;
 
+  @Column({ default: '' })
+  description: string;
+
   @OneToMany(() => EventEntity, (event) => event.user)
   events: EventEntity[];
 

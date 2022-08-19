@@ -101,4 +101,7 @@ export class UsersService {
       .where('users.address ILIKE :address', { address: `%${address}%` })
       .getOne();
   }
+  async updateDescription(id: number, description: string): Promise<void> {
+    await this.userRepository.update(id, { description });
+  }
 }

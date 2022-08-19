@@ -1,10 +1,20 @@
-import { Controller, Get, Param, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UserID } from 'src/shares/decorators/get-user-id.decorator';
 import { RolesGuardAdmin } from 'src/shares/decorators/is-admin.decorator';
 import { Response } from 'src/shares/interceptors/response.interceptor';
 import { PaginationInput } from 'src/shares/pagination/pagination.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { UpdateDescriptionDto } from './dto/update-description.dto';
 import { UserEntity } from './entities/user.entity';
 import { UsersService } from './users.service';
 
@@ -43,5 +53,16 @@ export class UsersController {
   @Get(':address')
   async getUserByAddress(@Param('address') address: string) {
     return this.usersService.findByAddress(address);
+  }
+
+  @Post('description')
+  async updateDescription(
+    @UserID() userId: number,
+    @Body() updateDescriptionDto: UpdateDescriptionDto,
+  ): Promise<void> {
+    return this.usersService.updateDescription(
+      userId,
+      updateDescriptionDto.description,
+    );
   }
 }
