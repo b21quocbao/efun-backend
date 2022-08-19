@@ -357,6 +357,25 @@ export class EventsService implements OnModuleInit {
       );
     }
 
+    for (const event of processedRs) {
+      event.groupType =
+        event.deadline.getTime() > Date.now()
+          ? 1
+          : event.endTime.getTime() > Date.now()
+          ? 2
+          : 3;
+      if (event.priority == 1) {
+        event.listingStatus =
+          Object.keys(event.predictionTokenAmounts).length > 0
+            ? 'Predicted'
+            : 'No status';
+      } else if (event.priority == 2) {
+        event.listingStatus = 'Locked';
+      } else {
+        event.listingStatus = event.result ? 'Ended' : 'Pending result';
+      }
+    }
+
     return {
       data: processedRs,
       pageNumber: Number(pageNumber),
