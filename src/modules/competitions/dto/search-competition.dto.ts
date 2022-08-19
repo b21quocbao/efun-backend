@@ -13,4 +13,10 @@ export class SearchCompetitionDto {
   @Transform(({ value }) => Number(value))
   @IsOptional()
   categoryId?: number;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @Transform(({ value }) => Number(value))
+  @IsOptional()
+  userId?: number;
 }

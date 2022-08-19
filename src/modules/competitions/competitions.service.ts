@@ -49,6 +49,13 @@ export class CompetitionsService {
       });
     }
 
+    if (searchCompetitionDto.userId || searchCompetitionDto.userId == 0) {
+      qb.leftJoin('competitions.events', 'events');
+      qb.where('events."userId" = :userId', {
+        userId: searchCompetitionDto.userId,
+      });
+    }
+
     const [rs, total] = await Promise.all([qb.getMany(), qb.getCount()]);
     return {
       data: rs,
