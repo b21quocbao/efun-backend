@@ -36,7 +36,10 @@ export class CategoriesService {
     }
 
     if (searchCategoryDto.userId || searchCategoryDto.userId == 0) {
-      qb.where({ userId: searchCategoryDto.userId });
+      qb.leftJoin('categories.events', 'events');
+      qb.where('events."userId" = :userId', {
+        userId: searchCategoryDto.userId,
+      });
     }
 
     if (searchCategoryDto.name) {
