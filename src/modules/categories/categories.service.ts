@@ -3,7 +3,7 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Response } from 'src/shares/interceptors/response.interceptor';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { CategoryEntity } from './entities/category.entity';
 import { SearchCategoryDto } from './dto/search-category.dto';
 import { plainToClass } from 'class-transformer';
@@ -37,9 +37,16 @@ export class CategoriesService {
 
     if (searchCategoryDto.userId || searchCategoryDto.userId == 0) {
       qb.leftJoin('categories.events', 'events');
-      qb.where('events."userId" = :userId', {
-        userId: searchCategoryDto.userId,
-      });
+      qb.leftJoin('categories.subEvents', 'subEvents');
+      qb.andWhere(
+        new Brackets((qb) => {
+          qb.andWhere('events."userId" = :userId', {
+            userId: searchCategoryDto.userId,
+          }).orWhere('"subEvents"."userId" = :userId', {
+            userId: searchCategoryDto.userId,
+          });
+        }),
+      );
     }
 
     if (searchCategoryDto.name) {
