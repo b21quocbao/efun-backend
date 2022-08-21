@@ -81,10 +81,11 @@ export class EventsService implements OnModuleInit {
       outOfEndTime7day,
       homeList,
       homeListTime,
-      tokenIds,
-      eventTypes,
-      listingStatuses,
     } = plainToClass(GetAllEventDto, request);
+    let { tokenIds, eventTypes, listingStatuses } = plainToClass(
+      GetAllEventDto,
+      request,
+    );
     const qb = this.eventRepository
       .createQueryBuilder('events')
       .leftJoin('events.predictions', 'predictions')
@@ -375,22 +376,31 @@ export class EventsService implements OnModuleInit {
     }
 
     if (tokenIds) {
-      processedRs.filter((rs) => {
+      tokenIds = typeof tokenIds === 'string' ? [tokenIds] : tokenIds;
+      processedRs = processedRs.filter((rs) => {
         const intersection = JSON.parse(rs.metadata).tokens.filter((x) =>
           tokenIds.includes(x),
         );
         return intersection.length > 0;
       });
+      total = processedRs.length;
     }
     if (eventTypes) {
-      processedRs.filter((rs) => {
+      eventTypes = typeof eventTypes === 'string' ? [eventTypes] : eventTypes;
+      processedRs = processedRs.filter((rs) => {
         return eventTypes.includes(JSON.parse(rs.metadata).eventType);
       });
+      total = processedRs.length;
     }
     if (listingStatuses) {
-      processedRs.filter((rs) => {
+      listingStatuses =
+        typeof listingStatuses === 'string'
+          ? [listingStatuses]
+          : listingStatuses;
+      processedRs = processedRs.filter((rs) => {
         return listingStatuses.includes(rs.listingStatus);
       });
+      total = processedRs.length;
     }
 
     if (homeList) {
