@@ -65,6 +65,9 @@ export class UserEntity {
   @Column({ default: false })
   isVerified: boolean;
 
+  @Column({ nullable: true })
+  bannerUrl?: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

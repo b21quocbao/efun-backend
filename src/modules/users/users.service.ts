@@ -131,7 +131,12 @@ export class UsersService {
       .where('users.address ILIKE :address', { address: `%${address}%` })
       .getRawOne();
   }
+
   async updateDescription(id: number, description: string): Promise<void> {
     await this.userRepository.update(id, { description });
+  }
+
+  async updateBannerUrl(id: number, bannerUrl: string): Promise<void> {
+    await this.userRepository.update(id, { bannerUrl });
   }
 }

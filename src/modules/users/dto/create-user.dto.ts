@@ -3,4 +3,5 @@ export class CreateUserDto {
   refreshToken?: string;
   country?: string;
   ip?: string;
+  bannerUrl?: string;
 }
