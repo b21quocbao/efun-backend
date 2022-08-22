@@ -27,7 +27,7 @@ export class UsersController {
   @Get()
   @UseGuards(JwtAuthGuard)
   async getUser(@UserID() userId: number) {
-    return this.usersService.getUser(userId);
+    return this.usersService.findOne(userId);
   }
 
   // @Delete()

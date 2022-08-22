@@ -47,8 +47,21 @@ export class UsersService {
     };
   }
 
-  async findOne(id: number): Promise<UserEntity> {
-    return this.userRepository.findOne(id);
+  async findOne(id: number) {
+    return this.userRepository
+      .createQueryBuilder('users')
+      .leftJoin('users.events', 'events')
+      .leftJoin('events.predictions', 'predictions')
+      .leftJoin('predictions.report', 'report')
+      .select([
+        'users.*',
+        'COUNT(events) as "numEvents"',
+        'COUNT(report.id) as "numReports"',
+        'COUNT(CASE WHEN events."isBlock" THEN 1 END) as "numBlock"',
+      ])
+      .groupBy('users.id')
+      .where('users.id = :id', { id })
+      .getRawOne();
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<UserEntity> {
@@ -98,10 +111,6 @@ export class UsersService {
     return user;
   }
 
-  async getUser(id: number): Promise<UserEntity> {
-    return this.userRepository.findOneOrFail(id);
-  }
-
   async blockUser(id: number): Promise<void> {
     await this.userRepository.update(id, { isBlocked: true });
   }
@@ -109,8 +118,18 @@ export class UsersService {
   async findByAddress(address: string): Promise<UserEntity> {
     return this.userRepository
       .createQueryBuilder('users')
+      .leftJoin('users.events', 'events')
+      .leftJoin('events.predictions', 'predictions')
+      .leftJoin('predictions.report', 'report')
+      .select([
+        'users.*',
+        'COUNT(events) as "numEvents"',
+        'COUNT(report.id) as "numReports"',
+        'COUNT(CASE WHEN events."isBlock" THEN 1 END) as "numBlock"',
+      ])
+      .groupBy('users.id')
       .where('users.address ILIKE :address', { address: `%${address}%` })
-      .getOne();
+      .getRawOne();
   }
   async updateDescription(id: number, description: string): Promise<void> {
     await this.userRepository.update(id, { description });

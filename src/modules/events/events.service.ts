@@ -80,7 +80,6 @@ export class EventsService implements OnModuleInit {
       outOfTimeBeforeEnd,
       outOfEndTime7day,
       homeList,
-      homeListTime,
     } = plainToClass(GetAllEventDto, request);
     let { tokenIds, eventTypes, listingStatuses } = plainToClass(
       GetAllEventDto,
@@ -344,6 +343,14 @@ export class EventsService implements OnModuleInit {
               : priorityA == 2
               ? b.deadline.getTime() - a.deadline.getTime()
               : b.endTime.getTime() - a.endTime.getTime()
+            : priorityA - priorityB;
+        } else if (orderBy == ESortEvent.UPCOMING) {
+          return priorityA == priorityB
+            ? a.deadline.getTime() - b.deadline.getTime()
+            : priorityA - priorityB;
+        } else if (orderBy == ESortEvent.LATEST) {
+          return priorityA == priorityB
+            ? b.createdAt.getTime() - a.createdAt.getTime()
             : priorityA - priorityB;
         }
         return priorityA == priorityB
