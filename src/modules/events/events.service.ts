@@ -372,7 +372,7 @@ export class EventsService implements OnModuleInit {
         event.listingStatus = 'Locked';
       } else {
         event.listingStatus =
-          event.result || event.endTime.getTime() > Date.now() + 172800 * 1000
+          event.result || event.endTime.getTime() + 172800 * 1000 < Date.now()
             ? 'Ended'
             : 'Pending result';
       }
