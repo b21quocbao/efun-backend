@@ -344,10 +344,6 @@ export class EventsService implements OnModuleInit {
               ? b.deadline.getTime() - a.deadline.getTime()
               : b.endTime.getTime() - a.endTime.getTime()
             : priorityA - priorityB;
-        } else if (orderBy == ESortEvent.UPCOMING) {
-          return priorityA == priorityB
-            ? a.deadline.getTime() - b.deadline.getTime()
-            : priorityA - priorityB;
         } else if (orderBy == ESortEvent.LATEST) {
           return priorityA == priorityB
             ? b.createdAt.getTime() - a.createdAt.getTime()
