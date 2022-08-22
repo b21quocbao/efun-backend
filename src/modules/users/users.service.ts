@@ -21,13 +21,24 @@ export class UsersService {
     pageNumber?: number,
     pageSize?: number,
   ): Promise<Response<UserEntity[]>> {
-    const qb = this.userRepository.createQueryBuilder('users');
+    const qb = this.userRepository
+      .createQueryBuilder('users')
+      .leftJoin('users.events', 'events')
+      .leftJoin('events.predictions', 'predictions')
+      .leftJoin('predictions.report', 'report')
+      .select([
+        'users.*',
+        'COUNT(events) as "numEvents"',
+        'COUNT(report.id) as "numReports"',
+        'COUNT(CASE WHEN events."isBlock" THEN 1 END) as "numBlock"',
+      ])
+      .groupBy('users.id');
 
     if (pageSize && pageNumber) {
       qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
     }
 
-    const [rs, total] = await Promise.all([qb.getMany(), qb.getCount()]);
+    const [rs, total] = await Promise.all([qb.getRawMany(), qb.getCount()]);
     return {
       data: rs,
       pageNumber: Number(pageNumber),
