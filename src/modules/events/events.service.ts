@@ -65,6 +65,7 @@ export class EventsService implements OnModuleInit {
       orderBy,
       categoryId,
       userId,
+      loginUserId,
       isHot,
       pageNumber,
       pageSize,
@@ -237,6 +238,9 @@ export class EventsService implements OnModuleInit {
         });
 
         for (const prediction of predictions) {
+          if (prediction.userId == loginUserId) {
+            event.predicted = true;
+          }
           if (!event.predictionTokenAmounts[prediction.token]) {
             event.predictionTokenAmounts[prediction.token] = '0';
           }
@@ -367,10 +371,7 @@ export class EventsService implements OnModuleInit {
           ? 2
           : 3;
       if (event.groupType == 1) {
-        event.listingStatus =
-          Object.keys(event.predictionTokenAmounts).length > 0
-            ? 'Predicted'
-            : 'No status';
+        event.listingStatus = event.predicted > 0 ? 'Predicted' : 'No status';
       } else if (event.groupType == 2) {
         event.listingStatus = 'Locked';
       } else {
