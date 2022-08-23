@@ -128,6 +128,7 @@ export class GetAllEventDto extends PaginationInput {
   @IsOptional()
   status?: EventStatus;
 
+  @ApiPropertyOptional()
   @IsOptional()
   eventId?: number;
 }
