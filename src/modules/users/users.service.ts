@@ -30,7 +30,7 @@ export class UsersService {
         'users.*',
         'COUNT(events) as "numEvents"',
         'COUNT(report.id) as "numReports"',
-        'COUNT(CASE WHEN events."isBlock" THEN 1 END) as "numBlock"',
+        `COUNT(CASE WHEN events."endTime" <= NOW() - INTERVAL '2 DAY' AND events.result IS NULL THEN 1 END) as "numBlock"`,
       ])
       .groupBy('users.id');
 
@@ -57,7 +57,7 @@ export class UsersService {
         'users.*',
         'COUNT(events) as "numEvents"',
         'COUNT(report.id) as "numReports"',
-        'COUNT(CASE WHEN events."isBlock" THEN 1 END) as "numBlock"',
+        `COUNT(CASE WHEN events."endTime" <= NOW() - INTERVAL '2 DAY' AND events.result IS NULL THEN 1 END) as "numBlock"`,
       ])
       .groupBy('users.id')
       .where('users.id = :id', { id })
@@ -125,7 +125,7 @@ export class UsersService {
         'users.*',
         'COUNT(events) as "numEvents"',
         'COUNT(report.id) as "numReports"',
-        'COUNT(CASE WHEN events."isBlock" THEN 1 END) as "numBlock"',
+        `COUNT(CASE WHEN events."endTime" <= NOW() - INTERVAL '2 DAY' AND events.result IS NULL THEN 1 END) as "numBlock"`,
       ])
       .groupBy('users.id')
       .where('users.address ILIKE :address', { address: `%${address}%` })
