@@ -64,7 +64,7 @@ export class FixturesService {
       .leftJoinAndSelect('fixtures.league', 'league')
       .leftJoinAndSelect('fixtures.teamAway', 'teamAway')
       .leftJoinAndSelect('fixtures.teamHome', 'teamHome');
-    const { leagueId, notFinised, search } = plainToClass(
+    const { leagueId, notFinised, search, nullOddMeta } = plainToClass(
       GetFixtureDto,
       getFixtureDto,
     );
@@ -84,6 +84,26 @@ export class FixturesService {
       } else {
         const currentTime = moment.utc().unix();
         qb.andWhere('fixtures."timestamp" <= :currentTime', { currentTime });
+      }
+    }
+
+    if (nullOddMeta === true || nullOddMeta === false) {
+      if (nullOddMeta) {
+        qb.andWhere(
+          new Brackets((qb) => {
+            qb.andWhere('fixtures."oddMeta" is NULL').orWhere(
+              'fixtures."oddMeta" ILIKE :search',
+              {
+                search: `%[]}`,
+              },
+            );
+          }),
+        );
+      } else {
+        qb.andWhere('fixtures."oddMeta" IS NOT NULL');
+        qb.andWhere('fixtures."oddMeta" NOT ILIKE :search', {
+          search: `%[]}`,
+        });
       }
     }
 

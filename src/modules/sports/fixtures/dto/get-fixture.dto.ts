@@ -13,6 +13,12 @@ export class GetFixtureDto {
   notFinised?: boolean;
 
   @ApiPropertyOptional()
+  @Transform(({ value }) => value.toLowerCase() === 'true')
+  @IsOptional()
+  @IsBoolean()
+  nullOddMeta?: boolean;
+
+  @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   search?: string;
