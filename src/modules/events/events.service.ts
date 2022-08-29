@@ -278,7 +278,7 @@ export class EventsService implements OnModuleInit {
           for (const index of Object.keys(
             event.predictionTokenOptionAmounts[token],
           )) {
-            event.predictionTokenOptionAmounts[token][index] = Math.round(
+            event.predictionTokenOptionAmounts[token][index] = Math.trunc(
               event.predictionTokenOptionAmounts[token][index]
                 .div(sum)
                 .toNumber() * 100,

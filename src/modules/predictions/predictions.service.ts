@@ -248,7 +248,7 @@ export class PredictionsService {
         for (const index of Object.keys(
           rs.predictionTokenOptionAmounts[token],
         )) {
-          rs.predictionTokenOptionAmounts[token][index] = Math.round(
+          rs.predictionTokenOptionAmounts[token][index] = Math.trunc(
             rs.predictionTokenOptionAmounts[token][index].div(sum).toNumber() *
               100,
           );
