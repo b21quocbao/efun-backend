@@ -265,6 +265,16 @@ export const predictionABI = [
   },
   {
     inputs: [
+      { internalType: 'uint256[]', name: '_eventIds', type: 'uint256[]' },
+      { internalType: 'address', name: '_token', type: 'address' },
+    ],
+    name: 'claimHostFee',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
       { internalType: 'uint256', name: '_eventId', type: 'uint256' },
       { internalType: 'address[]', name: '_tokens', type: 'address[]' },
     ],
@@ -405,16 +415,6 @@ export const predictionABI = [
     ],
     name: 'getEventInfo',
     outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [{ internalType: 'uint256', name: '_eventId', type: 'uint256' }],
-    name: 'getFee',
-    outputs: [
-      { internalType: 'uint256', name: 'hostFee', type: 'uint256' },
-      { internalType: 'uint256', name: 'platformFee', type: 'uint256' },
-    ],
     stateMutability: 'view',
     type: 'function',
   },
