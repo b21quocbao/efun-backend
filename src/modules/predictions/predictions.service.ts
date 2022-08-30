@@ -78,7 +78,8 @@ export class PredictionsService {
         '"subCategory".name as "subCategory"',
         'user.isVerified as "isUserVerified"',
         'user.address as address',
-        'array_agg(distinct reports.content) as "reportContents"',
+        'array_agg(reports.content) as "reportContents"',
+        'array_agg(reports.typeUpload) as "typeUploads"',
         '"predictUser".address as "userAddress"',
         'transaction."txId" as "transactionNumber"',
         'transaction."blockNumber" as "blockNumber"',
@@ -118,6 +119,9 @@ export class PredictionsService {
       data: await Promise.all(
         rs.map(async (prediction) => {
           prediction.reportContents = prediction.reportContents.filter(
+            (x: any) => x !== null,
+          );
+          prediction.reportTypeUploads = prediction.reportTypeUploads.filter(
             (x: any) => x !== null,
           );
           let status = !prediction.eventResult

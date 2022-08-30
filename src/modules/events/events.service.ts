@@ -107,7 +107,8 @@ export class EventsService implements OnModuleInit {
         '"subCategory".name as "subCategory"',
         'user.isVerified as "isUserVerified"',
         'user.address as address',
-        'array_agg(distinct report.content) as "reportContents"',
+        'array_agg(report.content) as "reportContents"',
+        'array_agg(report.typeUpload) as "reportTypeUploads"',
         'array_agg(distinct predictions.userId) as "participants"',
       ])
       .groupBy('events.id')
@@ -307,6 +308,7 @@ export class EventsService implements OnModuleInit {
       return {
         ...row,
         reportContents: row.reportContents.filter((x: any) => x !== null),
+        reportTypeUploads: row.reportTypeUploads.filter((x: any) => x !== null),
         participants: row.participants.filter((x: any) => x !== null),
         numParticipants: row.participants.filter((x: any) => x !== null).length,
       };

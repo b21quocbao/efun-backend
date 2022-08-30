@@ -22,6 +22,9 @@ export class ReportEntity {
   @Column({ nullable: true })
   status: string;
 
+  @Column({ default: '' })
+  typeUpload: string;
+
   @ManyToOne(() => UserEntity, (user) => user.reports)
   user: UserEntity;
 

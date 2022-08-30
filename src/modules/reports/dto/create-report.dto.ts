@@ -8,6 +8,9 @@ export class CreateReportDto {
   content: string;
 
   @ApiProperty()
+  typeUpload: string;
+
+  @ApiProperty()
   predictionId: number;
 
   userId?: number;
