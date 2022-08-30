@@ -111,21 +111,17 @@ export class FixturesService {
       qb.andWhere(
         new Brackets((qb) => {
           qb.andWhere('league.name ILIKE :search', { search: `%${search}%` })
-            .orWhere('fixtures.sport ILIKE :search', {
-              search: `%${search}%`,
-            })
             .orWhere('teamAway.name ILIKE :search', {
               search: `%${search}%`,
             })
             .orWhere('teamHome.name ILIKE :search', {
               search: `%${search}%`,
-            })
-            .orWhere('fixtures."venueName" ILIKE :search', {
-              search: `%${search}%`,
             });
         }),
       );
     }
+
+    qb.orderBy('fixtures.date');
 
     const [rs, total] = await Promise.all([qb.getMany(), qb.getCount()]);
     return {
