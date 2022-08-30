@@ -79,7 +79,7 @@ export class PredictionsService {
         'user.isVerified as "isUserVerified"',
         'user.address as address',
         'array_agg(reports.content) as "reportContents"',
-        'array_agg(reports.typeUpload) as "typeUploads"',
+        'array_agg(reports.typeUpload) as "reportTypeUploads"',
         '"predictUser".address as "userAddress"',
         'transaction."txId" as "transactionNumber"',
         'transaction."blockNumber" as "blockNumber"',
