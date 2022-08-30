@@ -62,6 +62,7 @@ export class EventsController {
     return this.eventsService.updateResultProof(
       +id,
       updateResultProofDto.resultProofUrl,
+      updateResultProofDto.typeUpload,
     );
   }
 

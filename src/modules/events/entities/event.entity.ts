@@ -89,6 +89,9 @@ export class EventEntity {
   @Column({ nullable: true })
   resultProofUrl?: string;
 
+  @Column({ nullable: true })
+  typeUpload?: string;
+
   @Column({ default: '' })
   description: string;
 

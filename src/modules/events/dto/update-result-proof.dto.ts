@@ -5,4 +5,8 @@ export class UpdateResultProofDto {
   @ApiProperty()
   @IsString()
   resultProofUrl: string;
+
+  @ApiProperty()
+  @IsString()
+  typeUpload: string;
 }

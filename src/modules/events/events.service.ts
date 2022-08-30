@@ -465,8 +465,12 @@ export class EventsService implements OnModuleInit {
     await this.eventRepository.update(id, { views: () => 'views + 1' });
   }
 
-  async updateResultProof(id: number, resultProofUrl: string): Promise<void> {
-    await this.eventRepository.update(id, { resultProofUrl });
+  async updateResultProof(
+    id: number,
+    resultProofUrl: string,
+    typeUpload: string,
+  ): Promise<void> {
+    await this.eventRepository.update(id, { resultProofUrl, typeUpload });
   }
 
   async updateStreamUrl(id: number, streamUrl: string): Promise<void> {
