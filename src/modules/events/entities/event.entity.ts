@@ -119,6 +119,9 @@ export class EventEntity {
   @Column({ nullable: true })
   competitionId?: number;
 
+  @Column({ nullable: true })
+  leagueId?: number;
+
   @Column({ default: false })
   isHot: boolean;
 

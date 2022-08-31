@@ -44,6 +44,10 @@ export class CreateEventDto {
   @IsOptional()
   competitionId?: number;
 
+  @IsNumber()
+  @IsOptional()
+  leagueId?: number;
+
   @IsString()
   type: EventType;
 

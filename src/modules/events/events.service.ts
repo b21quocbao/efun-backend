@@ -76,6 +76,7 @@ export class EventsService implements OnModuleInit {
       outOfEndTime,
       subCategoryId,
       competitionId,
+      leagueId,
       haveReport,
       biggestToken,
       outOfTimeBeforeEnd,
@@ -151,6 +152,9 @@ export class EventsService implements OnModuleInit {
     }
     if (competitionId) {
       qb.andWhere('events.competitionId = :competitionId', { competitionId });
+    }
+    if (leagueId) {
+      qb.andWhere('events.leagueId = :leagueId', { leagueId });
     }
     if (eventId || eventId === 0) {
       qb.andWhere('events.id = :eventId', { eventId });

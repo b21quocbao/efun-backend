@@ -41,6 +41,12 @@ export class GetAllEventDto extends PaginationInput {
   @Transform(({ value }) => Number(value))
   @IsOptional()
   @IsNumber()
+  leagueId?: number;
+
+  @ApiPropertyOptional()
+  @Transform(({ value }) => Number(value))
+  @IsOptional()
+  @IsNumber()
   subCategoryId?: number;
 
   @ApiPropertyOptional()
