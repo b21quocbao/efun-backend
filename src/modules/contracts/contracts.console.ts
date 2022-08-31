@@ -98,9 +98,10 @@ export class ContractConsole implements OnModuleInit {
             competitionId: result.competitionId.length
               ? Number(result.competitionId)
               : undefined,
-            leagueId: result.leagueId.length
-              ? Number(result.leagueId)
-              : undefined,
+            leagueId:
+              result.leagueId && result.leagueId.length
+                ? Number(result.leagueId)
+                : undefined,
             type: result.type,
             marketType: result.marketType.length
               ? result.marketType
