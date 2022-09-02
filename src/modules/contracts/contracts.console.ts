@@ -123,9 +123,6 @@ export class ContractConsole implements OnModuleInit {
       console.log(`Processing event ${JSON.stringify(event.returnValues)}`);
       console.log(`Handle item with id ${event.returnValues.eventId}`);
 
-      const user = await this.usersService.findByAddress(
-        event.returnValues.caller,
-      );
       const eventEntity = await this.eventsService.findOne(
         event.returnValues.eventId,
       );
@@ -136,7 +133,7 @@ export class ContractConsole implements OnModuleInit {
         event.transactionHash,
       );
 
-      if (user && eventEntity && !transactionEntity) {
+      if (eventEntity && !transactionEntity) {
         const transaction = await this.transactionsService.create({
           contractAddress: event.address,
           gas: receipt?.gasUsed,
