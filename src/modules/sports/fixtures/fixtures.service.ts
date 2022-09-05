@@ -62,6 +62,7 @@ export class FixturesService {
     const qb = this.fixtureRepository
       .createQueryBuilder('fixtures')
       .leftJoinAndSelect('fixtures.league', 'league')
+      .leftJoinAndSelect('fixtures.round', 'round')
       .leftJoinAndSelect('fixtures.teamAway', 'teamAway')
       .leftJoinAndSelect('fixtures.teamHome', 'teamHome');
     const { leagueId, notFinised, search, nullOddMeta } = plainToClass(
@@ -115,6 +116,12 @@ export class FixturesService {
               search: `%${search}%`,
             })
             .orWhere('teamHome.name ILIKE :search', {
+              search: `%${search}%`,
+            })
+            .orWhere('fixtures."venueName" ILIKE :search', {
+              search: `%${search}%`,
+            })
+            .orWhere('round."name" ILIKE :search', {
               search: `%${search}%`,
             });
         }),
