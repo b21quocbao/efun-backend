@@ -65,10 +65,8 @@ export class FixturesService {
       .leftJoinAndSelect('fixtures.round', 'round')
       .leftJoinAndSelect('fixtures.teamAway', 'teamAway')
       .leftJoinAndSelect('fixtures.teamHome', 'teamHome');
-    const { leagueId, notFinised, search, nullOddMeta } = plainToClass(
-      GetFixtureDto,
-      getFixtureDto,
-    );
+    const { leagueId, notFinised, search, nullOddMeta, fixtureId } =
+      plainToClass(GetFixtureDto, getFixtureDto);
 
     if (leagueId || leagueId === 0) {
       qb.where('fixtures."leagueId" = :leagueId', { leagueId });
@@ -125,6 +123,10 @@ export class FixturesService {
             });
         }),
       );
+    }
+
+    if (fixtureId || fixtureId === 0) {
+      qb.andWhere('fixtures.id = :fixtureId', { fixtureId });
     }
 
     if (pageSize && pageNumber) {

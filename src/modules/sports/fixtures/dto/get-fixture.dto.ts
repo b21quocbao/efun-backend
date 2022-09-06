@@ -22,4 +22,8 @@ export class GetFixtureDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  fixtureId?: number;
 }
