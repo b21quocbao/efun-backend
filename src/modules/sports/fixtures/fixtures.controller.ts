@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { FixturesService } from './fixtures.service';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'src/shares/interceptors/response.interceptor';
@@ -19,6 +19,12 @@ export class FixturesController {
     @Query() getFixtureDto: GetFixtureDto,
   ): Promise<Response<FixtureEntity[]>> {
     return this.fixturesService.findAll(getFixtureDto, pageNumber, pageSize);
+  }
+
+  @Get(':id')
+  async findOne(@Param('id') id: string): Promise<FixtureEntity> {
+    const { data } = await this.fixturesService.findAll({ fixtureId: +id });
+    return data[0];
   }
 
   @Get('goals')
