@@ -70,10 +70,6 @@ export class FixturesService {
       getFixtureDto,
     );
 
-    if (pageSize && pageNumber) {
-      qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
-    }
-
     if (leagueId || leagueId === 0) {
       qb.where('fixtures."leagueId" = :leagueId', { leagueId });
     }
@@ -87,23 +83,24 @@ export class FixturesService {
         qb.andWhere('fixtures."timestamp" <= :currentTime', { currentTime });
       }
     }
+    console.log(nullOddMeta, 'Line #90 fixtures.service.ts');
 
     if (nullOddMeta === true || nullOddMeta === false) {
       if (nullOddMeta) {
         qb.andWhere(
           new Brackets((qb) => {
             qb.andWhere('fixtures."oddMeta" is NULL').orWhere(
-              'fixtures."oddMeta" ILIKE :search',
+              'fixtures."oddMeta" ILIKE :oddMeta',
               {
-                search: `%[]}`,
+                oddMeta: `%[]}`,
               },
             );
           }),
         );
       } else {
         qb.andWhere('fixtures."oddMeta" IS NOT NULL');
-        qb.andWhere('fixtures."oddMeta" NOT ILIKE :search', {
-          search: `%[]}`,
+        qb.andWhere('fixtures."oddMeta" NOT ILIKE :oddMeta', {
+          oddMeta: `%[]}`,
         });
       }
     }
@@ -111,21 +108,27 @@ export class FixturesService {
     if (search) {
       qb.andWhere(
         new Brackets((qb) => {
-          qb.andWhere('league.name ILIKE :search', { search: `%${search}%` })
-            .orWhere('teamAway.name ILIKE :search', {
-              search: `%${search}%`,
+          qb.andWhere('league.name ILIKE :leagueName', {
+            leagueName: `%${search}%`,
+          })
+            .orWhere('teamAway.name ILIKE :teamAwayName', {
+              teamAwayName: `%${search}%`,
             })
-            .orWhere('teamHome.name ILIKE :search', {
-              search: `%${search}%`,
+            .orWhere('teamHome.name ILIKE :teamHomeName', {
+              teamHomeName: `%${search}%`,
             })
-            .orWhere('fixtures."venueName" ILIKE :search', {
-              search: `%${search}%`,
+            .orWhere('fixtures."venueName" ILIKE :venueName', {
+              venueName: `%${search}%`,
             })
-            .orWhere('round."name" ILIKE :search', {
-              search: `%${search}%`,
+            .orWhere('round."name" ILIKE :roundName', {
+              roundName: `%${search}%`,
             });
         }),
       );
+    }
+
+    if (pageSize && pageNumber) {
+      qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
     }
 
     qb.orderBy('fixtures.date');
