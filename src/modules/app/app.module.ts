@@ -17,6 +17,7 @@ import { NotificationEntity } from '../notifications/entities/notification.entit
 import { NotificationsModule } from '../notifications/notifications.module';
 import { PoolEntity } from '../pools/entities/pool.entity';
 import { PoolsModule } from '../pools/pools.module';
+import { AnalyticsModule } from '../analytics/analytics.module';
 import { PredictionEntity } from '../predictions/entities/prediction.entity';
 import { PredictionsModule } from '../predictions/predictions.module';
 import { ReportEntity } from '../reports/entities/report.entity';
@@ -45,6 +46,7 @@ import { UserEntity } from '../users/entities/user.entity';
 import { UsersModule } from '../users/users.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AnalyticEntity } from '../analytics/entities/analytic.entity';
 
 @Module({
   imports: [
@@ -81,6 +83,7 @@ import { AppService } from './app.service';
           GoalEntity,
           BetEntity,
           BookmakerEntity,
+          AnalyticEntity,
         ],
         synchronize: process.env.APP_ENV === 'local',
         schema: configService.get<string>('DB_SCHEMA'),
@@ -100,6 +103,7 @@ import { AppService } from './app.service';
     LatestBlockModule,
     NotificationsModule,
     PoolsModule,
+    AnalyticsModule,
     PredictionsModule,
     ReportsModule,
     TransactionsModule,

@@ -6,11 +6,13 @@ import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { UserEntity } from '../users/entities/user.entity';
+import { AnalyticsService } from '../analytics/analytics.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UsersService,
+    private analyticService: AnalyticsService,
     private jwtService: JwtService,
   ) {}
 
@@ -94,6 +96,7 @@ export class AuthService {
     if (geoData) {
       await this.userService.setCountry(ip, geoData.country, user.id);
     }
+    await this.analyticService.updateCount();
 
     return response;
   }
