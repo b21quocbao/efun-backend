@@ -1,0 +1,32 @@
+export class CreateGameDto {
+  bcMatchMeta?: string;
+  bcResult?: boolean;
+  bcResultMeta?: string;
+  remoteId?: number;
+  hot?: boolean;
+  referee?: string;
+  timezone?: string;
+  date?: Date;
+  timestamp?: number;
+  periodsFirst?: number;
+  periodsSecond?: number;
+  venueRemoteId?: number;
+  venueName?: string;
+  venueCity?: string;
+  statusLong?: string;
+  statusShort?: string;
+  statusElapsed?: number;
+  countryId?: number;
+  leagueId?: number;
+  seasonId?: number;
+  teamHomeId?: number;
+  teamAwayId?: number;
+  teamWinnerId?: number;
+  gameMeta?: string;
+  leagueMeta?: string;
+  teamsMeta?: string;
+  goalsMeta?: string;
+  scoreMeta?: string;
+  meta?: string;
+  oddMeta?: string;
+}
