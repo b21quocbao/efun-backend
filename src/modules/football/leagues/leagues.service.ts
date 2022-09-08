@@ -46,7 +46,8 @@ export class LeaguesService {
     );
     const qb = this.leagueRepository
       .createQueryBuilder('leagues')
-      .leftJoin('leagues.fixtures', 'fixtures');
+      .leftJoin('leagues.fixtures', 'fixtures')
+      .groupBy('leagues.id');
 
     if (pageSize && pageNumber) {
       qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
