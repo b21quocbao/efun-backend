@@ -5,6 +5,7 @@ import { SeasonsService } from '../seasons/seasons.service';
 import { CountriesService } from '../countries/countries.service';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { CronJob } from 'cron';
+import { ranking } from 'helpers/ranking';
 
 @Injectable()
 export class LeaguesConsole implements OnModuleInit {
@@ -62,6 +63,7 @@ export class LeaguesConsole implements OnModuleInit {
                       name: item.league.name,
                       type: item.league.type,
                       logo: item.league.logo,
+                      order: ranking[item.league.id],
                       startDate: startDate,
                       endDate: endDate,
                       meta: JSON.stringify(item),
