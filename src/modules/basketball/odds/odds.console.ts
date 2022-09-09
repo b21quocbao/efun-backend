@@ -104,7 +104,7 @@ export class OddsConsole implements OnModuleInit {
     );
     this.schedulerRegistry.addCronJob(
       'basketball_oddSchedule',
-      new CronJob(process.env.BASKETBALL_CRONT_GAME_H2H, oddSchedule),
+      new CronJob(process.env.BASKETBALL_CRONT_GAME_ODD, oddSchedule),
     );
     this.schedulerRegistry.getCronJob('basketball_betSchedule').start();
     this.schedulerRegistry.getCronJob('basketball_bookmakerSchedule').start();
