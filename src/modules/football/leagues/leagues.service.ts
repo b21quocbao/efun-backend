@@ -44,9 +44,12 @@ export class LeaguesService {
       GetLeagueDto,
       getLeagueDto,
     );
+    const currentTime = moment.utc().unix();
     const qb = this.leagueRepository
       .createQueryBuilder('leagues')
       .leftJoin('leagues.fixtures', 'fixtures')
+      .select('leagues.*')
+      .addSelect('MIN(fixtures.timestamp)', 'minTimestamp')
       .groupBy('leagues.id');
 
     if (pageSize && pageNumber) {
@@ -55,10 +58,8 @@ export class LeaguesService {
 
     if (notFinised === true || notFinised === false) {
       if (notFinised) {
-        const currentTime = moment.utc().unix();
         qb.andWhere('fixtures."timestamp" > :currentTime', { currentTime });
       } else {
-        const currentTime = moment.utc().unix();
         qb.andWhere('fixtures."timestamp" <= :currentTime', { currentTime });
       }
     }
@@ -83,7 +84,7 @@ export class LeaguesService {
       }
     }
 
-    const [rs, total] = await Promise.all([qb.getMany(), qb.getCount()]);
+    const [rs, total] = await Promise.all([qb.getRawMany(), qb.getCount()]);
     return {
       data: rs,
       pageNumber: Number(pageNumber),
