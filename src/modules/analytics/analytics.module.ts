@@ -4,10 +4,12 @@ import { AnalyticsService } from './analytics.service';
 import { AnalyticsController } from './analytics.controller';
 import { AnalyticEntity } from './entities/analytic.entity';
 import { UserEntity } from '../users/entities/user.entity';
+import { EventEntity } from '../events/entities/event.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([AnalyticEntity]),
+    TypeOrmModule.forFeature([EventEntity]),
     TypeOrmModule.forFeature([UserEntity]),
   ],
   controllers: [AnalyticsController],

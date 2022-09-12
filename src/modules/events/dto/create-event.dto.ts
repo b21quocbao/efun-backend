@@ -79,6 +79,8 @@ export class CreateEventDto {
   @IsString()
   metadata: string;
 
+  playType?: string;
+
   @IsBoolean()
   affiliate: boolean;
 

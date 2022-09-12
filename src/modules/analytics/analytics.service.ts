@@ -5,7 +5,9 @@ import { Repository } from 'typeorm';
 import { AnalyticEntity } from './entities/analytic.entity';
 import { UserEntity } from '../users/entities/user.entity';
 import { CountNewWalletDto } from './dto/count-new-wallet.dto';
+import { CountNewEventDto } from './dto/count-new-event.dto';
 import { plainToClass } from 'class-transformer';
+import { EventEntity } from '../events/entities/event.entity';
 
 @Injectable()
 export class AnalyticsService {
@@ -14,6 +16,8 @@ export class AnalyticsService {
     private analyticRepository: Repository<AnalyticEntity>,
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
+    @InjectRepository(EventEntity)
+    private eventRepository: Repository<EventEntity>,
   ) {}
 
   async updateCount(): Promise<void> {
@@ -54,6 +58,26 @@ export class AnalyticsService {
         },
       )
       .getCount();
+  }
+
+  async countNewEvent(countNewEventDto: CountNewEventDto): Promise<any[]> {
+    const { startTime, endTime } = plainToClass(
+      CountNewEventDto,
+      countNewEventDto,
+    );
+    return this.eventRepository
+      .createQueryBuilder('events')
+      .select('COUNT(*) AS cnt')
+      .addSelect('events."playType"')
+      .where(
+        'events."createdAt" >= :startTime AND events."createdAt" < :endTime',
+        {
+          startTime: startTime,
+          endTime: endTime,
+        },
+      )
+      .groupBy('events."playType"')
+      .getRawMany();
   }
 
   async findAll(

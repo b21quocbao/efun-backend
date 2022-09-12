@@ -101,6 +101,9 @@ export class EventEntity {
   @Column({ default: MarketType.None })
   marketType: MarketType;
 
+  @Column({ default: '' })
+  playType: string;
+
   @Column()
   userId: number;
 

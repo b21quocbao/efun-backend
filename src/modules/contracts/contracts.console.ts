@@ -107,6 +107,7 @@ export class ContractConsole implements OnModuleInit {
               ? result.marketType
               : undefined,
             description: result.description,
+            playType: JSON.parse(result.metadata).eventType,
             metadata: result.metadata,
             affiliate: event.returnValues.affiliate,
             hostFee: event.returnValues._hostFee,
