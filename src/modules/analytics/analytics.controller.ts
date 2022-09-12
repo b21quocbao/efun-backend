@@ -6,6 +6,7 @@ import { PaginationInput } from 'src/shares/pagination/pagination.dto';
 import { AnalyticEntity } from './entities/analytic.entity';
 import { CountNewWalletDto } from './dto/count-new-wallet.dto';
 import { CountNewEventDto } from './dto/count-new-event.dto';
+import { CountNewPredictionDto } from './dto/count-new-prediction.dto';
 
 @ApiTags('Analytics')
 @Controller('analytics')
@@ -32,6 +33,13 @@ export class AnalyticsController {
   @Get('count-new-event')
   async countNewEvent(@Query() request: CountNewEventDto): Promise<any[]> {
     return this.analyticsService.countNewEvent(request);
+  }
+
+  @Get('count-new-prediction')
+  async countNewPrediction(
+    @Query() request: CountNewPredictionDto,
+  ): Promise<any[]> {
+    return this.analyticsService.countNewPrediction(request);
   }
 
   @Get(':id')

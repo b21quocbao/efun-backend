@@ -8,6 +8,8 @@ import { CountNewWalletDto } from './dto/count-new-wallet.dto';
 import { CountNewEventDto } from './dto/count-new-event.dto';
 import { plainToClass } from 'class-transformer';
 import { EventEntity } from '../events/entities/event.entity';
+import { PredictionEntity } from '../predictions/entities/prediction.entity';
+import { CountNewPredictionDto } from './dto/count-new-prediction.dto';
 
 @Injectable()
 export class AnalyticsService {
@@ -18,6 +20,8 @@ export class AnalyticsService {
     private userRepository: Repository<UserEntity>,
     @InjectRepository(EventEntity)
     private eventRepository: Repository<EventEntity>,
+    @InjectRepository(PredictionEntity)
+    private predictionRepository: Repository<PredictionEntity>,
   ) {}
 
   async updateCount(): Promise<void> {
@@ -77,6 +81,29 @@ export class AnalyticsService {
         },
       )
       .groupBy('events."playType"')
+      .getRawMany();
+  }
+
+  async countNewPrediction(
+    countNewPredictionDto: CountNewPredictionDto,
+  ): Promise<any[]> {
+    const { startTime, endTime } = plainToClass(
+      CountNewPredictionDto,
+      countNewPredictionDto,
+    );
+    return this.predictionRepository
+      .createQueryBuilder('predictions')
+      .select('COUNT(*) AS cnt')
+      .leftJoin('predictions.event', 'event')
+      .addSelect('event."playType"')
+      .where(
+        'predictions."createdAt" >= :startTime AND predictions."createdAt" < :endTime',
+        {
+          startTime: startTime,
+          endTime: endTime,
+        },
+      )
+      .groupBy('event."playType"')
       .getRawMany();
   }
 
