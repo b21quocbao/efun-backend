@@ -579,6 +579,12 @@ export class EventsService implements OnModuleInit {
         continue;
       }
       const goalsMeta = JSON.parse(event.goalsMeta);
+      await this.updateScores(
+        +eventId,
+        goalsMeta.home + goalsMeta.away,
+        goalsMeta.home,
+        goalsMeta.away,
+      );
       arr.push(await getResult(event, goalsMeta.home, goalsMeta.away));
     }
     return { data: arr.join(',') + ',' };
