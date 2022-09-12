@@ -4,6 +4,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'src/shares/interceptors/response.interceptor';
 import { PaginationInput } from 'src/shares/pagination/pagination.dto';
 import { AnalyticEntity } from './entities/analytic.entity';
+import { CountNewWalletDto } from './dto/count-new-wallet.dto';
 
 @ApiTags('Analytics')
 @Controller('analytics')
@@ -20,6 +21,11 @@ export class AnalyticsController {
   @Get('date/:date')
   async findOneByDate(@Param('date') date: string): Promise<AnalyticEntity> {
     return this.analyticsService.findOneByDate(date);
+  }
+
+  @Get('count-new-wallet')
+  async countNewWallet(@Query() request: CountNewWalletDto): Promise<number> {
+    return this.analyticsService.countNewWallet(request);
   }
 
   @Get(':id')

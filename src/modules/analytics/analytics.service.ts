@@ -3,12 +3,17 @@ import { Response } from 'src/shares/interceptors/response.interceptor';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AnalyticEntity } from './entities/analytic.entity';
+import { UserEntity } from '../users/entities/user.entity';
+import { CountNewWalletDto } from './dto/count-new-wallet.dto';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class AnalyticsService {
   constructor(
     @InjectRepository(AnalyticEntity)
     private analyticRepository: Repository<AnalyticEntity>,
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
   ) {}
 
   async updateCount(): Promise<void> {
@@ -32,6 +37,23 @@ export class AnalyticsService {
       'count',
       1,
     );
+  }
+
+  async countNewWallet(countNewWalletDto: CountNewWalletDto): Promise<number> {
+    const { startTime, endTime } = plainToClass(
+      CountNewWalletDto,
+      countNewWalletDto,
+    );
+    return this.userRepository
+      .createQueryBuilder('users')
+      .where(
+        'users."createdAt" >= :startTime AND users."createdAt" < :endTime',
+        {
+          startTime: startTime,
+          endTime: endTime,
+        },
+      )
+      .getCount();
   }
 
   async findAll(
