@@ -129,7 +129,7 @@ export class ContractConsole implements OnModuleInit {
         event.returnValues.eventId,
       );
 
-      if (event.returnValues.caller.toLowerCase() === process.env.OPERATOR) {
+      if (eventEntity.pro) {
         event.returnValues.index -= 1;
       }
 
