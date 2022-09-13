@@ -111,6 +111,52 @@ export class AnalyticsService {
     return qb.groupBy('event."playType"').getRawMany();
   }
 
+  async countNewUserEvent(countNewEventDto: CountNewEventDto): Promise<any[]> {
+    const { startTime, endTime, token } = plainToClass(
+      CountNewEventDto,
+      countNewEventDto,
+    );
+    const qb = this.userRepository
+      .createQueryBuilder('users')
+      .select('COUNT(DISTINCT users.id) AS cnt')
+      .leftJoin('users.events', 'events')
+      .where(
+        'events."createdAt" >= :startTime AND events."createdAt" < :endTime',
+        {
+          startTime: startTime,
+          endTime: endTime,
+        },
+      );
+    if (token) {
+      qb.andWhere(':token = ANY(events.tokens)', { token });
+    }
+    return qb.getRawMany();
+  }
+
+  async countNewUserPrediction(
+    countNewEventDto: CountNewEventDto,
+  ): Promise<any[]> {
+    const { startTime, endTime, token } = plainToClass(
+      CountNewEventDto,
+      countNewEventDto,
+    );
+    const qb = this.userRepository
+      .createQueryBuilder('users')
+      .select('COUNT(DISTINCT users.id) AS cnt')
+      .leftJoin('users.predictions', 'predictions')
+      .where(
+        'predictions."createdAt" >= :startTime AND predictions."createdAt" < :endTime',
+        {
+          startTime: startTime,
+          endTime: endTime,
+        },
+      );
+    if (token) {
+      qb.andWhere('predictions.token = :token', { token });
+    }
+    return qb.getRawMany();
+  }
+
   async findAll(
     pageNumber?: number,
     pageSize?: number,

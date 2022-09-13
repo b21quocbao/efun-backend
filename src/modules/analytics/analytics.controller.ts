@@ -42,6 +42,18 @@ export class AnalyticsController {
     return this.analyticsService.countNewPrediction(request);
   }
 
+  @Get('count-new-user-event')
+  async countNewUserEvent(@Query() request: CountNewEventDto): Promise<any[]> {
+    return this.analyticsService.countNewUserEvent(request);
+  }
+
+  @Get('count-new-user-prediction')
+  async countNewUserPrediction(
+    @Query() request: CountNewPredictionDto,
+  ): Promise<any[]> {
+    return this.analyticsService.countNewUserPrediction(request);
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<AnalyticEntity> {
     return this.analyticsService.findOne(+id);
