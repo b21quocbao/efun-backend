@@ -52,11 +52,11 @@ export class EventsService implements OnModuleInit {
     // // console.log(events, 'Line #52 events.service.ts');
     // for (const event of events) {
     //   console.log(
-    //     JSON.parse(event.metadata).eventType,
+    //     JSON.parse(event.metadata).tokens,
     //     'Line #54 events.service.ts',
     //   );
     //   await this.update(event.id, {
-    //     playType: JSON.parse(event.metadata).eventType,
+    //     tokens: JSON.parse(event.metadata).tokens,
     //   });
     // }
 

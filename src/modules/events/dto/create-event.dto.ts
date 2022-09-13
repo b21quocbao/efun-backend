@@ -81,6 +81,8 @@ export class CreateEventDto {
 
   playType?: string;
 
+  tokens?: string[];
+
   @IsBoolean()
   affiliate: boolean;
 

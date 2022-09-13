@@ -143,6 +143,9 @@ export class EventEntity {
   @Column({ default: 0 })
   hostFee: number;
 
+  @Column('text', { default: [], array: true })
+  tokens: string[];
+
   @OneToOne(() => TransactionEntity)
   @JoinColumn()
   transaction?: TransactionEntity;
