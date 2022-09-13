@@ -1,6 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsDate } from 'class-validator';
+import { IsDate, IsOptional, IsString } from 'class-validator';
 
 export class CountNewEventDto {
   @ApiProperty()
@@ -12,4 +12,9 @@ export class CountNewEventDto {
   @Transform(({ value }) => new Date(value))
   @IsDate()
   endTime: Date;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  token?: string;
 }

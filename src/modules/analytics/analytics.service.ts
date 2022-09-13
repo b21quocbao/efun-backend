@@ -65,11 +65,11 @@ export class AnalyticsService {
   }
 
   async countNewEvent(countNewEventDto: CountNewEventDto): Promise<any[]> {
-    const { startTime, endTime } = plainToClass(
+    const { startTime, endTime, token } = plainToClass(
       CountNewEventDto,
       countNewEventDto,
     );
-    return this.eventRepository
+    const qb = this.eventRepository
       .createQueryBuilder('events')
       .select('COUNT(*) AS cnt')
       .addSelect('events."playType"')
@@ -79,19 +79,21 @@ export class AnalyticsService {
           startTime: startTime,
           endTime: endTime,
         },
-      )
-      .groupBy('events."playType"')
-      .getRawMany();
+      );
+    if (token) {
+      qb.andWhere(':token = ANY(events.tokens)', { token });
+    }
+    return qb.groupBy('events."playType"').getRawMany();
   }
 
   async countNewPrediction(
     countNewPredictionDto: CountNewPredictionDto,
   ): Promise<any[]> {
-    const { startTime, endTime } = plainToClass(
+    const { startTime, endTime, token } = plainToClass(
       CountNewPredictionDto,
       countNewPredictionDto,
     );
-    return this.predictionRepository
+    const qb = this.predictionRepository
       .createQueryBuilder('predictions')
       .select('COUNT(*) AS cnt')
       .leftJoin('predictions.event', 'event')
@@ -102,9 +104,11 @@ export class AnalyticsService {
           startTime: startTime,
           endTime: endTime,
         },
-      )
-      .groupBy('event."playType"')
-      .getRawMany();
+      );
+    if (token) {
+      qb.andWhere('predictions.token = :token', { token });
+    }
+    return qb.groupBy('event."playType"').getRawMany();
   }
 
   async findAll(
