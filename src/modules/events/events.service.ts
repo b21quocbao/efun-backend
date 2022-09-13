@@ -117,6 +117,7 @@ export class EventsService implements OnModuleInit {
         'competition.name as competition',
         'category.name as category',
         'fixture.goalsMeta as "goalsMeta"',
+        'fixture.statusShort as "statusShort"',
         '"subCategory".name as "subCategory"',
         'user.isVerified as "isUserVerified"',
         'user.address as address',
@@ -574,7 +575,7 @@ export class EventsService implements OnModuleInit {
       arr.push(+eventId);
       const { data } = await this.findAll({ eventId: +eventId });
       const event = data[0];
-      if (!event || !event.goalsMeta) {
+      if (!event || !event.goalsMeta || event.statusShort == 'PST') {
         arr.push(0);
         continue;
       }
