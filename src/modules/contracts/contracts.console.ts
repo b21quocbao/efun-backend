@@ -129,13 +129,26 @@ export class ContractConsole implements OnModuleInit {
         event.returnValues.eventId,
       );
 
+      if (event.returnValues.caller.toLowerCase() === process.env.OPERATOR) {
+        event.returnValues.index -= 1;
+      }
+
       if (eventEntity) {
-        await this.eventsService.update(eventEntity.id, {
-          result: JSON.parse(eventEntity.options)[event.returnValues.index],
-          finalTime: new Date(event.returnValues.finalTime * 1000),
-          claimTime: new Date(event.returnValues.claimTime * 1000),
-          status: EventStatus.FINISH,
-        });
+        if (event.returnValues.index == -1) {
+          await this.eventsService.update(eventEntity.id, {
+            result: JSON.parse(eventEntity.options)[event.returnValues.index],
+            finalTime: new Date(event.returnValues.finalTime * 1000),
+            claimTime: new Date(event.returnValues.claimTime * 1000),
+            isBlock: true,
+          });
+        } else {
+          await this.eventsService.update(eventEntity.id, {
+            result: JSON.parse(eventEntity.options)[event.returnValues.index],
+            finalTime: new Date(event.returnValues.finalTime * 1000),
+            claimTime: new Date(event.returnValues.claimTime * 1000),
+            status: EventStatus.FINISH,
+          });
+        }
       }
     };
 
