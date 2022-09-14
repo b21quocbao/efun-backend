@@ -63,6 +63,7 @@ export class PredictionsService {
         'event.endTime as "endTime"',
         'event.odds as odds',
         'event.options as options',
+        'event.pro as pro',
         'event.type as type',
         'event.marketType as "marketType"',
         'event.metadata as metadata',
