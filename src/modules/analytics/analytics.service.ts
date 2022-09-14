@@ -10,6 +10,8 @@ import { plainToClass } from 'class-transformer';
 import { EventEntity } from '../events/entities/event.entity';
 import { PredictionEntity } from '../predictions/entities/prediction.entity';
 import { CountNewPredictionDto } from './dto/count-new-prediction.dto';
+import BigNumber from 'bignumber.js';
+BigNumber.config({ EXPONENTIAL_AT: 100 });
 
 @Injectable()
 export class AnalyticsService {
@@ -134,11 +136,11 @@ export class AnalyticsService {
   }
 
   async countNewUserPrediction(
-    countNewEventDto: CountNewEventDto,
+    countNewPredictionDto: CountNewPredictionDto,
   ): Promise<any[]> {
     const { startTime, endTime, token } = plainToClass(
-      CountNewEventDto,
-      countNewEventDto,
+      CountNewPredictionDto,
+      countNewPredictionDto,
     );
     const qb = this.userRepository
       .createQueryBuilder('users')
@@ -155,6 +157,140 @@ export class AnalyticsService {
       qb.andWhere('predictions.token = :token', { token });
     }
     return qb.getRawMany();
+  }
+
+  async p2pPredictions(
+    countNewPredictionDto: CountNewPredictionDto,
+  ): Promise<any> {
+    const { startTime, endTime, token } = plainToClass(
+      CountNewPredictionDto,
+      countNewPredictionDto,
+    );
+    const metric1 = this.predictionRepository
+      .createQueryBuilder('predictions')
+      .select('COUNT(*)', 'cnt')
+      .addSelect('LEAST(event.pro, 1)', 'pro')
+      .leftJoin('predictions.event', 'event')
+      .where(
+        'predictions."createdAt" >= :startTime AND predictions."createdAt" < :endTime',
+        {
+          startTime: startTime,
+          endTime: endTime,
+        },
+      )
+      .where(`event."playType" = 'user vs pool'`)
+      .groupBy('LEAST(event.pro, 1)');
+
+    const metric2_1 = this.predictionRepository
+      .createQueryBuilder('predictions')
+      .select('COUNT(DISTINCT predictions.id)', 'totalPredictions')
+      .addSelect('SUM(predictions.amount::numeric)', 'totalPredictedPool')
+      .leftJoin('predictions.event', 'event')
+      .where(
+        'predictions."createdAt" >= :startTime AND predictions."createdAt" < :endTime',
+        {
+          startTime: startTime,
+          endTime: endTime,
+        },
+      )
+      .where(`event."playType" = 'user vs pool'`);
+    const metric2_2 = this.eventRepository
+      .createQueryBuilder('events')
+      .leftJoin('events.predictions', 'predictions')
+      .select('events.id', 'eventId')
+      .addSelect('COUNT(DISTINCT predictions.id)', 'totalPredictions')
+      .addSelect('SUM(predictions.amount::numeric)', 'totalPredictedPool')
+      .where(
+        'predictions."createdAt" >= :startTime AND predictions."createdAt" < :endTime',
+        {
+          startTime: startTime,
+          endTime: endTime,
+        },
+      )
+      .andWhere(
+        'events."createdAt" >= :startTime AND events."createdAt" < :endTime',
+        {
+          startTime: startTime,
+          endTime: endTime,
+        },
+      )
+      .where(`events."playType" = 'user vs pool'`)
+      .groupBy('events.id');
+
+    const metric2_3 = this.predictionRepository
+      .createQueryBuilder('predictions')
+      .select('predictions."userId"', 'userId')
+      .addSelect('SUM(predictions.amount::numeric)', 'totalPredictedPool')
+      .leftJoin('predictions.event', 'event')
+      .where(
+        'predictions."createdAt" >= :startTime AND predictions."createdAt" < :endTime',
+        {
+          startTime: startTime,
+          endTime: endTime,
+        },
+      )
+      .where(`event."playType" = 'user vs pool'`)
+      .groupBy('predictions."userId"');
+
+    const metric3 = this.predictionRepository
+      .createQueryBuilder('predictions')
+      .select('category.name', 'category')
+      .addSelect('LEAST(event.pro, 1)', 'pro')
+      .addSelect('COUNT(DISTINCT predictions.id)', 'totalPredictions')
+      .leftJoin('predictions.event', 'event')
+      .leftJoin('event.category', 'category')
+      .where(
+        'predictions."createdAt" >= :startTime AND predictions."createdAt" < :endTime',
+        {
+          startTime: startTime,
+          endTime: endTime,
+        },
+      )
+      .where(`event."playType" = 'user vs pool'`)
+      .groupBy('category.id')
+      .addGroupBy('LEAST(event.pro, 1)');
+
+    if (token) {
+      metric1.andWhere('predictions.token = :token', { token });
+      metric2_1.andWhere('predictions.token = :token', { token });
+      metric2_2.andWhere('predictions.token = :token', { token });
+      metric2_3.andWhere('predictions.token = :token', { token });
+      metric3.andWhere('predictions.token = :token', { token });
+      // metric4.andWhere('predictions.token = :token', { token });
+    }
+    const metric1Res = await metric1.getRawMany();
+    const metric2_1Res = await metric2_1.getRawMany();
+    const metric2_2Res = await metric2_2.getRawMany();
+    const metric2_3Res = await metric2_3.getRawMany();
+    const metric3Res = await metric3.getRawMany();
+    return {
+      metric1Res: metric1Res,
+      metric2Res: {
+        ...metric2_1Res,
+        avgPredictAmount: metric2_2Res
+          .reduce(
+            (sum, a) => new BigNumber(sum).plus(a.totalPredictedPool || 0),
+            new BigNumber(0),
+          )
+          .div(metric2_2Res.length)
+          .toString(),
+        avgPredictNum: metric2_2Res
+          .reduce(
+            (sum, a) => new BigNumber(sum).plus(a.totalPredictions),
+            new BigNumber(0),
+          )
+          .div(metric2_2Res.length)
+          .toString(),
+        avgPredictPerUser: metric2_3Res
+          .reduce(
+            (sum, a) => new BigNumber(sum).plus(a.totalPredictedPool),
+            new BigNumber(0),
+          )
+          .div(metric2_3Res.length)
+          .toString(),
+      },
+      metric3Res,
+    };
   }
 
   async findAll(
