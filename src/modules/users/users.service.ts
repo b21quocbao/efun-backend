@@ -28,8 +28,8 @@ export class UsersService {
       .leftJoin('predictions.report', 'report')
       .select([
         'users.*',
-        'COUNT(events) as "numEvents"',
-        'COUNT(report.id) as "numReports"',
+        'COUNT(DISTINCT events.id) as "numEvents"',
+        'COUNT(DISTINCT report.id) as "numReports"',
         `COUNT(CASE WHEN events."endTime" <= NOW() - INTERVAL '2 DAY' AND events.result IS NULL THEN 1 END) as "numBlock"`,
       ])
       .groupBy('users.id');
@@ -55,8 +55,8 @@ export class UsersService {
       .leftJoin('predictions.report', 'report')
       .select([
         'users.*',
-        'COUNT(events) as "numEvents"',
-        'COUNT(report.id) as "numReports"',
+        'COUNT(DISTINCT events.id) as "numEvents"',
+        'COUNT(DISTINCT report.id) as "numReports"',
         `COUNT(CASE WHEN events."endTime" <= NOW() - INTERVAL '2 DAY' AND events.result IS NULL THEN 1 END) as "numBlock"`,
       ])
       .groupBy('users.id')
@@ -123,8 +123,8 @@ export class UsersService {
       .leftJoin('predictions.report', 'report')
       .select([
         'users.*',
-        'COUNT(events) as "numEvents"',
-        'COUNT(report.id) as "numReports"',
+        'COUNT(DISTINCT events.id) as "numEvents"',
+        'COUNT(DISTINCT report.id) as "numReports"',
         `COUNT(CASE WHEN events."endTime" <= NOW() - INTERVAL '2 DAY' AND events.result IS NULL THEN 1 END) as "numBlock"`,
       ])
       .groupBy('users.id')
