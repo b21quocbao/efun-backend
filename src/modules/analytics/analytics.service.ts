@@ -310,6 +310,105 @@ export class AnalyticsService {
     };
   }
 
+  async p2pEvents(countNewEventDto: CountNewEventDto): Promise<any> {
+    const { startTime, endTime, token } = plainToClass(
+      CountNewEventDto,
+      countNewEventDto,
+    );
+    const metric1 = this.eventRepository
+      .createQueryBuilder('events')
+      .select('COUNT(*)', 'cnt')
+      .addSelect('LEAST(events.pro, 1)', 'pro')
+      .where(
+        'events."createdAt" >= :startTime AND events."createdAt" < :endTime',
+        {
+          startTime: startTime,
+          endTime: endTime,
+        },
+      )
+      .where(`events."playType" = 'user vs pool'`)
+      .groupBy('LEAST(events.pro, 1)');
+
+    const metric2_1 = this.eventRepository
+      .createQueryBuilder('events')
+      .select('COUNT(DISTINCT events.id)', 'totalEvents')
+      .addSelect('COUNT(DISTINCT events."userId")', 'totalHosts')
+      .where(
+        'events."createdAt" >= :startTime AND events."createdAt" < :endTime',
+        {
+          startTime: startTime,
+          endTime: endTime,
+        },
+      )
+      .where(`events."playType" = 'user vs pool'`);
+
+    const metric2_2 = this.eventRepository
+      .createQueryBuilder('events')
+      .leftJoin('events.pools', 'pools')
+      .select('events.id', 'eventId')
+      .addSelect('SUM(pools.amount::numeric)', 'totalPool')
+      .andWhere(
+        'events."createdAt" >= :startTime AND events."createdAt" < :endTime',
+        {
+          startTime: startTime,
+          endTime: endTime,
+        },
+      )
+      .where(`events."playType" = 'user vs pool'`)
+      .groupBy('events.id');
+
+    const metric3 = this.eventRepository
+      .createQueryBuilder('events')
+      .select('category.name', 'category')
+      .addSelect('LEAST(events.pro, 1)', 'pro')
+      .addSelect('COUNT(DISTINCT events.id)', 'totalEvents')
+      .leftJoin('events.category', 'category')
+      .where(
+        'events."createdAt" >= :startTime AND events."createdAt" < :endTime',
+        {
+          startTime: startTime,
+          endTime: endTime,
+        },
+      )
+      .where(`events."playType" = 'user vs pool'`)
+      .groupBy('category.id')
+      .addGroupBy('LEAST(events.pro, 1)');
+
+    if (token) {
+      metric1.andWhere(':token = ANY(events.tokens)', { token });
+      metric2_1.andWhere(':token = ANY(events.tokens)', { token });
+      metric2_2.andWhere(':token = ANY(events.tokens)', { token });
+      metric3.andWhere(':token = ANY(events.tokens)', { token });
+    }
+
+    const metric1Res = await metric1.getRawMany();
+    const metric2_1Res = await metric2_1.getRawMany();
+    const metric2_2Res = await metric2_2.getRawMany();
+    const metric3Res = await metric3.getRawMany();
+
+    return {
+      metric1Res: metric1Res,
+      metric2Res: {
+        totalEvents: metric2_1Res[0].totalEvents,
+        totalHosts: metric2_1Res[0].totalHosts,
+        totalPoolAmount: metric2_2Res
+          .reduce(
+            (sum, a) => new BigNumber(sum).plus(a.totalPool || 0),
+            new BigNumber(0),
+          )
+          .toString(),
+        avgPoolAmount: metric2_2Res
+          .reduce(
+            (sum, a) => new BigNumber(sum).plus(a.totalPool || 0),
+            new BigNumber(0),
+          )
+          .div(metric2_2Res.length)
+          .toString(),
+      },
+      metric3Res,
+    };
+  }
+
   async findAll(
     pageNumber?: number,
     pageSize?: number,

@@ -61,6 +61,11 @@ export class AnalyticsController {
     return this.analyticsService.p2pPredictions(request);
   }
 
+  @Get('p2p-event')
+  async p2pEvents(@Query() request: CountNewEventDto): Promise<any[]> {
+    return this.analyticsService.p2pEvents(request);
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<AnalyticEntity> {
     return this.analyticsService.findOne(+id);
