@@ -184,7 +184,7 @@ export class AnalyticsService {
     const metric2_1 = this.predictionRepository
       .createQueryBuilder('predictions')
       .select('COUNT(DISTINCT predictions.id)', 'totalPredictions')
-      .addSelect('SUM(predictions.amount::numeric)', 'totalPredictedPool')
+      .addSelect('COUNT(DISTINCT predictions."userId")', 'totalPredictors')
       .leftJoin('predictions.event', 'event')
       .where(
         'predictions."createdAt" >= :startTime AND predictions."createdAt" < :endTime',
@@ -194,12 +194,12 @@ export class AnalyticsService {
         },
       )
       .where(`event."playType" = 'user vs pool'`);
-    const metric2_2 = this.eventRepository
-      .createQueryBuilder('events')
-      .leftJoin('events.predictions', 'predictions')
-      .select('events.id', 'eventId')
-      .addSelect('COUNT(DISTINCT predictions.id)', 'totalPredictions')
-      .addSelect('SUM(predictions.amount::numeric)', 'totalPredictedPool')
+
+    const metric2_2 = this.predictionRepository
+      .createQueryBuilder('predictions')
+      .select('SUM(predictions.amount::numeric)', 'totalPredictedPool')
+      .addSelect('LEAST(event.pro, 1)', 'pro')
+      .leftJoin('predictions.event', 'event')
       .where(
         'predictions."createdAt" >= :startTime AND predictions."createdAt" < :endTime',
         {
@@ -207,15 +207,8 @@ export class AnalyticsService {
           endTime: endTime,
         },
       )
-      .andWhere(
-        'events."createdAt" >= :startTime AND events."createdAt" < :endTime',
-        {
-          startTime: startTime,
-          endTime: endTime,
-        },
-      )
-      .where(`events."playType" = 'user vs pool'`)
-      .groupBy('events.id');
+      .where(`event."playType" = 'user vs pool'`)
+      .groupBy('LEAST(event.pro, 1)');
 
     const metric2_3 = this.predictionRepository
       .createQueryBuilder('predictions')
@@ -231,6 +224,25 @@ export class AnalyticsService {
       )
       .where(`event."playType" = 'user vs pool'`)
       .groupBy('predictions."userId"');
+
+    const metric2_4 = this.eventRepository
+      .createQueryBuilder('events')
+      .leftJoin('events.predictions', 'predictions')
+      .select('events.id', 'eventId')
+      .addSelect('COUNT(DISTINCT predictions.id)', 'totalPredictions')
+      .addSelect('SUM(predictions.amount::numeric)', 'totalPredictedPool')
+      .where('predictions."createdAt" < :endTime', {
+        endTime: endTime,
+      })
+      .andWhere(
+        'events."createdAt" >= :startTime AND events."createdAt" < :endTime',
+        {
+          startTime: startTime,
+          endTime: endTime,
+        },
+      )
+      .where(`events."playType" = 'user vs pool'`)
+      .groupBy('events.id');
 
     const metric3 = this.predictionRepository
       .createQueryBuilder('predictions')
@@ -255,38 +267,43 @@ export class AnalyticsService {
       metric2_1.andWhere('predictions.token = :token', { token });
       metric2_2.andWhere('predictions.token = :token', { token });
       metric2_3.andWhere('predictions.token = :token', { token });
+      metric2_4.andWhere('predictions.token = :token', { token });
       metric3.andWhere('predictions.token = :token', { token });
-      // metric4.andWhere('predictions.token = :token', { token });
     }
+
     const metric1Res = await metric1.getRawMany();
     const metric2_1Res = await metric2_1.getRawMany();
     const metric2_2Res = await metric2_2.getRawMany();
     const metric2_3Res = await metric2_3.getRawMany();
+    const metric2_4Res = await metric2_4.getRawMany();
     const metric3Res = await metric3.getRawMany();
+
     return {
       metric1Res: metric1Res,
       metric2Res: {
-        ...metric2_1Res,
-        avgPredictAmount: metric2_2Res
-          .reduce(
-            (sum, a) => new BigNumber(sum).plus(a.totalPredictedPool || 0),
-            new BigNumber(0),
-          )
-          .div(metric2_2Res.length)
-          .toString(),
-        avgPredictNum: metric2_2Res
-          .reduce(
-            (sum, a) => new BigNumber(sum).plus(a.totalPredictions),
-            new BigNumber(0),
-          )
-          .div(metric2_2Res.length)
-          .toString(),
+        totalPredictions: metric2_1Res[0].totalPredictions,
+        totalPredictors: metric2_1Res[0].totalPredictors,
+        totalVolume: metric2_2Res,
         avgPredictPerUser: metric2_3Res
           .reduce(
             (sum, a) => new BigNumber(sum).plus(a.totalPredictedPool),
             new BigNumber(0),
           )
           .div(metric2_3Res.length)
+          .toString(),
+        avgPredictAmount: metric2_4Res
+          .reduce(
+            (sum, a) => new BigNumber(sum).plus(a.totalPredictedPool || 0),
+            new BigNumber(0),
+          )
+          .div(metric2_4Res.length)
+          .toString(),
+        avgPredictNum: metric2_4Res
+          .reduce(
+            (sum, a) => new BigNumber(sum).plus(a.totalPredictions),
+            new BigNumber(0),
+          )
+          .div(metric2_4Res.length)
           .toString(),
       },
       metric3Res,
