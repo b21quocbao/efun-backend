@@ -149,7 +149,11 @@ export class UsersService {
   }
 
   async updateNickname(id: number, nickname: string): Promise<void> {
-    if (await this.userRepository.findOne({ where: { nickname } })) {
+    const user = await this.userRepository.findOne(id);
+    if (
+      user.nickname ||
+      (await this.userRepository.findOne({ where: { nickname } }))
+    ) {
       throw new HttpException(
         { key: 'Nickname already exists' },
         HttpStatus.CONFLICT,
