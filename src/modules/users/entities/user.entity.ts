@@ -25,6 +25,9 @@ export class UserEntity {
   @Column({ default: '' })
   description: string;
 
+  @Column({ nullable: true, unique: true })
+  nickname: string;
+
   @OneToMany(() => EventEntity, (event) => event.user)
   events: EventEntity[];
 

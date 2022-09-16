@@ -136,6 +136,16 @@ export class UsersService {
     await this.userRepository.update(id, { description });
   }
 
+  async updateNickname(id: number, nickname: string): Promise<void> {
+    if (await this.userRepository.findOne({ where: { nickname } })) {
+      throw new HttpException(
+        { key: 'Nickname already exists' },
+        HttpStatus.CONFLICT,
+      );
+    }
+    await this.userRepository.update(id, { nickname });
+  }
+
   async updateBannerUrl(id: number, bannerUrl: string): Promise<void> {
     await this.userRepository.update(id, { bannerUrl });
   }

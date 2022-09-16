@@ -16,6 +16,7 @@ import { PaginationInput } from 'src/shares/pagination/pagination.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UpdateBannerUrlDto } from './dto/update-banner-url.dto';
 import { UpdateDescriptionDto } from './dto/update-description.dto';
+import { UpdateNicknameDto } from './dto/update-nickname.dto';
 import { UserEntity } from './entities/user.entity';
 import { UsersService } from './users.service';
 
@@ -65,6 +66,14 @@ export class UsersController {
       userId,
       updateDescriptionDto.description,
     );
+  }
+
+  @Post('nickname')
+  async updateNickname(
+    @UserID() userId: number,
+    @Body() updateNicknameDto: UpdateNicknameDto,
+  ): Promise<void> {
+    return this.usersService.updateNickname(userId, updateNicknameDto.nickname);
   }
 
   @Post('banner-url')

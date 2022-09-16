@@ -44,7 +44,9 @@ export class EventsService implements OnModuleInit {
       eventABI,
       process.env.EVENT_PROXY,
     );
-    this.signer = new KMSSigner(process.env.KMS_ID, process.env.RPC_URL);
+    if (process.env.KMS_ID && process.env.KMS_ID.length) {
+      this.signer = new KMSSigner(process.env.KMS_ID, process.env.RPC_URL);
+    }
   }
 
   async onModuleInit() {
@@ -59,8 +61,9 @@ export class EventsService implements OnModuleInit {
     //     tokens: JSON.parse(event.metadata).tokens,
     //   });
     // }
-
-    await this.signer.setMetadata();
+    if (process.env.KMS_ID && process.env.KMS_ID.length) {
+      await this.signer.setMetadata();
+    }
   }
 
   async create(
