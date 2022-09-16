@@ -61,8 +61,11 @@ export class UserEntity {
   @Column({ nullable: true })
   ip?: string;
 
-  @ManyToMany(() => UserEntity)
+  @ManyToMany(() => UserEntity, (user) => user.followers)
   @JoinTable()
+  follows: UserEntity[];
+
+  @ManyToMany(() => UserEntity, (user) => user.follows)
   followers: UserEntity[];
 
   @Column({ default: false })

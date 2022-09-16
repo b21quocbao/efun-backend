@@ -24,10 +24,14 @@ export class UsersService {
     const qb = this.userRepository
       .createQueryBuilder('users')
       .leftJoin('users.events', 'events')
+      .leftJoinAndSelect('users.follows', 'follows')
+      .leftJoinAndSelect('users.followers', 'followers')
       .leftJoin('events.predictions', 'predictions')
       .leftJoin('predictions.report', 'report')
       .select([
         'users.*',
+        'array_agg(DISTINCT follows.id) as "followsId"',
+        'array_agg(DISTINCT followers.id) as "followersId"',
         'COUNT(DISTINCT events.id) as "numEvents"',
         'COUNT(DISTINCT report.id) as "numReports"',
         `COUNT(CASE WHEN events."endTime" <= NOW() - INTERVAL '2 DAY' AND events.result IS NULL THEN 1 END) as "numBlock"`,
@@ -51,10 +55,14 @@ export class UsersService {
     return this.userRepository
       .createQueryBuilder('users')
       .leftJoin('users.events', 'events')
+      .leftJoinAndSelect('users.follows', 'follows')
+      .leftJoinAndSelect('users.followers', 'followers')
       .leftJoin('events.predictions', 'predictions')
       .leftJoin('predictions.report', 'report')
       .select([
         'users.*',
+        'array_agg(DISTINCT follows.id) as "followsId"',
+        'array_agg(DISTINCT followers.id) as "followersId"',
         'COUNT(DISTINCT events.id) as "numEvents"',
         'COUNT(DISTINCT report.id) as "numReports"',
         `COUNT(CASE WHEN events."endTime" <= NOW() - INTERVAL '2 DAY' AND events.result IS NULL THEN 1 END) as "numBlock"`,
@@ -119,10 +127,14 @@ export class UsersService {
     return this.userRepository
       .createQueryBuilder('users')
       .leftJoin('users.events', 'events')
+      .leftJoinAndSelect('users.follows', 'follows')
+      .leftJoinAndSelect('users.followers', 'followers')
       .leftJoin('events.predictions', 'predictions')
       .leftJoin('predictions.report', 'report')
       .select([
         'users.*',
+        'array_agg(DISTINCT follows.id) as "followsId"',
+        'array_agg(DISTINCT followers.id) as "followersId"',
         'COUNT(DISTINCT events.id) as "numEvents"',
         'COUNT(DISTINCT report.id) as "numReports"',
         `COUNT(CASE WHEN events."endTime" <= NOW() - INTERVAL '2 DAY' AND events.result IS NULL THEN 1 END) as "numBlock"`,
@@ -148,5 +160,45 @@ export class UsersService {
 
   async updateBannerUrl(id: number, bannerUrl: string): Promise<void> {
     await this.userRepository.update(id, { bannerUrl });
+  }
+
+  async follow(id: number, followId: number): Promise<void> {
+    const user = await this.userRepository.findOne(id, {
+      join: {
+        alias: 'users',
+        leftJoinAndSelect: { follows: 'users.follows' },
+      },
+    });
+    const follower = await this.userRepository.findOne(followId);
+    if (!user || !follower) {
+      throw new HttpException({ key: 'User not found' }, HttpStatus.NOT_FOUND);
+    }
+
+    if (!user.follows) {
+      user.follows = [];
+    }
+    if (!user.follows.map((x) => x.id).includes(followId)) {
+      user.follows.push(follower);
+    }
+    await this.userRepository.save(user);
+  }
+
+  async unfollow(id: number, followId: number): Promise<void> {
+    const user = await this.userRepository.findOne(id, {
+      join: {
+        alias: 'users',
+        leftJoinAndSelect: { follows: 'users.follows' },
+      },
+    });
+    const follower = await this.userRepository.findOne(followId);
+    if (!user || !follower) {
+      throw new HttpException({ key: 'User not found' }, HttpStatus.NOT_FOUND);
+    }
+
+    if (!user.follows) {
+      user.follows = [];
+    }
+    user.follows = user.follows.filter((x) => x.id !== followId);
+    await this.userRepository.save(user);
   }
 }

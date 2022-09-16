@@ -14,6 +14,7 @@ import { RolesGuardAdmin } from 'src/shares/decorators/is-admin.decorator';
 import { Response } from 'src/shares/interceptors/response.interceptor';
 import { PaginationInput } from 'src/shares/pagination/pagination.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { FollowUserDto } from './dto/follow-user.dto';
 import { UpdateBannerUrlDto } from './dto/update-banner-url.dto';
 import { UpdateDescriptionDto } from './dto/update-description.dto';
 import { UpdateNicknameDto } from './dto/update-nickname.dto';
@@ -85,5 +86,21 @@ export class UsersController {
       userId,
       updateBannerUrlDto.bannerUrl,
     );
+  }
+
+  @Post('follow')
+  async follow(
+    @UserID() userId: number,
+    @Body() followUser: FollowUserDto,
+  ): Promise<void> {
+    return this.usersService.follow(userId, followUser.followUserId);
+  }
+
+  @Post('unfollow')
+  async unfollow(
+    @UserID() userId: number,
+    @Body() followUser: FollowUserDto,
+  ): Promise<void> {
+    return this.usersService.unfollow(userId, followUser.followUserId);
   }
 }
