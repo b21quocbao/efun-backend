@@ -114,7 +114,7 @@ export class AnalyticsService {
   }
 
   async countNewUserEvent(countNewEventDto: CountNewEventDto): Promise<any[]> {
-    const { startTime, endTime, token } = plainToClass(
+    const { startTime, endTime, token, playType } = plainToClass(
       CountNewEventDto,
       countNewEventDto,
     );
@@ -132,13 +132,16 @@ export class AnalyticsService {
     if (token) {
       qb.andWhere(':token = ANY(events.tokens)', { token });
     }
+    if (playType) {
+      qb.andWhere('events."playType" = :playType', { playType });
+    }
     return qb.getRawMany();
   }
 
   async countNewUserPrediction(
     countNewPredictionDto: CountNewPredictionDto,
   ): Promise<any[]> {
-    const { startTime, endTime, token } = plainToClass(
+    const { startTime, endTime, token, playType } = plainToClass(
       CountNewPredictionDto,
       countNewPredictionDto,
     );
@@ -146,6 +149,7 @@ export class AnalyticsService {
       .createQueryBuilder('users')
       .select('COUNT(DISTINCT users.id) AS cnt')
       .leftJoin('users.predictions', 'predictions')
+      .leftJoin('predictions.event', 'event')
       .where(
         'predictions."createdAt" >= :startTime AND predictions."createdAt" < :endTime',
         {
@@ -155,6 +159,9 @@ export class AnalyticsService {
       );
     if (token) {
       qb.andWhere('predictions.token = :token', { token });
+    }
+    if (playType) {
+      qb.andWhere('event."playType" = :playType', { playType });
     }
     return qb.getRawMany();
   }

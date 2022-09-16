@@ -17,4 +17,9 @@ export class CountNewPredictionDto {
   @IsString()
   @IsOptional()
   token?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  playType?: string;
 }
