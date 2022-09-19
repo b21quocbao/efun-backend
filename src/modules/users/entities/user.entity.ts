@@ -71,6 +71,9 @@ export class UserEntity {
   @Column({ default: false })
   isVerified: boolean;
 
+  @Column({ default: false })
+  changedNickname: boolean;
+
   @Column({ nullable: true })
   bannerUrl?: string;
 
