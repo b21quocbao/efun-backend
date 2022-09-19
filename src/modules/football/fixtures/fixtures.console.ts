@@ -1,6 +1,6 @@
 // eslint-disable-next-line
 const moment = require('moment');
-import { axiosInstance } from 'src/modules/football/helper/axios';
+import { HTTPClient } from 'helpers/axios';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { FixturesService } from './fixtures.service';
 import { FixtureEntity } from './entities/fixture.entity';
@@ -53,12 +53,13 @@ export class FixturesConsole implements OnModuleInit {
                   });
 
                   if (getSeason) {
-                    const fixtures = await axiosInstance.get(
-                      '/fixtures?league=' +
-                        league.remoteId +
-                        '&season=' +
-                        getSeason.year,
-                    );
+                    const fixtures =
+                      await HTTPClient.getFootballInstance().client.get(
+                        '/fixtures?league=' +
+                          league.remoteId +
+                          '&season=' +
+                          getSeason.year,
+                      );
 
                     if (fixtures.data && fixtures.data.response) {
                       for (const item of fixtures.data.response) {
@@ -225,18 +226,19 @@ export class FixturesConsole implements OnModuleInit {
                   'YYYY-MM-DD',
                 );
 
-                const fixturesFootballAPI = await axiosInstance.get(
-                  '/fixtures/headtohead?league=' +
-                    leagueMeta.id +
-                    '&season=' +
-                    leagueMeta.season +
-                    '&h2h=' +
-                    teamMeta.home.id +
-                    '-' +
-                    teamMeta.away.id +
-                    '&date=' +
-                    fixtureDate,
-                );
+                const fixturesFootballAPI =
+                  await HTTPClient.getFootballInstance().client.get(
+                    '/fixtures/headtohead?league=' +
+                      leagueMeta.id +
+                      '&season=' +
+                      leagueMeta.season +
+                      '&h2h=' +
+                      teamMeta.home.id +
+                      '-' +
+                      teamMeta.away.id +
+                      '&date=' +
+                      fixtureDate,
+                  );
 
                 if (
                   fixturesFootballAPI.data &&

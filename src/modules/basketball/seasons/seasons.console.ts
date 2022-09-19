@@ -1,4 +1,4 @@
-import { axiosInstance } from 'src/modules/basketball/helper/axios';
+import { HTTPClient } from 'helpers/axios';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { SeasonsService } from './seasons.service';
 import { SchedulerRegistry } from '@nestjs/schedule';
@@ -16,7 +16,7 @@ export class SeasonsConsole implements OnModuleInit {
       const seasonStart = Number(process.env.BASKETBALL_SEASON_START);
 
       try {
-        const seasons = await axiosInstance.get('/seasons');
+        const seasons = await HTTPClient.getBasketballInstance().client.get('/seasons');
 
         if (seasons.data && seasons.data.response) {
           for (const item of seasons.data.response) {

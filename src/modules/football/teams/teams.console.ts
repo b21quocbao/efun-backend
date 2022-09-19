@@ -1,4 +1,4 @@
-import { axiosInstance } from 'src/modules/football/helper/axios';
+import { HTTPClient } from 'helpers/axios';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { TeamsService } from './teams.service';
 import { CountriesService } from '../countries/countries.service';
@@ -32,7 +32,7 @@ export class TeamsConsole implements OnModuleInit {
           for (const leagueId of leagueIds) {
             for (const team of allTeams.data) {
               const teamYear = team.year;
-              const teams = await axiosInstance.get(
+              const teams = await HTTPClient.getFootballInstance().client.get(
                 '/teams?league=' + leagueId + '&season=' + teamYear,
               );
 

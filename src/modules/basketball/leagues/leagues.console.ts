@@ -1,4 +1,4 @@
-import { axiosInstance } from 'src/modules/basketball/helper/axios';
+import { HTTPClient } from 'helpers/axios';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { LeaguesService } from './leagues.service';
 import { SeasonsService } from '../seasons/seasons.service';
@@ -29,9 +29,10 @@ export class LeaguesConsole implements OnModuleInit {
         if (allSeasons.total > 0) {
           for (const leagueId of leagueIds) {
             for (const season of allSeasons.data) {
-              const leagues = await axiosInstance.get(
-                '/leagues?season=' + season.year + '&id=' + leagueId,
-              );
+              const leagues =
+                await HTTPClient.getBasketballInstance().client.get(
+                  '/leagues?season=' + season.year + '&id=' + leagueId,
+                );
 
               if (
                 leagues.data &&

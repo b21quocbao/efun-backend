@@ -1,4 +1,3 @@
-import { EventEntity } from 'src/modules/events/entities/event.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -127,7 +126,7 @@ export class GameEntity {
   @Column({ nullable: true })
   meta?: string;
 
-  @Column({ default: 'Football' })
+  @Column({ default: 'Basketball' })
   sport?: string;
 
   @Column({ nullable: true })

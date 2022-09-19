@@ -1,4 +1,4 @@
-import { axiosInstance } from 'src/modules/football/helper/axios';
+import { HTTPClient } from 'helpers/axios';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { CountriesService } from './countries.service';
 import { SchedulerRegistry } from '@nestjs/schedule';
@@ -14,7 +14,9 @@ export class CountriesConsole implements OnModuleInit {
   onModuleInit() {
     const countrySchedule = async () => {
       try {
-        const countries = await axiosInstance.get('/countries');
+        const countries = await HTTPClient.getFootballInstance().client.get(
+          '/countries',
+        );
 
         if (countries.data && countries.data.response) {
           for (const item of countries.data.response) {

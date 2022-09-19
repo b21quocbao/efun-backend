@@ -1,4 +1,4 @@
-import { axiosInstance } from 'src/modules/football/helper/axios';
+import { HTTPClient } from 'helpers/axios';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { RoundsService } from './rounds.service';
 import { SeasonsService } from '../seasons/seasons.service';
@@ -42,8 +42,8 @@ export class RoundsConsole implements OnModuleInit {
                     leagueId +
                     '&season=' +
                     seasonYear;
-                  const rounds = await axiosInstance.get(roundUrl);
-                  const currentRounds = await axiosInstance.get(
+                  const rounds = await HTTPClient.getFootballInstance().client.get(roundUrl);
+                  const currentRounds = await HTTPClient.getFootballInstance().client.get(
                     roundUrl + '&current=true',
                   );
 

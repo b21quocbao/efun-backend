@@ -1,6 +1,6 @@
 // eslint-disable-next-line
 const moment = require('moment');
-import { axiosInstance } from 'src/modules/basketball/helper/axios';
+import { HTTPClient } from 'helpers/axios';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { GamesService } from './games.service';
 import { GameEntity } from './entities/game.entity';
@@ -50,12 +50,13 @@ export class GamesConsole implements OnModuleInit {
                   });
 
                   if (getSeason) {
-                    const games = await axiosInstance.get(
-                      '/games?league=' +
-                        league.remoteId +
-                        '&season=' +
-                        getSeason.year,
-                    );
+                    const games =
+                      await HTTPClient.getBasketballInstance().client.get(
+                        '/games?league=' +
+                          league.remoteId +
+                          '&season=' +
+                          getSeason.year,
+                      );
 
                     if (games.data && games.data.response) {
                       for (const item of games.data.response) {
@@ -207,21 +208,25 @@ export class GamesConsole implements OnModuleInit {
                   'YYYY-MM-DD',
                 );
 
-                const gamesFootballAPI = await axiosInstance.get(
-                  '/games/headtohead?league=' +
-                    leagueMeta.id +
-                    '&season=' +
-                    leagueMeta.season +
-                    '&h2h=' +
-                    teamMeta.home.id +
-                    '-' +
-                    teamMeta.away.id +
-                    '&date=' +
-                    gameDate,
-                );
+                const gamesBasketballAPI =
+                  await HTTPClient.getBasketballInstance().client.get(
+                    '/games/headtohead?league=' +
+                      leagueMeta.id +
+                      '&season=' +
+                      leagueMeta.season +
+                      '&h2h=' +
+                      teamMeta.home.id +
+                      '-' +
+                      teamMeta.away.id +
+                      '&date=' +
+                      gameDate,
+                  );
 
-                if (gamesFootballAPI.data && gamesFootballAPI.data.response) {
-                  for (const item of gamesFootballAPI.data.response) {
+                if (
+                  gamesBasketballAPI.data &&
+                  gamesBasketballAPI.data.response
+                ) {
+                  for (const item of gamesBasketballAPI.data.response) {
                     const gameItemDetail = item.game;
 
                     const updateData: UpdateGameDto = {

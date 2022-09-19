@@ -1,6 +1,6 @@
 // eslint-disable-next-line
 const moment = require('moment');
-import { axiosInstance } from 'src/modules/football/helper/axios';
+import { HTTPClient } from 'helpers/axios';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { OddsService } from './odds.service';
 import { SeasonsService } from '../seasons/seasons.service';
@@ -22,7 +22,7 @@ export class OddsConsole implements OnModuleInit {
 
   onModuleInit() {
     const betSchedule = async () => {
-      const bets = await axiosInstance.get('/odds/bets');
+      const bets = await HTTPClient.getFootballInstance().client.get('/odds/bets');
 
       if (bets.data && bets.data.response) {
         for (const item of bets.data.response) {
@@ -40,7 +40,7 @@ export class OddsConsole implements OnModuleInit {
     };
 
     const bookmakerSchedule = async () => {
-      const bookmakers = await axiosInstance.get('/odds/bookmakers');
+      const bookmakers = await HTTPClient.getFootballInstance().client.get('/odds/bookmakers');
 
       if (bookmakers.data && bookmakers.data.response) {
         for (const item of bookmakers.data.response) {
@@ -75,7 +75,7 @@ export class OddsConsole implements OnModuleInit {
         for (const fixture of fixtures) {
           const meta = JSON.parse(fixture.meta);
 
-          const odds = await axiosInstance.get(
+          const odds = await HTTPClient.getFootballInstance().client.get(
             '/odds?season=' +
               meta.league.season +
               '&bookmaker=13&fixture=' +
