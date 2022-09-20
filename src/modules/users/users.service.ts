@@ -30,12 +30,8 @@ export class UsersService {
       .leftJoin('predictions.report', 'report')
       .select([
         'users.*',
-        'array_agg(follows.id) as "followsId"',
-        'array_agg(follows.nickname) as "followsNames"',
-        'array_agg(follows.address) as "followsAddresses"',
-        'array_agg(followers.id) as "followersId"',
-        'array_agg(followers.nickname) as "followersNames"',
-        'array_agg(followers.address) as "followersAddresses"',
+        'json_agg(DISTINCT (follows.id, follows.nickname, follows.address)) as "followsId"',
+        'json_agg(DISTINCT (followers.id, followers.nickname, followers.address)) as "followersId"',
         'COUNT(DISTINCT events.id) as "numEvents"',
         'COUNT(DISTINCT report.id) as "numReports"',
         `COUNT(CASE WHEN events."endTime" <= NOW() - INTERVAL '2 DAY' AND events.result IS NULL THEN 1 END) as "numBlock"`,
@@ -65,12 +61,8 @@ export class UsersService {
       .leftJoin('predictions.report', 'report')
       .select([
         'users.*',
-        'array_agg(follows.id) as "followsId"',
-        'array_agg(follows.nickname) as "followsNames"',
-        'array_agg(follows.address) as "followsAddresses"',
-        'array_agg(followers.id) as "followersId"',
-        'array_agg(followers.nickname) as "followersNames"',
-        'array_agg(followers.address) as "followersAddresses"',
+        'json_agg(DISTINCT (follows.id, follows.nickname, follows.address)) as "followsId"',
+        'json_agg(DISTINCT (followers.id, followers.nickname, followers.address)) as "followersId"',
         'COUNT(DISTINCT events.id) as "numEvents"',
         'COUNT(DISTINCT report.id) as "numReports"',
         `COUNT(CASE WHEN events."endTime" <= NOW() - INTERVAL '2 DAY' AND events.result IS NULL THEN 1 END) as "numBlock"`,
@@ -141,12 +133,8 @@ export class UsersService {
       .leftJoin('predictions.report', 'report')
       .select([
         'users.*',
-        'array_agg(follows.id) as "followsId"',
-        'array_agg(follows.nickname) as "followsNames"',
-        'array_agg(follows.address) as "followsAddresses"',
-        'array_agg(followers.id) as "followersId"',
-        'array_agg(followers.nickname) as "followersNames"',
-        'array_agg(followers.address) as "followersAddresses"',
+        'json_agg(DISTINCT (follows.id, follows.nickname, follows.address)) as "followsId"',
+        'json_agg(DISTINCT (followers.id, followers.nickname, followers.address)) as "followersId"',
         'COUNT(DISTINCT events.id) as "numEvents"',
         'COUNT(DISTINCT report.id) as "numReports"',
         `COUNT(CASE WHEN events."endTime" <= NOW() - INTERVAL '2 DAY' AND events.result IS NULL THEN 1 END) as "numBlock"`,
