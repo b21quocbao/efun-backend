@@ -123,6 +123,7 @@ export class EventsService implements OnModuleInit {
         'fixture.statusShort as "statusShort"',
         '"subCategory".name as "subCategory"',
         'user.isVerified as "isUserVerified"',
+        'user.nickname as "userNickname"',
         'user.address as address',
         'array_agg(report.content) as "reportContents"',
         'array_agg(report.typeUpload) as "reportTypeUploads"',
