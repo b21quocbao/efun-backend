@@ -20,7 +20,7 @@ export class HTTPClient {
     this.client.interceptors.response.use(
       (config) => config,
       (error) => {
-        if (error.response.status === 408 || error.code === 'ECONNABORTED') {
+        if (error.code === 'ECONNABORTED') {
           console.log(`A timeout happend on url ${error.config.url}`);
         }
         return Promise.reject(error);
