@@ -185,7 +185,7 @@ export class AnalyticsService {
           endTime: endTime,
         },
       )
-      .where(`event."playType" = 'user vs pool'`)
+      .andWhere(`event."playType" = 'user vs pool'`)
       .groupBy('LEAST(event.pro, 1)');
 
     const metric2_1 = this.predictionRepository
@@ -200,7 +200,7 @@ export class AnalyticsService {
           endTime: endTime,
         },
       )
-      .where(`event."playType" = 'user vs pool'`);
+      .andWhere(`event."playType" = 'user vs pool'`);
 
     const metric2_2 = this.predictionRepository
       .createQueryBuilder('predictions')
@@ -214,7 +214,7 @@ export class AnalyticsService {
           endTime: endTime,
         },
       )
-      .where(`event."playType" = 'user vs pool'`)
+      .andWhere(`event."playType" = 'user vs pool'`)
       .groupBy('LEAST(event.pro, 1)');
 
     const metric2_3 = this.predictionRepository
@@ -229,7 +229,7 @@ export class AnalyticsService {
           endTime: endTime,
         },
       )
-      .where(`event."playType" = 'user vs pool'`)
+      .andWhere(`event."playType" = 'user vs pool'`)
       .groupBy('predictions."userId"');
 
     const metric2_4 = this.eventRepository
@@ -248,7 +248,7 @@ export class AnalyticsService {
           endTime: endTime,
         },
       )
-      .where(`events."playType" = 'user vs pool'`)
+      .andWhere(`events."playType" = 'user vs pool'`)
       .groupBy('events.id');
 
     const metric3 = this.predictionRepository
@@ -265,7 +265,7 @@ export class AnalyticsService {
           endTime: endTime,
         },
       )
-      .where(`event."playType" = 'user vs pool'`)
+      .andWhere(`event."playType" = 'user vs pool'`)
       .groupBy('category.id')
       .addGroupBy('LEAST(event.pro, 1)');
 
@@ -333,7 +333,7 @@ export class AnalyticsService {
           endTime: endTime,
         },
       )
-      .where(`events."playType" = 'user vs pool'`)
+      .andWhere(`events."playType" = 'user vs pool'`)
       .groupBy('LEAST(events.pro, 1)');
 
     const metric2_1 = this.eventRepository
@@ -347,21 +347,21 @@ export class AnalyticsService {
           endTime: endTime,
         },
       )
-      .where(`events."playType" = 'user vs pool'`);
+      .andWhere(`events."playType" = 'user vs pool'`);
 
     const metric2_2 = this.eventRepository
       .createQueryBuilder('events')
       .leftJoin('events.pools', 'pools')
       .select('events.id', 'eventId')
       .addSelect('SUM(pools.amount::numeric)', 'totalPool')
-      .andWhere(
+      .where(
         'events."createdAt" >= :startTime AND events."createdAt" < :endTime',
         {
           startTime: startTime,
           endTime: endTime,
         },
       )
-      .where(`events."playType" = 'user vs pool'`)
+      .andWhere(`events."playType" = 'user vs pool'`)
       .groupBy('events.id');
 
     const metric3 = this.eventRepository
@@ -377,7 +377,7 @@ export class AnalyticsService {
           endTime: endTime,
         },
       )
-      .where(`events."playType" = 'user vs pool'`)
+      .andWhere(`events."playType" = 'user vs pool'`)
       .groupBy('category.id')
       .addGroupBy('LEAST(events.pro, 1)');
 
