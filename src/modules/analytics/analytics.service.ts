@@ -13,6 +13,10 @@ import { CountNewPredictionDto } from './dto/count-new-prediction.dto';
 import BigNumber from 'bignumber.js';
 BigNumber.config({ EXPONENTIAL_AT: 100 });
 
+function checkNaN(s: string): string {
+  return s.toLowerCase() === 'nan' ? '0' : s;
+}
+
 @Injectable()
 export class AnalyticsService {
   constructor(
@@ -291,27 +295,33 @@ export class AnalyticsService {
         totalPredictions: metric2_1Res[0].totalPredictions,
         totalPredictors: metric2_1Res[0].totalPredictors,
         totalVolume: metric2_2Res,
-        avgPredictPerUser: metric2_3Res
-          .reduce(
-            (sum, a) => new BigNumber(sum).plus(a.totalPredictedPool),
-            new BigNumber(0),
-          )
-          .div(metric2_3Res.length)
-          .toString(),
-        avgPredictAmount: metric2_4Res
-          .reduce(
-            (sum, a) => new BigNumber(sum).plus(a.totalPredictedPool || 0),
-            new BigNumber(0),
-          )
-          .div(metric2_4Res.length)
-          .toString(),
-        avgPredictNum: metric2_4Res
-          .reduce(
-            (sum, a) => new BigNumber(sum).plus(a.totalPredictions),
-            new BigNumber(0),
-          )
-          .div(metric2_4Res.length)
-          .toString(),
+        avgPredictPerUser: checkNaN(
+          metric2_3Res
+            .reduce(
+              (sum, a) => new BigNumber(sum).plus(a.totalPredictedPool),
+              new BigNumber(0),
+            )
+            .div(metric2_3Res.length)
+            .toString(),
+        ),
+        avgPredictAmount: checkNaN(
+          metric2_4Res
+            .reduce(
+              (sum, a) => new BigNumber(sum).plus(a.totalPredictedPool || 0),
+              new BigNumber(0),
+            )
+            .div(metric2_4Res.length)
+            .toString(),
+        ),
+        avgPredictNum: checkNaN(
+          metric2_4Res
+            .reduce(
+              (sum, a) => new BigNumber(sum).plus(a.totalPredictions),
+              new BigNumber(0),
+            )
+            .div(metric2_4Res.length)
+            .toString(),
+        ),
       },
       metric3Res,
     };
@@ -404,13 +414,15 @@ export class AnalyticsService {
             new BigNumber(0),
           )
           .toString(),
-        avgPoolAmount: metric2_2Res
-          .reduce(
-            (sum, a) => new BigNumber(sum).plus(a.totalPool || 0),
-            new BigNumber(0),
-          )
-          .div(metric2_2Res.length)
-          .toString(),
+        avgPoolAmount: checkNaN(
+          metric2_2Res
+            .reduce(
+              (sum, a) => new BigNumber(sum).plus(a.totalPool || 0),
+              new BigNumber(0),
+            )
+            .div(metric2_2Res.length)
+            .toString(),
+        ),
       },
       metric3Res,
     };
