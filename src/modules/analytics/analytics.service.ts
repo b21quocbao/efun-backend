@@ -170,10 +170,10 @@ export class AnalyticsService {
     return qb.getRawMany();
   }
 
-  async p2pPredictions(
+  async dashboardPredictions(
     countNewPredictionDto: CountNewPredictionDto,
   ): Promise<any> {
-    const { startTime, endTime, token } = plainToClass(
+    const { startTime, endTime, token, playType } = plainToClass(
       CountNewPredictionDto,
       countNewPredictionDto,
     );
@@ -189,7 +189,7 @@ export class AnalyticsService {
           endTime: endTime,
         },
       )
-      .andWhere(`event."playType" = 'user vs user'`)
+      .andWhere('event."playType" = :playType', { playType })
       .groupBy('LEAST(event.pro, 1)');
 
     const metric2_1 = this.predictionRepository
@@ -204,7 +204,7 @@ export class AnalyticsService {
           endTime: endTime,
         },
       )
-      .andWhere(`event."playType" = 'user vs user'`);
+      .andWhere('event."playType" = :playType', { playType });
 
     const metric2_2 = this.predictionRepository
       .createQueryBuilder('predictions')
@@ -218,7 +218,7 @@ export class AnalyticsService {
           endTime: endTime,
         },
       )
-      .andWhere(`event."playType" = 'user vs user'`)
+      .andWhere('event."playType" = :playType', { playType })
       .groupBy('LEAST(event.pro, 1)');
 
     const metric2_3 = this.predictionRepository
@@ -233,7 +233,7 @@ export class AnalyticsService {
           endTime: endTime,
         },
       )
-      .andWhere(`event."playType" = 'user vs user'`)
+      .andWhere('event."playType" = :playType', { playType })
       .groupBy('predictions."userId"');
 
     const metric2_4 = this.eventRepository
@@ -252,7 +252,7 @@ export class AnalyticsService {
           endTime: endTime,
         },
       )
-      .andWhere(`events."playType" = 'user vs user'`)
+      .andWhere(`events."playType" = :playType`, { playType })
       .groupBy('events.id');
 
     const metric3 = this.predictionRepository
@@ -269,7 +269,7 @@ export class AnalyticsService {
           endTime: endTime,
         },
       )
-      .andWhere(`event."playType" = 'user vs user'`)
+      .andWhere('event."playType" = :playType', { playType })
       .groupBy('category.id')
       .addGroupBy('LEAST(event.pro, 1)');
 
@@ -327,8 +327,8 @@ export class AnalyticsService {
     };
   }
 
-  async p2pEvents(countNewEventDto: CountNewEventDto): Promise<any> {
-    const { startTime, endTime, token } = plainToClass(
+  async dashboardEvents(countNewEventDto: CountNewEventDto): Promise<any> {
+    const { startTime, endTime, token, playType } = plainToClass(
       CountNewEventDto,
       countNewEventDto,
     );
@@ -343,7 +343,7 @@ export class AnalyticsService {
           endTime: endTime,
         },
       )
-      .andWhere(`events."playType" = 'user vs user'`)
+      .andWhere(`events."playType" = :playType`, { playType })
       .groupBy('LEAST(events.pro, 1)');
 
     const metric2_1 = this.eventRepository
@@ -357,7 +357,7 @@ export class AnalyticsService {
           endTime: endTime,
         },
       )
-      .andWhere(`events."playType" = 'user vs user'`);
+      .andWhere(`events."playType" = :playType`, { playType });
 
     const metric2_2 = this.eventRepository
       .createQueryBuilder('events')
@@ -371,7 +371,7 @@ export class AnalyticsService {
           endTime: endTime,
         },
       )
-      .andWhere(`events."playType" = 'user vs user'`)
+      .andWhere(`events."playType" = :playType`, { playType })
       .groupBy('events.id');
 
     const metric3 = this.eventRepository
@@ -387,7 +387,7 @@ export class AnalyticsService {
           endTime: endTime,
         },
       )
-      .andWhere(`events."playType" = 'user vs user'`)
+      .andWhere(`events."playType" = :playType`, { playType })
       .groupBy('category.id')
       .addGroupBy('LEAST(events.pro, 1)');
 

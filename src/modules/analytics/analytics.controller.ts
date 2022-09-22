@@ -54,16 +54,16 @@ export class AnalyticsController {
     return this.analyticsService.countNewUserPrediction(request);
   }
 
-  @Get('p2p-prediction')
-  async p2pPredictions(
+  @Get('dashboard-prediction')
+  async dashboardPredictions(
     @Query() request: CountNewPredictionDto,
   ): Promise<any[]> {
-    return this.analyticsService.p2pPredictions(request);
+    return this.analyticsService.dashboardPredictions(request);
   }
 
-  @Get('p2p-event')
-  async p2pEvents(@Query() request: CountNewEventDto): Promise<any[]> {
-    return this.analyticsService.p2pEvents(request);
+  @Get('dashboard-event')
+  async dashboardEvents(@Query() request: CountNewEventDto): Promise<any[]> {
+    return this.analyticsService.dashboardEvents(request);
   }
 
   @Get(':id')
