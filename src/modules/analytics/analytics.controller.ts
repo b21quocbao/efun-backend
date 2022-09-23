@@ -7,6 +7,7 @@ import { AnalyticEntity } from './entities/analytic.entity';
 import { CountNewWalletDto } from './dto/count-new-wallet.dto';
 import { CountNewEventDto } from './dto/count-new-event.dto';
 import { CountNewPredictionDto } from './dto/count-new-prediction.dto';
+import { DashboardIncomeDto } from './dto/dashboard-income.dto';
 
 @ApiTags('Analytics')
 @Controller('analytics')
@@ -64,6 +65,11 @@ export class AnalyticsController {
   @Get('dashboard-event')
   async dashboardEvents(@Query() request: CountNewEventDto): Promise<any[]> {
     return this.analyticsService.dashboardEvents(request);
+  }
+
+  @Get('dashboard-income')
+  async dashboardIncome(@Query() request: DashboardIncomeDto): Promise<any[]> {
+    return this.analyticsService.dashboardIncome(request);
   }
 
   @Get(':id')

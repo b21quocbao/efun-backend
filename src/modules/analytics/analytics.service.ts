@@ -11,6 +11,7 @@ import { EventEntity } from '../events/entities/event.entity';
 import { PredictionEntity } from '../predictions/entities/prediction.entity';
 import { CountNewPredictionDto } from './dto/count-new-prediction.dto';
 import BigNumber from 'bignumber.js';
+import { DashboardIncomeDto } from './dto/dashboard-income.dto';
 BigNumber.config({ EXPONENTIAL_AT: 100 });
 
 function checkNaN(s: string): string {
@@ -425,6 +426,67 @@ export class AnalyticsService {
         ),
       },
       metric3Res,
+    };
+  }
+
+  async dashboardIncome(dashboardIncomeDto: DashboardIncomeDto): Promise<any> {
+    const { startTime, endTime, token } = plainToClass(
+      DashboardIncomeDto,
+      dashboardIncomeDto,
+    );
+
+    const eventCount = await this.eventRepository
+      .createQueryBuilder('events')
+      .addSelect('events."playType"')
+      .where(
+        'events."createdAt" >= :startTime AND events."createdAt" < :endTime',
+        {
+          startTime: startTime,
+          endTime: endTime,
+        },
+      )
+      .andWhere(':token = ANY(events.tokens)', { token })
+      .getCount();
+
+    const uvuTotalAmount = await this.predictionRepository
+      .createQueryBuilder('predictions')
+      .leftJoin('predictions.event', 'event')
+      .select('SUM(predictions."amount"::numeric)', 'total')
+      .where(
+        'event."claimTime" >= :startTime AND event."claimTime" < :endTime',
+        {
+          startTime: startTime,
+          endTime: endTime,
+        },
+      )
+      .andWhere('predictions."optionIndex" != event."resultIndex"')
+      .andWhere('event."isBlock" = false')
+      .andWhere('predictions."amount" IS NOT NULL')
+      .andWhere(`event."playType" = 'user vs user'`)
+      .andWhere(`predictions.token = :token`, { token })
+      .getRawOne();
+
+    const uvpTotalAmount = await this.predictionRepository
+      .createQueryBuilder('predictions')
+      .leftJoin('predictions.event', 'event')
+      .select('SUM(predictions.amount::numeric)', 'total')
+      .where(
+        'event."claimTime" >= :startTime AND event."claimTime" < :endTime',
+        {
+          startTime: startTime,
+          endTime: endTime,
+        },
+      )
+      .andWhere('event."isBlock" = false')
+      .andWhere('predictions."amount" IS NOT NULL')
+      .andWhere(`event."playType" = 'user vs pool'`)
+      .andWhere(`predictions.token = :token`, { token })
+      .getRawOne();
+
+    return {
+      eventCreateFee: eventCount * 10000,
+      uvuTotalAmount: uvuTotalAmount.total,
+      uvpTotalAmount: uvpTotalAmount.total,
     };
   }
 
