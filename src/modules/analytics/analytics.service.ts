@@ -485,8 +485,14 @@ export class AnalyticsService {
 
     return {
       eventCreateFee: eventCount * 10000,
-      uvuTotalAmount: uvuTotalAmount.total,
-      uvpTotalAmount: uvpTotalAmount.total,
+      uvuTotalAmount: new BigNumber(uvuTotalAmount.total)
+        .multipliedBy(1)
+        .dividedBy(100)
+        .toString(),
+      uvpTotalAmount: new BigNumber(uvpTotalAmount.total)
+        .multipliedBy(0.5)
+        .dividedBy(100)
+        .toString(),
     };
   }
 
