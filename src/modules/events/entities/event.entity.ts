@@ -87,6 +87,9 @@ export class EventEntity {
   result?: string;
 
   @Column({ nullable: true })
+  resultIndex?: number;
+
+  @Column({ nullable: true })
   resultProofUrl?: string;
 
   @Column({ nullable: true })
