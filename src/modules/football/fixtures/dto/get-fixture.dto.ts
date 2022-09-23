@@ -16,6 +16,12 @@ export class GetFixtureDto {
   @Transform(({ value }) => value.toLowerCase() === 'true')
   @IsOptional()
   @IsBoolean()
+  isHot?: boolean;
+
+  @ApiPropertyOptional()
+  @Transform(({ value }) => value.toLowerCase() === 'true')
+  @IsOptional()
+  @IsBoolean()
   nullOddMeta?: boolean;
 
   @ApiPropertyOptional()

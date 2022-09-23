@@ -65,7 +65,7 @@ export class FixturesService {
       .leftJoinAndSelect('fixtures.round', 'round')
       .leftJoinAndSelect('fixtures.teamAway', 'teamAway')
       .leftJoinAndSelect('fixtures.teamHome', 'teamHome');
-    const { leagueId, notFinised, search, nullOddMeta, fixtureId } =
+    const { leagueId, notFinised, search, nullOddMeta, fixtureId, isHot } =
       plainToClass(GetFixtureDto, getFixtureDto);
 
     if (leagueId || leagueId === 0) {
@@ -80,6 +80,10 @@ export class FixturesService {
         const currentTime = moment.utc().unix();
         qb.andWhere('fixtures."timestamp" <= :currentTime', { currentTime });
       }
+    }
+
+    if (isHot === true || isHot === false) {
+      qb.andWhere('fixtures.hot = :isHot', { isHot });
     }
 
     if (nullOddMeta === true || nullOddMeta === false) {
