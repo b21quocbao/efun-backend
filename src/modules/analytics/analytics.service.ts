@@ -435,7 +435,7 @@ export class AnalyticsService {
       dashboardIncomeDto,
     );
 
-    const eventCount = await this.eventRepository
+    let eventCount: any = await this.eventRepository
       .createQueryBuilder('events')
       .addSelect('events."playType"')
       .where(
@@ -444,11 +444,9 @@ export class AnalyticsService {
           startTime: startTime,
           endTime: endTime,
         },
-      )
-      .andWhere(':token = ANY(events.tokens)', { token })
-      .getCount();
+      );
 
-    const uvuTotalAmount = await this.predictionRepository
+    let uvuTotalAmount: any = await this.predictionRepository
       .createQueryBuilder('predictions')
       .leftJoin('predictions.event', 'event')
       .select('SUM(predictions."amount"::numeric)', 'total')
@@ -462,11 +460,9 @@ export class AnalyticsService {
       .andWhere('predictions."optionIndex" != event."resultIndex"')
       .andWhere('event."isBlock" = false')
       .andWhere('predictions."amount" IS NOT NULL')
-      .andWhere(`event."playType" = 'user vs user'`)
-      .andWhere(`predictions.token = :token`, { token })
-      .getRawOne();
+      .andWhere(`event."playType" = 'user vs user'`);
 
-    const uvpTotalAmount = await this.predictionRepository
+    let uvpTotalAmount: any = await this.predictionRepository
       .createQueryBuilder('predictions')
       .leftJoin('predictions.event', 'event')
       .select('SUM(predictions.amount::numeric)', 'total')
@@ -479,20 +475,40 @@ export class AnalyticsService {
       )
       .andWhere('event."isBlock" = false')
       .andWhere('predictions."amount" IS NOT NULL')
-      .andWhere(`event."playType" = 'user vs pool'`)
-      .andWhere(`predictions.token = :token`, { token })
-      .getRawOne();
+      .andWhere(`event."playType" = 'user vs pool'`);
+
+    if (token) {
+      eventCount.andWhere(':token = ANY(events.tokens)', { token });
+      uvuTotalAmount.andWhere(`predictions.token = :token`, { token });
+      uvpTotalAmount.andWhere(`predictions.token = :token`, { token });
+    } else {
+      uvuTotalAmount
+        .groupBy('predictions.token')
+        .addSelect('predictions.token', 'token');
+      uvpTotalAmount
+        .groupBy('predictions.token')
+        .addSelect('predictions.token', 'token');
+    }
+    eventCount = await eventCount.getCount();
+    uvuTotalAmount = await uvuTotalAmount.getRawMany();
+    uvpTotalAmount = await uvpTotalAmount.getRawMany();
+    for (const x of uvpTotalAmount) {
+      x.total = new BigNumber(x.total)
+        .multipliedBy(0.5)
+        .dividedBy(100)
+        .toString();
+    }
+    for (const x of uvuTotalAmount) {
+      x.total = new BigNumber(x.total)
+        .multipliedBy(1)
+        .dividedBy(100)
+        .toString();
+    }
 
     return {
       eventCreateFee: eventCount * 10000,
-      uvuTotalAmount: new BigNumber(uvuTotalAmount.total)
-        .multipliedBy(1)
-        .dividedBy(100)
-        .toString(),
-      uvpTotalAmount: new BigNumber(uvpTotalAmount.total)
-        .multipliedBy(0.5)
-        .dividedBy(100)
-        .toString(),
+      uvuTotalAmount: uvuTotalAmount,
+      uvpTotalAmount: uvpTotalAmount,
     };
   }
 
