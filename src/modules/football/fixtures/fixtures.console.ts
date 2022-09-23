@@ -7,7 +7,16 @@ import { FixtureEntity } from './entities/fixture.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LeagueEntity } from '../leagues/entities/league.entity';
 import { SeasonEntity } from '../seasons/entities/season.entity';
-import { LessThanOrEqual, Not, Repository } from 'typeorm';
+import {
+  Between,
+  Brackets,
+  In,
+  LessThan,
+  LessThanOrEqual,
+  MoreThan,
+  Not,
+  Repository,
+} from 'typeorm';
 import { RoundEntity } from '../rounds/entities/round.entity';
 import { TeamEntity } from '../teams/entities/team.entity';
 import { SUB_TYPE, TYPE } from './entities/goal.entity';
@@ -362,6 +371,78 @@ export class FixturesConsole implements OnModuleInit {
       }
     };
 
+    const setHot = async () => {
+      const fromTime = moment.utc().subtract(1, 'day');
+      const toTime = moment.utc().add(15, 'days');
+      const hotTeams = process.env.HOT_TEAMS.split(',');
+
+      const fixtures = await this.fixtureRepository
+        .createQueryBuilder('fixtures')
+        .leftJoin('fixtures.teamHome', 'teamHome')
+        .leftJoin('fixtures.teamAway', 'teamAway')
+        .select('fixtures.id', 'id')
+        .where(
+          new Brackets((qb) => {
+            qb.andWhere('"teamHome"."remoteId" IN (:...hotTeams)').orWhere(
+              '"teamAway"."remoteId" IN (:...hotTeams)',
+              {
+                hotTeams,
+              },
+            );
+          }),
+        )
+        .andWhere('fixtures."statusLong" NOT IN (:...statusLong)', {
+          statusLong: ['Match Finished', 'Match Postponed', 'Match Cancelled'],
+        })
+        .andWhere({
+          hot: false,
+          timestamp: Between(fromTime.unix(), toTime.unix()),
+        })
+        .execute();
+
+      if (fixtures.length > 0) {
+        await this.fixtureRepository
+          .createQueryBuilder('fixtures')
+          .update(FixtureEntity)
+          .set({
+            hot: true,
+          })
+          .where('fixtures.id IN (:...ids)', {
+            ids: fixtures.map((x: any) => x.id),
+          })
+          .execute();
+      }
+    };
+
+    const deleteHot = async () => {
+      const time = moment.utc().subtract(3, 'days');
+
+      await this.fixtureRepository
+        .createQueryBuilder('fixtures')
+        .update(FixtureEntity)
+        .set({
+          hot: false,
+        })
+        .where('fixtures."statusLong" IN (:...statusLong)', {
+          statusLong: ['Match Postponed', 'Match Cancelled'],
+        })
+        .execute();
+
+      await this.fixtureRepository
+        .createQueryBuilder('fixtures')
+        .update(FixtureEntity)
+        .set({
+          hot: false,
+        })
+        .where('fixtures."statusLong" = :statusLong', {
+          statusLong: 'Match Finished',
+        })
+        .andWhere({
+          timestamp: LessThan(time.unix()),
+        })
+        .execute();
+    };
+
     this.schedulerRegistry.addCronJob(
       'fixtureSchedule',
       new CronJob(process.env.CRONT_FIXTURE, fixtureSchedule),
@@ -372,5 +453,15 @@ export class FixturesConsole implements OnModuleInit {
     );
     this.schedulerRegistry.getCronJob('fixtureSchedule').start();
     this.schedulerRegistry.getCronJob('h2hFixtureSchedule').start();
+
+    // Hot matches
+    this.schedulerRegistry.addCronJob(
+      'setHot',
+      new CronJob(process.env.CRONT_FIXTURE_H2H, setHot),
+    );
+    this.schedulerRegistry.addCronJob(
+      'deleteHot',
+      new CronJob(process.env.CRONT_FIXTURE_H2H, deleteHot),
+    );
   }
 }
