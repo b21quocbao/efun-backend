@@ -451,9 +451,6 @@ export class FixturesConsole implements OnModuleInit {
       'h2hFixtureSchedule',
       new CronJob(process.env.CRONT_FIXTURE_H2H, h2hFixtureSchedule),
     );
-    this.schedulerRegistry.getCronJob('fixtureSchedule').start();
-    this.schedulerRegistry.getCronJob('h2hFixtureSchedule').start();
-
     // Hot matches
     this.schedulerRegistry.addCronJob(
       'setHot',
@@ -463,5 +460,9 @@ export class FixturesConsole implements OnModuleInit {
       'deleteHot',
       new CronJob(process.env.CRONT_FIXTURE_H2H, deleteHot),
     );
+    this.schedulerRegistry.getCronJob('fixtureSchedule').start();
+    this.schedulerRegistry.getCronJob('h2hFixtureSchedule').start();
+    this.schedulerRegistry.getCronJob('setHot').start();
+    this.schedulerRegistry.getCronJob('deleteHot').start();
   }
 }
