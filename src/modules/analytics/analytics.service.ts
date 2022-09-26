@@ -493,16 +493,10 @@ export class AnalyticsService {
     uvuTotalAmount = await uvuTotalAmount.getRawMany();
     uvpTotalAmount = await uvpTotalAmount.getRawMany();
     for (const x of uvpTotalAmount) {
-      x.total = new BigNumber(x.total)
-        .multipliedBy(0.5)
-        .dividedBy(100)
-        .toString();
+      x.total = checkNaN(new BigNumber(x.total).times(0.5).div(100).toString());
     }
     for (const x of uvuTotalAmount) {
-      x.total = new BigNumber(x.total)
-        .multipliedBy(1)
-        .dividedBy(100)
-        .toString();
+      x.total = checkNaN(new BigNumber(x.total).times(1).div(100).toString());
     }
 
     return {
