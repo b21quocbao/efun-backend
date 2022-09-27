@@ -256,6 +256,19 @@ export class AnalyticsService {
       .andWhere(`events."playType" = :playType`, { playType })
       .groupBy('events.id');
 
+    const metric2_4_count = this.eventRepository
+      .createQueryBuilder('events')
+      .select('events.id', 'eventId')
+      .andWhere(
+        'events."createdAt" >= :startTime AND events."createdAt" < :endTime',
+        {
+          startTime: startTime,
+          endTime: endTime,
+        },
+      )
+      .andWhere(`events."playType" = :playType`, { playType })
+      .groupBy('events.id');
+
     const metric3 = this.predictionRepository
       .createQueryBuilder('predictions')
       .select('category.name', 'category')
@@ -280,6 +293,7 @@ export class AnalyticsService {
       metric2_2.andWhere('predictions.token = :token', { token });
       metric2_3.andWhere('predictions.token = :token', { token });
       metric2_4.andWhere('predictions.token = :token', { token });
+      metric2_4_count.andWhere(':token = ANY(events.tokens)', { token });
       metric3.andWhere('predictions.token = :token', { token });
     }
 
@@ -288,6 +302,7 @@ export class AnalyticsService {
     const metric2_2Res = await metric2_2.getRawMany();
     const metric2_3Res = await metric2_3.getRawMany();
     const metric2_4Res = await metric2_4.getRawMany();
+    const metric2_4_countRes = await metric2_4_count.getCount();
     const metric3Res = await metric3.getRawMany();
 
     return {
@@ -311,7 +326,7 @@ export class AnalyticsService {
               (sum, a) => new BigNumber(sum).plus(a.totalPredictedPool || 0),
               new BigNumber(0),
             )
-            .div(metric2_4Res.length)
+            .div(metric2_4_countRes)
             .toString(),
         ),
         avgPredictNum: checkNaN(
@@ -320,7 +335,7 @@ export class AnalyticsService {
               (sum, a) => new BigNumber(sum).plus(a.totalPredictions),
               new BigNumber(0),
             )
-            .div(metric2_4Res.length)
+            .div(metric2_4_countRes)
             .toString(),
         ),
       },
