@@ -15,13 +15,11 @@ export class CoinsConsole implements OnModuleInit {
 
   onModuleInit() {
     const coinSchedule = async () => {
-      console.log(this.flag, 'Line #18 coins.console.ts');
-
       const res = await axios(
         'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?aux=num_market_pairs',
         {
           headers: {
-            'X-CMC_PRO_API_KEY': true
+            'X-CMC_PRO_API_KEY': this.flag
               ? process.env.COINMARKETCAP_API_KEY
               : process.env.COINMARKETCAP_API_KEY_2 &&
                 process.env.COINMARKETCAP_API_KEY_2.length > 0
