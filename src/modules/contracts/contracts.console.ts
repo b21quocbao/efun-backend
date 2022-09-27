@@ -129,11 +129,11 @@ export class ContractConsole implements OnModuleInit {
         event.returnValues.eventId,
       );
 
-      if (eventEntity.pro) {
-        event.returnValues.index -= 1;
-      }
-
       if (eventEntity) {
+        if (eventEntity.pro) {
+          event.returnValues.index -= 1;
+        }
+
         if (event.returnValues.index == -1) {
           await this.eventsService.update(eventEntity.id, {
             finalTime: new Date(event.returnValues.finalTime * 1000),
