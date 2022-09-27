@@ -15,6 +15,8 @@ export class CoinsConsole implements OnModuleInit {
 
   onModuleInit() {
     const coinSchedule = async () => {
+      console.log(this.flag, 'Line #18 coins.console.ts');
+
       const res = await axios(
         'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?aux=num_market_pairs',
         {
