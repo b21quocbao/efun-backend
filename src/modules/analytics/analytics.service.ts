@@ -500,7 +500,7 @@ export class AnalyticsService {
     }
 
     return {
-      eventCreateFee: eventCount * 10000,
+      eventCreateFee: eventCount * 2000,
       uvuTotalAmount: uvuTotalAmount,
       uvpTotalAmount: uvpTotalAmount,
     };

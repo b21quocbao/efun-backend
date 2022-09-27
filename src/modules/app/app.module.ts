@@ -31,11 +31,13 @@ import { UsersModule } from '../users/users.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AnalyticEntity } from '../analytics/entities/analytic.entity';
+import { CoinsModule } from '../coins/coins.module';
 import { FootballEntities, FootballModules } from '../football';
 import {
   BasketballEntities,
   BasketballModules,
 } from '../basketball/index.module';
+import { CoinEntity } from '../coins/entities/coin.entity';
 
 @Module({
   imports: [
@@ -64,6 +66,7 @@ import {
           CompetitionEntity,
           UserEntity,
           AnalyticEntity,
+          CoinEntity,
           ...FootballEntities,
           ...BasketballEntities,
         ],
@@ -94,6 +97,7 @@ import {
     ContractsModule,
     CompetitionsModule,
     TokensModule,
+    CoinsModule,
     ...FootballModules,
     ...BasketballModules,
   ],

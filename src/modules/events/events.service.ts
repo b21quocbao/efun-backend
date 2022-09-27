@@ -11,7 +11,6 @@ import { EventEntity } from './entities/event.entity';
 import { EventStatus } from './enums/event-status.enum';
 import { ESortEvent } from './enums/event-type.enum';
 import BigNumber from 'bignumber.js';
-import { PredictionsService } from '../predictions/predictions.service';
 import { PredictionEntity } from '../predictions/entities/prediction.entity';
 import { predictionABI } from 'src/shares/contracts/abi/predictionABI';
 import { plainToClass } from 'class-transformer';

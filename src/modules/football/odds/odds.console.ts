@@ -22,7 +22,9 @@ export class OddsConsole implements OnModuleInit {
 
   onModuleInit() {
     const betSchedule = async () => {
-      const bets = await HTTPClient.getFootballInstance().client.get('/odds/bets');
+      const bets = await HTTPClient.getFootballInstance().client.get(
+        '/odds/bets',
+      );
 
       if (bets.data && bets.data.response) {
         for (const item of bets.data.response) {
@@ -40,7 +42,9 @@ export class OddsConsole implements OnModuleInit {
     };
 
     const bookmakerSchedule = async () => {
-      const bookmakers = await HTTPClient.getFootballInstance().client.get('/odds/bookmakers');
+      const bookmakers = await HTTPClient.getFootballInstance().client.get(
+        '/odds/bookmakers',
+      );
 
       if (bookmakers.data && bookmakers.data.response) {
         for (const item of bookmakers.data.response) {
