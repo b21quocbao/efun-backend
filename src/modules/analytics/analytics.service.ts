@@ -435,9 +435,10 @@ export class AnalyticsService {
       dashboardIncomeDto,
     );
 
-    let eventCount: any = await this.eventRepository
+    let eventCreateFee: any = await this.eventRepository
       .createQueryBuilder('events')
       .addSelect('events."playType"')
+      .select('SUM(predictions."creationFee"::numeric)', 'total')
       .where(
         'events."createdAt" >= :startTime AND events."createdAt" < :endTime',
         {
@@ -478,7 +479,7 @@ export class AnalyticsService {
       .andWhere(`event."playType" = 'user vs pool'`);
 
     if (token) {
-      eventCount.andWhere(':token = ANY(events.tokens)', { token });
+      eventCreateFee.andWhere(':token = ANY(events.tokens)', { token });
       uvuTotalAmount.andWhere(`predictions.token = :token`, { token });
       uvpTotalAmount.andWhere(`predictions.token = :token`, { token });
     } else {
@@ -489,7 +490,7 @@ export class AnalyticsService {
         .groupBy('predictions.token')
         .addSelect('predictions.token', 'token');
     }
-    eventCount = await eventCount.getCount();
+    eventCreateFee = await eventCreateFee.getRawMany();
     uvuTotalAmount = await uvuTotalAmount.getRawMany();
     uvpTotalAmount = await uvpTotalAmount.getRawMany();
     for (const x of uvpTotalAmount) {
@@ -500,7 +501,7 @@ export class AnalyticsService {
     }
 
     return {
-      eventCreateFee: eventCount * 2000,
+      eventCreateFee: eventCreateFee,
       uvuTotalAmount: uvuTotalAmount,
       uvpTotalAmount: uvpTotalAmount,
     };

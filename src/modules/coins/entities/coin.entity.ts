@@ -22,6 +22,9 @@ export class CoinEntity {
   @Column()
   rate: string;
 
+  @Column({ nullable: true })
+  logo: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
