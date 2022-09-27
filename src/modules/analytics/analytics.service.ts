@@ -438,7 +438,7 @@ export class AnalyticsService {
     let eventCreateFee: any = await this.eventRepository
       .createQueryBuilder('events')
       .addSelect('events."playType"')
-      .select('SUM(predictions."creationFee"::numeric)', 'total')
+      .select('SUM(events."creationFee"::numeric)', 'total')
       .where(
         'events."createdAt" >= :startTime AND events."createdAt" < :endTime',
         {
