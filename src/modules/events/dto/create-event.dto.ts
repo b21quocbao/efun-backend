@@ -90,6 +90,9 @@ export class CreateEventDto {
   hostFee: number;
 
   @IsString()
+  creationFee: string;
+
+  @IsString()
   shortDescription: string;
 
   @IsString()

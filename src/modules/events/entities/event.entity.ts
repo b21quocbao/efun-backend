@@ -146,6 +146,9 @@ export class EventEntity {
   @Column({ default: 0 })
   hostFee: number;
 
+  @Column({ default: '10000000000000000000000' })
+  creationFee: string;
+
   @Column('text', { default: [], array: true })
   tokens: string[];
 

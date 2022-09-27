@@ -79,6 +79,12 @@ export const predictionABI = [
         name: '_hostFee',
         type: 'uint256',
       },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'creationFee',
+        type: 'uint256',
+      },
     ],
     name: 'EventCreated',
     type: 'event',
@@ -322,6 +328,13 @@ export const predictionABI = [
     type: 'function',
   },
   {
+    inputs: [],
+    name: 'creationFee',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [
       { internalType: 'uint256', name: '_eventId', type: 'uint256' },
       { internalType: 'address[]', name: '_tokens', type: 'address[]' },
@@ -511,6 +524,7 @@ export const predictionABI = [
     inputs: [
       { internalType: 'uint256', name: '_participateRate', type: 'uint256' },
       { internalType: 'uint256', name: '_oneHundredPrecent', type: 'uint256' },
+      { internalType: 'uint256', name: '_creationFee', type: 'uint256' },
     ],
     name: 'initialize',
     outputs: [],
@@ -603,6 +617,15 @@ export const predictionABI = [
   {
     inputs: [],
     name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'uint256', name: '_creationFee', type: 'uint256' },
+    ],
+    name: 'setCreationFee',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',

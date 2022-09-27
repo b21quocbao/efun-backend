@@ -13,6 +13,7 @@ import { PoolsService } from '../pools/pools.service';
 import axios from 'axios';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { CronJob } from 'cron';
+const { toWei } = Web3.utils;
 
 @Injectable()
 export class ContractConsole implements OnModuleInit {
@@ -107,6 +108,7 @@ export class ContractConsole implements OnModuleInit {
               ? result.marketType
               : undefined,
             description: result.description,
+            creationFee: event.returnValues.creationFee || toWei('10000'),
             playType: JSON.parse(result.metadata).eventType,
             tokens: JSON.parse(result.metadata).tokens,
             metadata: result.metadata,
