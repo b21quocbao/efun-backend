@@ -476,6 +476,7 @@ export class AnalyticsService {
       .andWhere('predictions."optionIndex" != event."resultIndex"')
       .andWhere('event."isBlock" = false')
       .andWhere('predictions."amount" IS NOT NULL')
+      .andWhere('predictions."rewardTransactionId" IS NOT NULL')
       .andWhere(`event."playType" = 'user vs user'`);
 
     let uvpTotalAmount: any = await this.predictionRepository
@@ -491,6 +492,7 @@ export class AnalyticsService {
       )
       .andWhere('event."isBlock" = false')
       .andWhere('predictions."amount" IS NOT NULL')
+      .andWhere('predictions."rewardTransactionId" IS NOT NULL')
       .andWhere(`event."playType" = 'user vs pool'`);
 
     if (token) {
