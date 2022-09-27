@@ -3,4 +3,5 @@ export class CreateCoinDto {
   symbol: string;
   rate: string;
   logo: string;
+  volume: string;
 }

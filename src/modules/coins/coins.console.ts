@@ -35,6 +35,7 @@ export class CoinsConsole implements OnModuleInit {
             symbol: coin.symbol,
             name: coin.name,
             rate: coin.quote.USD.price,
+            volume: coin.quote.USD.volume_24h,
             logo: `https://s2.coinmarketcap.com/static/img/coins/64x64/${coin.id}.png`,
           });
         }
