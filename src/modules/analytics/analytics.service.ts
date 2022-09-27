@@ -395,7 +395,7 @@ export class AnalyticsService {
     if (token) {
       metric1.andWhere(':token = ANY(events.tokens)', { token });
       metric2_1.andWhere(':token = ANY(events.tokens)', { token });
-      metric2_2.andWhere(':token = ANY(events.tokens)', { token });
+      metric2_2.andWhere('pools.token = :token', { token });
       metric3.andWhere(':token = ANY(events.tokens)', { token });
     }
 
