@@ -130,16 +130,34 @@ export class ContractConsole implements OnModuleInit {
       const eventEntity = await this.eventsService.findOne(
         event.returnValues.eventId,
       );
+      const receipt = await this.web3.eth.getTransactionReceipt(
+        event.transactionHash,
+      );
+      let transactionEntity = await this.transactionsService.findOneByHash(
+        event.transactionHash,
+      );
 
       if (eventEntity) {
         if (eventEntity.pro) {
           event.returnValues.index -= 1;
         }
 
+        if (!transactionEntity) {
+          transactionEntity = await this.transactionsService.create({
+            contractAddress: event.address,
+            gas: receipt?.gasUsed,
+            receipt: JSON.stringify(receipt),
+            blockNumber: receipt?.blockNumber,
+            walletAddress: receipt?.from,
+            txId: event.transactionHash,
+          });
+        }
+
         if (event.returnValues.index == -1) {
           await this.eventsService.update(eventEntity.id, {
             finalTime: new Date(event.returnValues.finalTime * 1000),
             claimTime: new Date(event.returnValues.claimTime * 1000),
+            updateResultTransactionId: transactionEntity.id,
             isBlock: true,
           });
         } else {
