@@ -11,8 +11,6 @@ import { EventEntity } from './entities/event.entity';
 import { EventStatus } from './enums/event-status.enum';
 import { ESortEvent } from './enums/event-type.enum';
 import BigNumber from 'bignumber.js';
-import { PredictionEntity } from '../predictions/entities/prediction.entity';
-import { predictionABI } from 'src/shares/contracts/abi/predictionABI';
 import { plainToClass } from 'class-transformer';
 import { eventABI } from 'src/shares/contracts/abi/eventABI';
 import { TxData } from 'ethereumjs-tx';
@@ -23,22 +21,15 @@ BigNumber.config({ EXPONENTIAL_AT: 100 });
 @Injectable()
 export class EventsService implements OnModuleInit {
   private web3;
-  private predictionContract;
   private eventContract;
   private signer: KMSSigner;
 
   constructor(
     @InjectRepository(EventEntity)
     private eventRepository: Repository<EventEntity>,
-    @InjectRepository(PredictionEntity)
-    private predictionRepository: Repository<PredictionEntity>,
   ) {
     this.web3 = new Web3();
     this.web3.setProvider(new Web3.providers.HttpProvider(process.env.RPC_URL));
-    this.predictionContract = new this.web3.eth.Contract(
-      predictionABI,
-      process.env.PREDICTION_PROXY,
-    );
     this.eventContract = new this.web3.eth.Contract(
       eventABI,
       process.env.EVENT_PROXY,
@@ -52,13 +43,7 @@ export class EventsService implements OnModuleInit {
     // const events = await this.eventRepository.find();
     // // console.log(events, 'Line #52 events.service.ts');
     // for (const event of events) {
-    //   console.log(
-    //     JSON.parse(event.metadata).tokens,
-    //     'Line #54 events.service.ts',
-    //   );
-    //   await this.update(event.id, {
-    //     tokens: JSON.parse(event.metadata).tokens,
-    //   });
+    //   await this.recalPool(event.id);
     // }
     if (process.env.KMS_ID && process.env.KMS_ID.length) {
       await this.signer.setMetadata();
@@ -113,9 +98,10 @@ export class EventsService implements OnModuleInit {
       .leftJoin('predictions.report', 'report')
       .select([
         'events.*',
-        'array_agg(pools.amount) as "poolAmounts"',
-        'array_agg(pools.token) as "poolTokens"',
-        'array_agg(pools."claimAmount") as "poolClaimAmounts"',
+        `json_agg(DISTINCT jsonb_build_object('token', pools.token, 'amount', pools.amount, 'claimAmount', pools."claimAmount")) as "poolTokens"`,
+        `case when ${
+          loginUserId || 0
+        } = ANY(array_agg(predictions.userId)) then true else false end as predicted`,
         'competition.name as competition',
         'category.name as category',
         'fixture.goalsMeta as "goalsMeta"',
@@ -227,95 +213,9 @@ export class EventsService implements OnModuleInit {
 
     // eslint-disable-next-line
     let [rs, total] = await Promise.all([qb.getRawMany(), qb.getCount()]);
-    let processedRs = await Promise.all(
-      rs.map(async (event) => {
-        event.poolTokens = event.poolTokens.filter((x: any, index) => {
-          if (!x) {
-            event.poolAmounts = event.poolAmounts.splice(index, 1);
-            return false;
-          }
-          return true;
-        });
-        const poolEstimateClaimAmounts = await this.predictionContract.methods
-          .getRemainingLP(event.id, event.poolTokens)
-          .call()
-          .catch(() => '0');
-        event.poolTokenAmounts = {};
-        event.poolTokenEstimateClaimAmounts = {};
-        event.poolTokenClaimAmounts = {};
-        event.predictionTokenAmounts = {};
-        event.predictionTokenOptionAmounts = {};
-
-        for (let idx = 0; idx < event.poolTokens.length; ++idx) {
-          event.poolTokenAmounts[event.poolTokens[idx]] =
-            event.poolAmounts[idx];
-          event.poolTokenClaimAmounts[event.poolTokens[idx]] =
-            event.poolClaimAmounts[idx];
-          event.poolTokenEstimateClaimAmounts[event.poolTokens[idx]] =
-            poolEstimateClaimAmounts[idx];
-        }
-        const predictions = await this.predictionRepository.find({
-          eventId: event.id,
-        });
-
-        for (const prediction of predictions) {
-          if (prediction.userId == loginUserId) {
-            event.predicted = true;
-          }
-          if (!event.predictionTokenAmounts[prediction.token]) {
-            event.predictionTokenAmounts[prediction.token] = '0';
-          }
-          event.predictionTokenAmounts[prediction.token] = new BigNumber(
-            event.predictionTokenAmounts[prediction.token],
-          )
-            .plus(prediction.amount)
-            .toString();
-
-          if (!event.predictionTokenOptionAmounts[prediction.token]) {
-            event.predictionTokenOptionAmounts[prediction.token] = {};
-          }
-          if (
-            !event.predictionTokenOptionAmounts[prediction.token][
-              prediction.optionIndex
-            ]
-          ) {
-            event.predictionTokenOptionAmounts[prediction.token][
-              prediction.optionIndex
-            ] = new BigNumber(0);
-          }
-          event.predictionTokenOptionAmounts[prediction.token][
-            prediction.optionIndex
-          ] = event.predictionTokenOptionAmounts[prediction.token][
-            prediction.optionIndex
-          ].plus(prediction.amount);
-        }
-        for (const token of Object.keys(event.predictionTokenOptionAmounts)) {
-          let sum = new BigNumber(0);
-          for (const index of Object.keys(
-            event.predictionTokenOptionAmounts[token],
-          )) {
-            sum = sum.plus(event.predictionTokenOptionAmounts[token][index]);
-          }
-          for (const index of Object.keys(
-            event.predictionTokenOptionAmounts[token],
-          )) {
-            event.predictionTokenOptionAmounts[token][index] = Math.trunc(
-              event.predictionTokenOptionAmounts[token][index]
-                .div(sum)
-                .toNumber() * 100,
-            );
-          }
-        }
-
-        delete event.poolAmounts;
-        delete event.poolClaimAmounts;
-        delete event.poolTokens;
-        return event;
-      }),
-    );
 
     if (orderBy == ESortEvent.BIGGEST_EFUN_POOL) {
-      processedRs.sort((a: any, b: any) => {
+      rs.sort((a: any, b: any) => {
         return new BigNumber(a.predictionTokenAmounts[biggestToken] || '0').gt(
           b.predictionTokenAmounts[biggestToken] || '0',
         )
@@ -324,7 +224,7 @@ export class EventsService implements OnModuleInit {
       });
     }
 
-    processedRs = processedRs.map((row) => {
+    rs = rs.map((row) => {
       return {
         ...row,
         reportContents: row.reportContents.filter((x: any) => x !== null),
@@ -334,12 +234,12 @@ export class EventsService implements OnModuleInit {
       };
     });
 
-    for (let i = 0; i < processedRs.length; ++i) {
-      processedRs[i].index = i;
+    for (let i = 0; i < rs.length; ++i) {
+      rs[i].index = i;
     }
 
     if (homeList) {
-      processedRs.sort((a: any, b: any) => {
+      rs.sort((a: any, b: any) => {
         const priorityA =
           a.deadline.getTime() > Date.now()
             ? 1
@@ -385,7 +285,7 @@ export class EventsService implements OnModuleInit {
       });
     }
 
-    for (const event of processedRs) {
+    for (const event of rs) {
       event.groupType =
         event.deadline.getTime() > Date.now()
           ? 1
@@ -406,41 +306,38 @@ export class EventsService implements OnModuleInit {
 
     if (tokenIds) {
       tokenIds = typeof tokenIds === 'string' ? [tokenIds] : tokenIds;
-      processedRs = processedRs.filter((rs) => {
+      rs = rs.filter((rs) => {
         const intersection = JSON.parse(rs.metadata).tokens.filter((x) =>
           tokenIds.includes(x),
         );
         return intersection.length > 0;
       });
-      total = processedRs.length;
+      total = rs.length;
     }
     if (eventTypes) {
       eventTypes = typeof eventTypes === 'string' ? [eventTypes] : eventTypes;
-      processedRs = processedRs.filter((rs) => {
+      rs = rs.filter((rs) => {
         return eventTypes.includes(JSON.parse(rs.metadata).eventType);
       });
-      total = processedRs.length;
+      total = rs.length;
     }
     if (listingStatuses) {
       listingStatuses =
         typeof listingStatuses === 'string'
           ? [listingStatuses]
           : listingStatuses;
-      processedRs = processedRs.filter((rs) => {
+      rs = rs.filter((rs) => {
         return listingStatuses.includes(rs.listingStatus);
       });
-      total = processedRs.length;
+      total = rs.length;
     }
 
     if (homeList) {
-      processedRs = processedRs.slice(
-        (pageNumber - 1) * pageSize,
-        pageNumber * pageSize,
-      );
+      rs = rs.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
     }
 
     return {
-      data: processedRs,
+      data: rs,
       pageNumber: Number(pageNumber),
       pageSize: Number(pageSize),
       total: total,

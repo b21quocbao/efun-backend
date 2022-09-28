@@ -159,6 +159,36 @@ export class EventEntity {
   @Column({ nullable: true })
   transactionId?: number;
 
+  @Column({
+    type: 'jsonb',
+    default: {},
+  })
+  poolTokenAmounts: Record<string, string>;
+
+  @Column({
+    type: 'jsonb',
+    default: {},
+  })
+  poolTokenEstimateClaimAmounts: Record<string, string>;
+
+  @Column({
+    type: 'jsonb',
+    default: {},
+  })
+  poolTokenClaimAmounts: Record<string, string>;
+
+  @Column({
+    type: 'jsonb',
+    default: {},
+  })
+  predictionTokenAmounts: Record<string, string>;
+
+  @Column({
+    type: 'jsonb',
+    default: {},
+  })
+  predictionTokenOptionAmounts: Record<string, string>;
+
   @ManyToOne(() => TransactionEntity)
   @JoinColumn({ name: 'updateResultTransactionId' })
   updateResultTransaction?: TransactionEntity;

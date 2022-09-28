@@ -14,4 +14,9 @@ export class UpdateEventDto extends PartialType(CreateEventDto) {
   updateResultTransactionId?: number;
   playType?: string;
   tokens?: string[];
+  poolTokenAmounts?: Record<string, string>;
+  poolTokenEstimateClaimAmounts?: Record<string, string>;
+  poolTokenClaimAmounts?: Record<string, string>;
+  predictionTokenAmounts?: Record<string, string>;
+  predictionTokenOptionAmounts?: Record<string, string>;
 }
