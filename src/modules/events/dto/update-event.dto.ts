@@ -11,6 +11,7 @@ export class UpdateEventDto extends PartialType(CreateEventDto) {
   finalTime?: Date;
   claimTime?: Date;
   proofOfResult?: string;
+  updateResultTransactionId?: number;
   playType?: string;
   tokens?: string[];
 }

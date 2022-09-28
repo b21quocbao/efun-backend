@@ -157,7 +157,14 @@ export class EventEntity {
   transaction?: TransactionEntity;
 
   @Column({ nullable: true })
-  transactionId: number;
+  transactionId?: number;
+
+  @ManyToOne(() => TransactionEntity)
+  @JoinColumn({ name: 'updateResultTransactionId' })
+  updateResultTransaction?: TransactionEntity;
+
+  @Column({ nullable: true })
+  updateResultTransactionId?: number;
 
   @Column({ default: '' })
   metadata: string;
