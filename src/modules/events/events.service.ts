@@ -227,21 +227,19 @@ export class EventsService implements OnModuleInit {
     rs = rs.map((event) => {
       return {
         ...event,
-        poolTokenEstimateClaimAmounts: event.poolTokenEstimateClaimAmounts.map(
-          (amount: string, index: number) => {
-            if (
-              event.endTime != 0 &&
+        poolTokenEstimateClaimAmounts: Object.keys(
+          event.poolTokenEstimateClaimAmounts,
+        ).forEach((key: string) => {
+          if (
+            (event.endTime != 0 &&
               new Date(event.endTime).getTime() + 172800 * 1000 < Date.now() &&
-              event.status != EventStatus.FINISH
-            ) {
-              return event.poolTokenAmounts[index];
-            } else if (event.isBlock) {
-              return event.poolTokenAmounts[index];
-            } else {
-              return amount;
-            }
-          },
-        ),
+              event.status != EventStatus.FINISH) ||
+            event.isBlock
+          ) {
+            event.poolTokenEstimateClaimAmounts[key] =
+              event.poolTokenAmounts[key];
+          }
+        }),
         reportContents: event.reportContents.filter((x: any) => x !== null),
         reportTypeUploads: event.reportTypeUploads.filter(
           (x: any) => x !== null,
