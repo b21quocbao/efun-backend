@@ -224,13 +224,31 @@ export class EventsService implements OnModuleInit {
       });
     }
 
-    rs = rs.map((row) => {
+    rs = rs.map((event) => {
       return {
-        ...row,
-        reportContents: row.reportContents.filter((x: any) => x !== null),
-        reportTypeUploads: row.reportTypeUploads.filter((x: any) => x !== null),
-        participants: row.participants.filter((x: any) => x !== null),
-        numParticipants: row.participants.filter((x: any) => x !== null).length,
+        ...event,
+        poolTokenEstimateClaimAmounts: event.poolTokenEstimateClaimAmounts.map(
+          (amount: string, index: number) => {
+            if (
+              event.endTime != 0 &&
+              new Date(event.endTime).getTime() + 172800 * 1000 < Date.now() &&
+              event.status != EventStatus.FINISH
+            ) {
+              return event.poolTokenAmounts[index];
+            } else if (event.isBlock) {
+              return event.poolTokenAmounts[index];
+            } else {
+              return amount;
+            }
+          },
+        ),
+        reportContents: event.reportContents.filter((x: any) => x !== null),
+        reportTypeUploads: event.reportTypeUploads.filter(
+          (x: any) => x !== null,
+        ),
+        participants: event.participants.filter((x: any) => x !== null),
+        numParticipants: event.participants.filter((x: any) => x !== null)
+          .length,
       };
     });
 

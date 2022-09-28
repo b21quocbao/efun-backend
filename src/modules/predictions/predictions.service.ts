@@ -10,6 +10,7 @@ import { PredictionEntity } from './entities/prediction.entity';
 import { SearchPredictionDto } from './dto/search-prediction.dto';
 import { PSortEvent } from './enums/prediction-type.enum';
 import BigNumber from 'bignumber.js';
+import { EventStatus } from '../events/enums/event-status.enum';
 BigNumber.config({ EXPONENTIAL_AT: 100 });
 
 @Injectable()
@@ -119,6 +120,17 @@ export class PredictionsService {
           prediction.reportTypeUploads = prediction.reportTypeUploads.filter(
             (x: any) => x !== null,
           );
+          if (
+            (prediction.endTime > 0 &&
+              new Date(prediction.endTime).getTime() + 172800 * 1000 <
+                Date.now() &&
+              prediction.eventStatus != EventStatus.FINISH) ||
+            prediction.eventIsBlock
+          ) {
+            prediction.status = prediction.cashBackTransactionId
+              ? 'Claimed Cashback'
+              : 'Claim Cashback';
+          }
 
           return prediction;
         }),

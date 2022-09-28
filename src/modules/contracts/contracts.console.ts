@@ -22,7 +22,8 @@ const { toWei } = Web3.utils;
 export class ContractConsole implements OnModuleInit {
   private web3;
   private predictionContract;
-  private recalPool;
+  private recalPoolAmount;
+  private recalPredictionAmount;
   private recalEstimateReward;
   private eventHandler1;
   private eventHandler2;
@@ -72,18 +73,6 @@ export class ContractConsole implements OnModuleInit {
           : isNumber(prediction.rewardTransactionId)
           ? 'Claimed'
           : 'Unknown';
-
-        if (
-          (prediction.endTime > 0 &&
-            new Date(prediction.endTime).getTime() + 172800 * 1000 <
-              Date.now() &&
-            prediction.eventStatus != EventStatus.FINISH) ||
-          prediction.eventIsBlock
-        ) {
-          status = prediction.cashBackTransactionId
-            ? 'Claimed Cashback'
-            : 'Claim Cashback';
-        }
 
         let estimateReward = '';
         if (status == 'Unknown') {
@@ -147,8 +136,8 @@ export class ContractConsole implements OnModuleInit {
       }
     };
 
-    this.recalPool = async (eventId: number) => {
-      console.log('recalPool', 'Line #55 contracts.console.ts');
+    this.recalPoolAmount = async (eventId: number) => {
+      console.log('recalPoolAmount', 'Line #55 contracts.console.ts');
 
       const events = await this.eventsService.findAll({ eventId });
       const event = events.data[0];
@@ -161,10 +150,8 @@ export class ContractConsole implements OnModuleInit {
         .call()
         .catch(() => '0');
       const poolTokenAmounts = {};
-      const poolTokenEstimateClaimAmounts = {};
       const poolTokenClaimAmounts = {};
-      const predictionTokenAmounts = {};
-      const predictionTokenOptionAmounts = {};
+      const poolTokenEstimateClaimAmounts = {};
 
       for (let idx = 0; idx < event.poolTokens.length; ++idx) {
         poolTokenAmounts[event.poolTokens[idx].token] =
@@ -174,6 +161,23 @@ export class ContractConsole implements OnModuleInit {
         poolTokenEstimateClaimAmounts[event.poolTokens[idx].token] =
           poolEstimateClaimAmounts[idx];
       }
+
+      await this.eventsService.update(eventId, {
+        poolTokenAmounts,
+        poolTokenClaimAmounts,
+        poolTokenEstimateClaimAmounts,
+      });
+    };
+
+    this.recalPredictionAmount = async (eventId: number) => {
+      console.log('recalPredictionAmount', 'Line #55 contracts.console.ts');
+
+      const events = await this.eventsService.findAll({ eventId });
+      const event = events.data[0];
+
+      const predictionTokenAmounts = {};
+      const predictionTokenOptionAmounts = {};
+
       const predictions = await this.predictionsService.findAll({
         eventId: event.id,
       });
@@ -219,9 +223,6 @@ export class ContractConsole implements OnModuleInit {
       }
 
       await this.eventsService.update(eventId, {
-        poolTokenAmounts,
-        poolTokenEstimateClaimAmounts,
-        poolTokenClaimAmounts,
         predictionTokenAmounts,
         predictionTokenOptionAmounts,
       });
@@ -358,7 +359,9 @@ export class ContractConsole implements OnModuleInit {
             updateResultTransactionId: transactionEntity.id,
             status: EventStatus.FINISH,
           });
+
           await this.recalEstimateReward({ eventId: eventEntity.id });
+          await this.recalPoolAmount(event.returnValues.eventId);
         }
       }
     };
@@ -389,7 +392,7 @@ export class ContractConsole implements OnModuleInit {
           txId: event.transactionHash,
         });
 
-        await this.predictionsService.create({
+        const prediction = await this.predictionsService.create({
           eventId: event.returnValues.eventId,
           userId: user.id,
           predictNum: event.returnValues.predictNum,
@@ -398,6 +401,10 @@ export class ContractConsole implements OnModuleInit {
           token: event.returnValues.token,
           amount: event.returnValues.amount,
         });
+
+        await this.recalEstimateReward({ predictionId: prediction.id });
+        await this.recalPredictionAmount({ eventId: prediction.eventId });
+        await this.recalPoolAmount(event.returnValues.eventId);
       }
     };
 
@@ -439,6 +446,7 @@ export class ContractConsole implements OnModuleInit {
           rewardTransactionId: transactionEntity.id,
           rewardAmount: event.returnValues.reward,
         });
+
         await this.recalEstimateReward({ predictionId: prediction.id });
       }
     };
@@ -507,7 +515,7 @@ export class ContractConsole implements OnModuleInit {
           await this.poolsService.update(pool.id, {
             amount: event.returnValues.amount,
           });
-          await this.recalPool(event.returnValues.eventId);
+          await this.recalPoolAmount(event.returnValues.eventId);
         } else {
           await this.poolsService.create({
             eventId: event.returnValues.eventId,
@@ -515,7 +523,7 @@ export class ContractConsole implements OnModuleInit {
             token: event.returnValues.token,
             amount: event.returnValues.amount,
           });
-          await this.recalPool(event.returnValues.eventId);
+          await this.recalPoolAmount(event.returnValues.eventId);
         }
       }
     };
@@ -553,7 +561,7 @@ export class ContractConsole implements OnModuleInit {
           claimAmount: event.returnValues.amount,
           claimTransactionId: transactionEntity.id,
         });
-        await this.recalPool(event.returnValues.eventId);
+        await this.recalPoolAmount(event.returnValues.eventId);
       }
     };
 
