@@ -462,15 +462,16 @@ export class AnalyticsService {
         },
       );
 
-    let uvuTotalAmount: any = await this.predictionRepository
+    let uvuTotalAmount: any = this.predictionRepository
       .createQueryBuilder('predictions')
       .leftJoin('predictions.event', 'event')
+      .leftJoin('predictions.rewardTransaction', 'rewardTransaction')
       .select('SUM(predictions."amount"::numeric)', 'total')
       .addSelect(
         'json_agg(DISTINCT (predictions.id, predictions.amount)) as "predictionsId"',
       )
       .where(
-        'event."claimTime" >= :startTime AND event."claimTime" < :endTime',
+        '"rewardTransaction"."createdAt" >= :startTime AND "rewardTransaction"."createdAt" < :endTime',
         {
           startTime: startTime,
           endTime: endTime,
@@ -481,15 +482,16 @@ export class AnalyticsService {
       .andWhere('predictions."rewardTransactionId" IS NOT NULL')
       .andWhere(`event."playType" = 'user vs user'`);
 
-    let uvpTotalAmount: any = await this.predictionRepository
+    let uvpTotalAmount: any = this.predictionRepository
       .createQueryBuilder('predictions')
       .leftJoin('predictions.event', 'event')
+      .leftJoin('predictions.rewardTransaction', 'rewardTransaction')
       .select('SUM(predictions.amount::numeric)', 'total')
       .addSelect(
         'json_agg(DISTINCT (predictions.id, predictions.amount)) as "predictionsId"',
       )
       .where(
-        'event."claimTime" >= :startTime AND event."claimTime" < :endTime',
+        '"rewardTransaction"."createdAt" >= :startTime AND "rewardTransaction"."createdAt" < :endTime',
         {
           startTime: startTime,
           endTime: endTime,

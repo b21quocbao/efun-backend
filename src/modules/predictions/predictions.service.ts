@@ -49,6 +49,7 @@ export class PredictionsService {
       .createQueryBuilder('predictions')
       .leftJoin('predictions.event', 'event')
       .leftJoin('predictions.transaction', 'transaction')
+      .leftJoin('predictions.rewardTransaction', 'rewardTransaction')
       .leftJoin('predictions.user', 'predictUser')
       .leftJoin('event.user', 'user')
       .leftJoin('event.category', 'category')

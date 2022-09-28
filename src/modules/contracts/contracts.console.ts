@@ -166,6 +166,7 @@ export class ContractConsole implements OnModuleInit {
             resultIndex: event.returnValues.index,
             finalTime: new Date(event.returnValues.finalTime * 1000),
             claimTime: new Date(event.returnValues.claimTime * 1000),
+            updateResultTransactionId: transactionEntity.id,
             status: EventStatus.FINISH,
           });
         }
