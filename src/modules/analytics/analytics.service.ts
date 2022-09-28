@@ -466,7 +466,9 @@ export class AnalyticsService {
       .createQueryBuilder('predictions')
       .leftJoin('predictions.event', 'event')
       .select('SUM(predictions."amount"::numeric)', 'total')
-      .addSelect('array_agg(predictions.id) as "predictionsId"')
+      .addSelect(
+        'json_agg(DISTINCT (predictions.id, predictions.amount)) as "predictionsId"',
+      )
       .where(
         'event."claimTime" >= :startTime AND event."claimTime" < :endTime',
         {
@@ -484,7 +486,9 @@ export class AnalyticsService {
       .createQueryBuilder('predictions')
       .leftJoin('predictions.event', 'event')
       .select('SUM(predictions.amount::numeric)', 'total')
-      .addSelect('array_agg(predictions.id) as "predictionsId"')
+      .addSelect(
+        'json_agg(DISTINCT (predictions.id, predictions.amount)) as "predictionsId"',
+      )
       .where(
         'event."claimTime" >= :startTime AND event."claimTime" < :endTime',
         {
