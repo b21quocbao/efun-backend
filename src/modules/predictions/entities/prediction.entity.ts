@@ -75,6 +75,12 @@ export class PredictionEntity {
   @Column({ nullable: true })
   cashBackTransactionId?: number;
 
+  @Column({ nullable: true })
+  estimateReward?: string;
+
+  @Column({ nullable: true })
+  sponsor?: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

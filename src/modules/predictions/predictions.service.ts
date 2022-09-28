@@ -9,29 +9,19 @@ import { Repository } from 'typeorm';
 import { PredictionEntity } from './entities/prediction.entity';
 import { SearchPredictionDto } from './dto/search-prediction.dto';
 import { PSortEvent } from './enums/prediction-type.enum';
-import { isNumber } from 'class-validator';
-import { PoolsService } from '../pools/pools.service';
 import BigNumber from 'bignumber.js';
-import { EventStatus } from '../events/enums/event-status.enum';
-import { predictionABI } from 'src/shares/contracts/abi/predictionABI';
 BigNumber.config({ EXPONENTIAL_AT: 100 });
 
 @Injectable()
 export class PredictionsService {
   private web3;
-  private predictionContract;
 
   constructor(
     @InjectRepository(PredictionEntity)
     private predictionRepository: Repository<PredictionEntity>,
-    private readonly poolsService: PoolsService,
   ) {
     this.web3 = new Web3();
     this.web3.setProvider(new Web3.providers.HttpProvider(process.env.RPC_URL));
-    this.predictionContract = new this.web3.eth.Contract(
-      predictionABI,
-      process.env.PREDICTION_PROXY,
-    );
   }
 
   async create(
@@ -129,84 +119,8 @@ export class PredictionsService {
           prediction.reportTypeUploads = prediction.reportTypeUploads.filter(
             (x: any) => x !== null,
           );
-          let status = !prediction.eventResult
-            ? 'Predicted'
-            : isNumber(prediction.rewardTransactionId)
-            ? 'Claimed'
-            : 'Unknown';
 
-          if (
-            (prediction.endTime > 0 &&
-              new Date(prediction.endTime).getTime() + 172800 * 1000 <
-                Date.now() &&
-              prediction.eventStatus != EventStatus.FINISH) ||
-            prediction.eventIsBlock
-          ) {
-            status = prediction.cashBackTransactionId
-              ? 'Claimed Cashback'
-              : 'Claim Cashback';
-          }
-
-          let estimateReward;
-          if (status == 'Unknown') {
-            status = 'Claim';
-            try {
-              estimateReward = await this.predictionContract.methods
-                .estimateReward(
-                  prediction.eventId,
-                  prediction.userAddress,
-                  prediction.token,
-                  prediction.predictNum,
-                  true,
-                )
-                .call();
-            } catch (err) {
-              status = 'Lost';
-            }
-          } else if (status == 'Claimed') {
-            estimateReward = prediction.rewardAmount;
-          } else {
-            estimateReward = await this.predictionContract.methods
-              .estimateReward(
-                prediction.eventId,
-                prediction.userAddress,
-                prediction.token,
-                prediction.predictNum,
-                false,
-              )
-              .call()
-              .catch(() => '0');
-          }
-          let sponsor = await this.predictionContract.methods
-            .estimateRewardSponsor(
-              prediction.eventId,
-              prediction.userAddress,
-              prediction.token,
-              prediction.predictNum,
-            )
-            .call()
-            .catch(() => '0');
-          if (status === 'Lost') {
-            sponsor = '0';
-          }
-          const resultIndex = JSON.parse(prediction.eventOptions).indexOf(
-            prediction.eventResult,
-          );
-
-          if (
-            resultIndex == 2 ||
-            (resultIndex == 3 && prediction.optionIndex == 0) ||
-            (resultIndex == 1 && prediction.optionIndex == 4)
-          ) {
-            sponsor = '0';
-          }
-
-          return {
-            ...prediction,
-            status: status,
-            estimateReward: estimateReward,
-            sponsor: sponsor,
-          };
+          return prediction;
         }),
       ),
       pageNumber: Number(pageNumber),

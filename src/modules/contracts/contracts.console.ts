@@ -15,6 +15,7 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import { CronJob } from 'cron';
 import BigNumber from 'bignumber.js';
 import { predictionABI } from 'src/shares/contracts/abi/predictionABI';
+import { isNumber } from 'class-validator';
 const { toWei } = Web3.utils;
 
 @Injectable()
@@ -22,6 +23,7 @@ export class ContractConsole implements OnModuleInit {
   private web3;
   private predictionContract;
   private recalPool;
+  private recalEstimateReward;
   private eventHandler1;
   private eventHandler2;
   private eventHandler3;
@@ -46,7 +48,108 @@ export class ContractConsole implements OnModuleInit {
       process.env.PREDICTION_PROXY,
     );
 
+    this.recalEstimateReward = async (recalEstimateRewardDto: {
+      predictionId?: number;
+      eventId?: number;
+    }) => {
+      console.log('recalEstimateReward', 'Line #55 contracts.console.ts');
+
+      const { predictionId, eventId } = recalEstimateRewardDto;
+      let predictions;
+      if (predictionId) {
+        predictions = await this.predictionsService.findAll({
+          predictionId,
+        });
+      } else {
+        predictions = await this.predictionsService.findAll({
+          eventId,
+        });
+      }
+
+      for (const prediction of predictions.data) {
+        let status = !prediction.eventResult
+          ? 'Predicted'
+          : isNumber(prediction.rewardTransactionId)
+          ? 'Claimed'
+          : 'Unknown';
+
+        if (
+          (prediction.endTime > 0 &&
+            new Date(prediction.endTime).getTime() + 172800 * 1000 <
+              Date.now() &&
+            prediction.eventStatus != EventStatus.FINISH) ||
+          prediction.eventIsBlock
+        ) {
+          status = prediction.cashBackTransactionId
+            ? 'Claimed Cashback'
+            : 'Claim Cashback';
+        }
+
+        let estimateReward = '';
+        if (status == 'Unknown') {
+          status = 'Claim';
+          try {
+            estimateReward = await this.predictionContract.methods
+              .estimateReward(
+                prediction.eventId,
+                prediction.userAddress,
+                prediction.token,
+                prediction.predictNum,
+                true,
+              )
+              .call();
+          } catch (err) {
+            status = 'Lost';
+          }
+        } else if (status == 'Claimed') {
+          estimateReward = prediction.rewardAmount;
+        } else {
+          estimateReward = await this.predictionContract.methods
+            .estimateReward(
+              prediction.eventId,
+              prediction.userAddress,
+              prediction.token,
+              prediction.predictNum,
+              false,
+            )
+            .call()
+            .catch(() => '0');
+        }
+        let sponsor = await this.predictionContract.methods
+          .estimateRewardSponsor(
+            prediction.eventId,
+            prediction.userAddress,
+            prediction.token,
+            prediction.predictNum,
+          )
+          .call()
+          .catch(() => '0');
+        if (status === 'Lost') {
+          sponsor = '0';
+        }
+        const resultIndex = JSON.parse(prediction.eventOptions).indexOf(
+          prediction.eventResult,
+        );
+
+        if (
+          resultIndex == 2 ||
+          (resultIndex == 3 && prediction.optionIndex == 0) ||
+          (resultIndex == 1 && prediction.optionIndex == 4)
+        ) {
+          sponsor = '0';
+        }
+
+        await this.predictionsService.update(prediction.id, {
+          status: status,
+          estimateReward: estimateReward,
+          sponsor: sponsor,
+        });
+      }
+    };
+
     this.recalPool = async (eventId: number) => {
+      console.log('recalPool', 'Line #55 contracts.console.ts');
+
       const events = await this.eventsService.findAll({ eventId });
       const event = events.data[0];
 
@@ -255,6 +358,7 @@ export class ContractConsole implements OnModuleInit {
             updateResultTransactionId: transactionEntity.id,
             status: EventStatus.FINISH,
           });
+          await this.recalEstimateReward({ eventId: eventEntity.id });
         }
       }
     };
@@ -335,6 +439,7 @@ export class ContractConsole implements OnModuleInit {
           rewardTransactionId: transactionEntity.id,
           rewardAmount: event.returnValues.reward,
         });
+        await this.recalEstimateReward({ predictionId: prediction.id });
       }
     };
 
