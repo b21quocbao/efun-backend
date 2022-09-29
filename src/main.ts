@@ -6,7 +6,9 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
-  app.enableCors();
+  app.enableCors({
+    origin: [...process.env.ORIGIN.split(','), /efun-app-v2.*\.vercel\.app/],
+  });
   app.setGlobalPrefix(process.env.PREFIX);
 
   //Swagger
