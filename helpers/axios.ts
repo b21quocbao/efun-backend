@@ -21,7 +21,9 @@ export class HTTPClient {
       (config) => config,
       (error) => {
         if (error.code === 'ECONNABORTED') {
-          console.log(`A timeout happend on url ${error.config.url}`);
+          return Promise.reject(
+            new Error(`A timeout happend on url ${error.config.url}`),
+          );
         }
         return Promise.reject(error);
       },
