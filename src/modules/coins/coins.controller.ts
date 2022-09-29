@@ -17,6 +17,11 @@ export class CoinsController {
     return this.coinsService.findOneBySymbol(symbol);
   }
 
+  @Get('text/:search')
+  async findOneByText(@Param('search') search: string) {
+    return this.coinsService.findOneByText(search);
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.coinsService.findOne(+id);

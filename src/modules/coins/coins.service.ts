@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToClass } from 'class-transformer';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { CoinEntity } from './entities/coin.entity';
 import { CreateCoinDto } from './dto/create-coin.dto';
 
@@ -35,5 +35,20 @@ export class CoinsService {
       .createQueryBuilder('coins')
       .where('symbol = :symbol', { symbol })
       .getOne();
+  }
+
+  async findOneByText(search: string): Promise<CoinEntity[]> {
+    return this.coinRepository
+      .createQueryBuilder('coins')
+      .andWhere(
+        new Brackets((qb) => {
+          qb.andWhere('coins.name ILIKE :name', {
+            name: `%${search}%`,
+          }).orWhere('coins.symbol ILIKE :symbol', {
+            symbol: `%${search}%`,
+          });
+        }),
+      )
+      .getMany();
   }
 }
