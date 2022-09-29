@@ -403,7 +403,7 @@ export class ContractConsole implements OnModuleInit {
         });
 
         await this.recalEstimateReward({ predictionId: prediction.id });
-        await this.recalPredictionAmount({ eventId: prediction.eventId });
+        await this.recalPredictionAmount(prediction.eventId);
         await this.recalPoolAmount(event.returnValues.eventId);
       }
     };
