@@ -234,7 +234,7 @@ export class ContractConsole implements OnModuleInit {
         console.log(`Handle item with id ${event.returnValues.idx}`);
 
         const user = await this.usersService.findByAddress(
-          event.returnValues.creator,
+          event.returnValues.addresses[2],
         );
         const eventEntity = await this.eventsService.findOne(
           event.returnValues.idx,
@@ -261,9 +261,9 @@ export class ContractConsole implements OnModuleInit {
 
           await this.eventsService.create(user.id, {
             id: event.returnValues.idx,
-            startTime: new Date(event.returnValues.startTime * 1000),
-            deadline: new Date(event.returnValues.deadlineTime * 1000),
-            endTime: new Date(event.returnValues.endTime * 1000),
+            startTime: new Date(event.returnValues.numInfos[0] * 1000),
+            deadline: new Date(event.returnValues.numInfos[1] * 1000),
+            endTime: new Date(event.returnValues.numInfos[2] * 1000),
             odds: JSON.stringify(event.returnValues.odds),
             transactionId: transactionEntity.id,
             options: result.options,
@@ -278,7 +278,7 @@ export class ContractConsole implements OnModuleInit {
             categoryId: result.categoryId.length
               ? Number(result.categoryId)
               : undefined,
-            pro: event.returnValues.pro,
+            pro: event.returnValues.numInfos[3],
             fixtureId:
               result.fixtureId && result.fixtureId.length
                 ? Number(result.fixtureId)
@@ -303,7 +303,7 @@ export class ContractConsole implements OnModuleInit {
             tokens: JSON.parse(result.metadata).tokens,
             metadata: result.metadata,
             affiliate: event.returnValues.affiliate,
-            hostFee: event.returnValues._hostFee,
+            hostFee: event.returnValues.numInfos[4],
             shortDescription: result.shortDescription,
             streamUrl: result.streamUrl.length ? result.streamUrl : undefined,
           });
