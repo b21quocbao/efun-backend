@@ -1,3 +1,4 @@
+import { EventEntity } from 'src/modules/events/entities/event.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -5,6 +6,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Index,
+  OneToMany,
 } from 'typeorm';
 
 @Entity('coins')
@@ -27,6 +29,9 @@ export class CoinEntity {
 
   @Column({ nullable: true })
   logo: string;
+
+  @OneToMany(() => EventEntity, (event) => event.fixture)
+  events: EventEntity[];
 
   @CreateDateColumn()
   createdAt: Date;

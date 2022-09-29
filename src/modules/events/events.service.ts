@@ -17,6 +17,7 @@ import { TxData } from 'ethereumjs-tx';
 import { KMSSigner } from 'helpers/kms';
 import { getResult } from 'helpers/get-result';
 import { UsersService } from '../users/users.service';
+import { CoinsService } from '../coins/coins.service';
 BigNumber.config({ EXPONENTIAL_AT: 100 });
 
 @Injectable()
@@ -29,6 +30,7 @@ export class EventsService implements OnModuleInit {
     @InjectRepository(EventEntity)
     private eventRepository: Repository<EventEntity>,
     private userService: UsersService,
+    private coinService: CoinsService,
   ) {
     this.web3 = new Web3();
     this.web3.setProvider(new Web3.providers.HttpProvider(process.env.RPC_URL));
@@ -240,11 +242,6 @@ export class EventsService implements OnModuleInit {
     }
     if (isFollowFirst === true || isFollowFirst === false) {
       const user = await this.userService.findOne(loginUserId);
-      console.log(
-        user,
-        user.followsId.map((x: any) => x.f1),
-        'Line #243 events.service.ts',
-      );
       if (isFollowFirst) {
         qb.andWhere('events."userId" IN(:...ids)', {
           ids: user.followsId.map((x: any) => x.f1),
@@ -562,7 +559,21 @@ export class EventsService implements OnModuleInit {
         goalsMeta.home,
         goalsMeta.away,
       );
-      arr.push(await getResult(event, goalsMeta.home, goalsMeta.away));
+      if (event.pro == 6) {
+        const options = JSON.parse(event.options) as number[];
+        const coin = await this.coinService.findOne(event.coinId);
+        for (let i = 0; i < options.length; i++) {
+          if (
+            (i != options.length - 1 && Number(coin.volume) < options[i]) ||
+            i == options.length - 1
+          ) {
+            arr.push(i + 1);
+            break;
+          }
+        }
+      } else {
+        arr.push(await getResult(event, goalsMeta.home, goalsMeta.away));
+      }
     }
     return { data: arr.join(',') + ',' };
   }

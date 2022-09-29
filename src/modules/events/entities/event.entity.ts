@@ -19,6 +19,7 @@ import {
 import { EventStatus } from '../enums/event-status.enum';
 import { EventType } from '../enums/event-type.enum';
 import { MarketType } from '../enums/market-type.enum';
+import { CoinEntity } from 'src/modules/coins/entities/coin.entity';
 
 @Entity('events')
 export class EventEntity {
@@ -52,6 +53,9 @@ export class EventEntity {
 
   @ManyToOne(() => FixtureEntity, (fixture) => fixture.events)
   fixture: FixtureEntity;
+
+  @ManyToOne(() => CoinEntity, (coin) => coin.events)
+  coin: CoinEntity;
 
   @OneToMany(() => PoolEntity, (pool) => pool.event)
   pools: PoolEntity[];
@@ -115,6 +119,9 @@ export class EventEntity {
 
   @Column({ nullable: true })
   fixtureId: number;
+
+  @Column({ nullable: true })
+  coinId: number;
 
   @Column({ nullable: true })
   categoryId: number;

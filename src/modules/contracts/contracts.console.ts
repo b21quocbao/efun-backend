@@ -293,6 +293,10 @@ export class ContractConsole implements OnModuleInit {
               result.leagueId && result.leagueId.length
                 ? Number(result.leagueId)
                 : undefined,
+            coinId:
+              result.coinId && result.coinId.length
+                ? Number(result.coinId)
+                : undefined,
             type: result.type,
             marketType: result.marketType.length
               ? result.marketType

@@ -28,6 +28,10 @@ export class CreateEventDto {
   categoryId?: number;
 
   @IsNumber()
+  @IsOptional()
+  coinId?: number;
+
+  @IsNumber()
   transactionId: number;
 
   @IsNumber()

@@ -95,21 +95,6 @@ export async function getResult(
         result = index;
       }
     });
-  } else if (event.pro == 6) {
-    const options = JSON.parse(event.options) as number[];
-    for (let i = 0; i < options.length; i++) {
-      // if (
-      //   (i != options.length - 1 && price < int(options[i])) ||
-      //   i == options.length - 1
-      // ) {
-      //   events[number].finalTime = block.timestamp;
-      //   events[number].claimTime = block.timestamp;
-      //   events[number].resultIndex = i;
-      //   events[number].status = EDataTypes.EventStatus.FINISH;
-      //   finalResult[number] = price;
-      //   break;
-      // }
-    }
   }
   return result + 1;
 }
