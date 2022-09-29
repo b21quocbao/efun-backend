@@ -135,8 +135,17 @@ export class GetAllEventDto extends PaginationInput {
   status?: EventStatus;
 
   @ApiPropertyOptional()
+  @Transform(({ value }) => value.toLowerCase() === 'true')
+  @IsOptional()
+  @IsBoolean()
+  followFirst?: boolean;
+
+  @ApiPropertyOptional()
   @IsOptional()
   eventId?: number;
+
+  isFollowFirst?: boolean;
+  skip?: number = 0;
 }
 
 export class GetOtherEventDto extends PaginationInput {

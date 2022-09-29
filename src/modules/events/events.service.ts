@@ -16,6 +16,7 @@ import { eventABI } from 'src/shares/contracts/abi/eventABI';
 import { TxData } from 'ethereumjs-tx';
 import { KMSSigner } from 'helpers/kms';
 import { getResult } from 'helpers/get-result';
+import { UsersService } from '../users/users.service';
 BigNumber.config({ EXPONENTIAL_AT: 100 });
 
 @Injectable()
@@ -27,6 +28,7 @@ export class EventsService implements OnModuleInit {
   constructor(
     @InjectRepository(EventEntity)
     private eventRepository: Repository<EventEntity>,
+    private userService: UsersService,
   ) {
     this.web3 = new Web3();
     this.web3.setProvider(new Web3.providers.HttpProvider(process.env.RPC_URL));
@@ -59,6 +61,38 @@ export class EventsService implements OnModuleInit {
   }
 
   async findAll(request: GetAllEventDto): Promise<Response<any[]>> {
+    const { followFirst, pageNumber, pageSize } = plainToClass(
+      GetAllEventDto,
+      request,
+    );
+
+    if (followFirst) {
+      const x = await this.findAll2({ ...request, isFollowFirst: true });
+      const y = await this.findAll2({
+        ...request,
+        isFollowFirst: false,
+        pageNumber,
+        pageSize,
+        skip: x.total,
+      });
+      if (x.total >= pageNumber * pageSize) {
+        return {
+          ...x,
+          total: x.total + y.total,
+        };
+      } else {
+        return {
+          ...x,
+          data: x.data.concat(y.data),
+          total: x.total + y.total,
+        };
+      }
+    } else {
+      return this.findAll2(request);
+    }
+  }
+
+  async findAll2(request: GetAllEventDto): Promise<Response<any[]>> {
     const {
       search,
       orderBy,
@@ -81,6 +115,8 @@ export class EventsService implements OnModuleInit {
       outOfTimeBeforeEnd,
       outOfEndTime7day,
       homeList,
+      isFollowFirst,
+      skip,
     } = plainToClass(GetAllEventDto, request);
     let { tokenIds, eventTypes, listingStatuses } = plainToClass(
       GetAllEventDto,
@@ -202,13 +238,37 @@ export class EventsService implements OnModuleInit {
     if (isHot) {
       qb.andWhere('events.isHot = :isHot', { isHot });
     }
+    if (isFollowFirst === true || isFollowFirst === false) {
+      const user = await this.userService.findOne(loginUserId);
+      console.log(
+        user,
+        user.followsId.map((x: any) => x.f1),
+        'Line #243 events.service.ts',
+      );
+      if (isFollowFirst) {
+        qb.andWhere('events."userId" IN(:...ids)', {
+          ids: user.followsId.map((x: any) => x.f1),
+        });
+        qb.andWhere('events.deadline > now()');
+      } else {
+        qb.andWhere(
+          new Brackets((qb) => {
+            qb.andWhere('events."userId" NOT IN(:...ids)', {
+              ids: user.followsId.map((x: any) => x.f1),
+            }).orWhere('events.deadline <= now()');
+          }),
+        );
+      }
+    }
     if (orderBy == ESortEvent.UPCOMING) {
       qb.orderBy('deadline');
     } else if (orderBy == ESortEvent.LATEST) {
       qb.orderBy('"createdAt"', 'DESC');
     }
     if (pageSize && pageNumber && !homeList) {
-      qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
+      qb.limit(
+        Math.max(pageSize - Math.max(skip - (pageNumber - 1) * pageSize, 0), 0),
+      ).offset(Math.max((pageNumber - 1) * pageSize - skip, 0));
     }
 
     // eslint-disable-next-line

@@ -10,6 +10,7 @@ import { LatestBlockModule } from '../latest-block/latest-block.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([EventEntity]),
+    UsersModule,
     TransactionsModule,
     UsersModule,
     LatestBlockModule,
