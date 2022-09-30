@@ -610,39 +610,40 @@ export class ContractConsole implements OnModuleInit {
 
   onModuleInit() {
     const contractSchedule = async () => {
-      try {
-        await crawlSmartcontractEventsBatch(
-          this.web3,
-          this.latestBlockService,
-          [false, true, false, false, false, false, false],
-          [
-            ContractEvent.EventCreated,
-            ContractEvent.EventResultUpdated,
-            ContractEvent.PredictionCreated,
-            ContractEvent.RewardClaimed,
-            ContractEvent.LPDeposited,
-            ContractEvent.LPClaimed,
-            ContractEvent.CashBackClaimed,
-          ],
-          [
-            this.eventHandler1,
-            this.eventHandler2,
-            this.eventHandler3,
-            this.eventHandler4,
-            this.eventHandler5,
-            this.eventHandler6,
-            this.eventHandler7,
-          ],
+      while (true) {
+        try {
+          await crawlSmartcontractEventsBatch(
+            this.web3,
+            this.latestBlockService,
+            [false, true, false, false, false, false, false],
+            [
+              ContractEvent.EventCreated,
+              ContractEvent.EventResultUpdated,
+              ContractEvent.PredictionCreated,
+              ContractEvent.RewardClaimed,
+              ContractEvent.LPDeposited,
+              ContractEvent.LPClaimed,
+              ContractEvent.CashBackClaimed,
+            ],
+            [
+              this.eventHandler1,
+              this.eventHandler2,
+              this.eventHandler3,
+              this.eventHandler4,
+              this.eventHandler5,
+              this.eventHandler6,
+              this.eventHandler7,
+            ],
+          );
+        } catch (err) {
+          console.log(err);
+        }
+        await new Promise((resolve) =>
+          setTimeout(resolve, Number(process.env.CRONT_CONTRACT) * 1000),
         );
-      } catch (err) {
-        console.log(err);
       }
     };
 
-    this.schedulerRegistry.addCronJob(
-      'contractSchedule',
-      new CronJob(process.env.CRONT_CONTRACT, contractSchedule),
-    );
-    this.schedulerRegistry.getCronJob('contractSchedule').start();
+    contractSchedule();
   }
 }
