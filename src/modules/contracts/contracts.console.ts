@@ -644,6 +644,8 @@ export class ContractConsole implements OnModuleInit {
       }
     };
 
-    contractSchedule();
+    if (process.env.CRONT_CONTRACT && process.env.CRONT_CONTRACT.length > 0) {
+      contractSchedule();
+    }
   }
 }

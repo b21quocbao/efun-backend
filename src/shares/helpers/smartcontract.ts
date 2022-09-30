@@ -24,19 +24,6 @@ export async function crawlSmartcontractEventsBatch(
   );
   if (latestBlock.block) cursor = Number(latestBlock.block);
 
-  const hour = new Date().getUTCHours();
-  const day = new Date().getUTCDay();
-  if (
-    process.env.RPC_URL_2 &&
-    process.env.RPC_URL_2.length &&
-    ((hour >= 11 && !(hour >= 14 && hour <= 17)) ||
-      day == 6 ||
-      day == 0 ||
-      hour <= 1)
-  ) {
-    web3.setProvider(new Web3.providers.HttpProvider(process.env.RPC_URL_2));
-  }
-
   const eventContract = new web3.eth.Contract(
     eventABI as AbiItem[],
     process.env.EVENT_PROXY,
