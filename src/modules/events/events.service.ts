@@ -244,23 +244,23 @@ export class EventsService implements OnModuleInit {
       const user = await this.userService.findOne(loginUserId);
       if (isFollowFirst) {
         qb.andWhere('events."userId" IN(:...ids)', {
-          ids: user.followsId.map((x: any) => x.f1),
+          ids: user.followsId.map((x: any) => x.f1 || 0),
         });
         qb.andWhere('events.deadline > now()');
       } else {
         qb.andWhere(
           new Brackets((qb) => {
             qb.andWhere('events."userId" NOT IN(:...ids)', {
-              ids: user.followsId.map((x: any) => x.f1),
+              ids: user.followsId.map((x: any) => x.f1 || 0),
             }).orWhere('events.deadline <= now()');
           }),
         );
       }
     }
     if (orderBy == ESortEvent.UPCOMING) {
-      qb.orderBy('deadline');
+      qb.orderBy('events.deadline');
     } else if (orderBy == ESortEvent.LATEST) {
-      qb.orderBy('"createdAt"', 'DESC');
+      qb.orderBy('events."createdAt"', 'DESC');
     }
     if (pageSize && pageNumber && !homeList) {
       qb.limit(
