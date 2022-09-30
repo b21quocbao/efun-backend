@@ -612,6 +612,8 @@ export class ContractConsole implements OnModuleInit {
     const contractSchedule = async () => {
       while (true) {
         try {
+          console.log('start crawl SC', new Date(), 'Line #615 contracts.console.ts');
+          
           await crawlSmartcontractEventsBatch(
             this.web3,
             this.latestBlockService,
@@ -638,6 +640,7 @@ export class ContractConsole implements OnModuleInit {
         } catch (err) {
           console.log(err);
         }
+        console.log('end crawl SC', new Date(), 'Line #615 contracts.console.ts');
         await new Promise((resolve) =>
           setTimeout(resolve, Number(process.env.CRONT_CONTRACT) * 1000),
         );
