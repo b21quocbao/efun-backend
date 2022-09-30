@@ -38,7 +38,23 @@ export async function crawlSmartcontractEventsBatch(
   const eventsBatch = [];
   for (let idx = 0; idx < contracts.length; ++idx) {
     const contract = contracts[idx] ? eventContract : predictionContract;
-    eventsBatch.push(await contract.getPastEvents(eventNames[idx], params));
+    let events = await contract.getPastEvents(eventNames[idx], params);
+    let events2 = [];
+    if (process.env.RPC_URL_2 && process.env.RPC_URL_2.length > 0) {
+      web3.setProvider(new Web3.providers.HttpProvider(process.env.RPC_URL_2));
+      const contract2 = contracts[idx] ? eventContract : predictionContract;
+      events2 = await contract2.getPastEvents(eventNames[idx], params);
+      web3.setProvider(new Web3.providers.HttpProvider(process.env.RPC_URL));
+    }
+
+    events = events.concat(events2);
+    events = events.filter(
+      (val: any, idx: any) =>
+        events
+          .map((val: any) => JSON.stringify(val))
+          .indexOf(JSON.stringify(val)) == idx,
+    );
+    eventsBatch.push(events);
   }
 
   for (let idx = 0; idx < eventsBatch.length; idx++) {
