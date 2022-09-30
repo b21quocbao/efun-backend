@@ -22,7 +22,7 @@ export async function crawlSmartcontractEventsBatch(
     LatestBlockNetwork.BSC,
     'crawl-all',
   );
-  if (latestBlock.block) cursor = Number(latestBlock.block);
+  if (latestBlock.block) cursor = Number(latestBlock.block) - 2;
 
   const eventContract = new web3.eth.Contract(
     eventABI as AbiItem[],
