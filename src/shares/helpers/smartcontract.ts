@@ -11,6 +11,7 @@ import { AbiItem } from 'web3-utils';
 
 export async function crawlSmartcontractEventsBatch(
   web3: any,
+  web3_2: any,
   latestBlockService: LatestBlockService,
   // eslint-disable-next-line
   contracts: any[],
@@ -41,9 +42,16 @@ export async function crawlSmartcontractEventsBatch(
     let events = await contract.getPastEvents(eventNames[idx], params);
     let events2 = [];
     if (process.env.RPC_URL_2 && process.env.RPC_URL_2.length > 0) {
-      web3.setProvider(process.env.RPC_URL_2);
+      const eventContract = new web3_2.eth.Contract(
+        eventABI as AbiItem[],
+        process.env.EVENT_PROXY,
+      );
+      const predictionContract = new web3_2.eth.Contract(
+        predictionABI as AbiItem[],
+        process.env.PREDICTION_PROXY,
+      );
+      const contract = contracts[idx] ? eventContract : predictionContract;
       events2 = await contract.getPastEvents(eventNames[idx], params);
-      web3.setProvider(process.env.RPC_URL);
     }
 
     events = events.concat(events2);

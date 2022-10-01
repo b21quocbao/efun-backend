@@ -21,6 +21,7 @@ const { toWei } = Web3.utils;
 @Injectable()
 export class ContractConsole implements OnModuleInit {
   private web3;
+  private web3_2;
   private predictionContract;
   private recalPoolAmount;
   private recalPredictionAmount;
@@ -42,8 +43,10 @@ export class ContractConsole implements OnModuleInit {
     private readonly poolsService: PoolsService,
     private schedulerRegistry: SchedulerRegistry,
   ) {
-    this.web3 = new Web3();
-    this.web3.setProvider(new Web3.providers.HttpProvider(process.env.RPC_URL));
+    this.web3 = new Web3(process.env.RPC_URL);
+    if (process.env.RPC_URL_2 && process.env.RPC_URL_2.length > 0) {
+      this.web3_2 = new Web3(process.env.RPC_URL_2);
+    }
     this.predictionContract = new this.web3.eth.Contract(
       predictionABI,
       process.env.PREDICTION_PROXY,
@@ -614,6 +617,7 @@ export class ContractConsole implements OnModuleInit {
         try {
           await crawlSmartcontractEventsBatch(
             this.web3,
+            this.web3_2,
             this.latestBlockService,
             [false, true, false, false, false, false, false],
             [
