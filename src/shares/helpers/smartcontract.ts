@@ -41,9 +41,9 @@ export async function crawlSmartcontractEventsBatch(
     let events = await contract.getPastEvents(eventNames[idx], params);
     let events2 = [];
     if (process.env.RPC_URL_2 && process.env.RPC_URL_2.length > 0) {
-      web3.setProvider(new Web3.providers.HttpProvider(process.env.RPC_URL_2));
+      web3.setProvider(process.env.RPC_URL_2);
       events2 = await contract.getPastEvents(eventNames[idx], params);
-      web3.setProvider(new Web3.providers.HttpProvider(process.env.RPC_URL));
+      web3.setProvider(process.env.RPC_URL);
     }
 
     events = events.concat(events2);
