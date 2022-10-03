@@ -282,11 +282,8 @@ export class EventsService implements OnModuleInit {
     }
 
     rs = rs.map((event) => {
-      return {
-        ...event,
-        poolTokenEstimateClaimAmounts: Object.keys(
-          event.poolTokenEstimateClaimAmounts,
-        ).forEach((key: string) => {
+      Object.keys(event.poolTokenEstimateClaimAmounts).forEach(
+        (key: string) => {
           if (
             (event.endTime != 0 &&
               new Date(event.endTime).getTime() + 172800 * 1000 < Date.now() &&
@@ -296,7 +293,11 @@ export class EventsService implements OnModuleInit {
             event.poolTokenEstimateClaimAmounts[key] =
               event.poolTokenAmounts[key];
           }
-        }),
+        },
+      );
+
+      return {
+        ...event,
         reportContents: event.reportContents.filter((x: any) => x !== null),
         reportTypeUploads: event.reportTypeUploads.filter(
           (x: any) => x !== null,
