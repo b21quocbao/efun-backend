@@ -188,7 +188,7 @@ export class EventsService implements OnModuleInit {
     if (categoryId) {
       qb.andWhere('events.categoryId = :categoryId', { categoryId });
     }
-    if (categoryId) {
+    if (pro || pro == 0) {
       qb.andWhere('events.pro = :pro', { pro });
     }
     if (subCategoryId) {
