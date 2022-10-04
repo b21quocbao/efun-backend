@@ -99,6 +99,7 @@ export class EventsService implements OnModuleInit {
       search,
       orderBy,
       categoryId,
+      pro,
       userId,
       loginUserId,
       isHot,
@@ -186,6 +187,9 @@ export class EventsService implements OnModuleInit {
     }
     if (categoryId) {
       qb.andWhere('events.categoryId = :categoryId', { categoryId });
+    }
+    if (categoryId) {
+      qb.andWhere('events.pro = :pro', { pro });
     }
     if (subCategoryId) {
       qb.andWhere('events.subCategoryId = :subCategoryId', { subCategoryId });
