@@ -260,6 +260,18 @@ export class ContractConsole implements OnModuleInit {
               txId: event.transactionHash,
             });
           }
+
+          let odds = JSON.stringify(event.returnValues.odds);
+
+          if (event.returnValues.numInfos[3] == 5) {
+            odds = JSON.stringify(
+              event.returnValues.odds.slice(
+                0,
+                event.returnValues.odds.length / 2,
+              ),
+            );
+          }
+
           const { data: result } = await axios.get(event.returnValues.datas);
 
           await this.eventsService.create(user.id, {
@@ -267,7 +279,7 @@ export class ContractConsole implements OnModuleInit {
             startTime: new Date(event.returnValues.numInfos[0] * 1000),
             deadline: new Date(event.returnValues.numInfos[1] * 1000),
             endTime: new Date(event.returnValues.numInfos[2] * 1000),
-            odds: JSON.stringify(event.returnValues.odds),
+            odds: odds,
             transactionId: transactionEntity.id,
             options: result.options,
             name: result.name,
