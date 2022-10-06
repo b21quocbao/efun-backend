@@ -75,6 +75,9 @@ export class EventEntity {
   @Column()
   options: string;
 
+  @Column({ nullable: true })
+  tokenOptions?: string;
+
   @Column()
   odds: string;
 

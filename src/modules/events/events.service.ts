@@ -565,7 +565,7 @@ export class EventsService implements OnModuleInit {
         goalsMeta.away,
       );
       if (event.pro == 6) {
-        const options = JSON.parse(event.options) as number[];
+        const options = JSON.parse(event.tokenOptions) as number[];
         const coin = await this.coinService.findOne(event.coinId);
         for (let i = 0; i < options.length; i++) {
           if (

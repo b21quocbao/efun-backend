@@ -262,9 +262,16 @@ export class ContractConsole implements OnModuleInit {
           }
 
           let odds = JSON.stringify(event.returnValues.odds);
+          let tokenOptions = '[]';
 
           if (event.returnValues.numInfos[3] == 5) {
             odds = JSON.stringify(
+              event.returnValues.odds.slice(
+                0,
+                event.returnValues.odds.length / 2,
+              ),
+            );
+            tokenOptions = JSON.stringify(
               event.returnValues.odds.slice(
                 0,
                 event.returnValues.odds.length / 2,
@@ -282,6 +289,7 @@ export class ContractConsole implements OnModuleInit {
             odds: odds,
             transactionId: transactionEntity.id,
             options: result.options,
+            tokenOptions: tokenOptions,
             name: result.name,
             thumbnailUrl: result.thumbnailUrl.replace(
               'ipfs.infura.io',

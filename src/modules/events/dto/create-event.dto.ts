@@ -103,6 +103,10 @@ export class CreateEventDto {
   @IsOptional()
   streamUrl?: string;
 
+  @IsString()
+  @IsOptional()
+  tokenOptions?: string;
+
   totalScore?: number;
 
   scoreOne?: number;
