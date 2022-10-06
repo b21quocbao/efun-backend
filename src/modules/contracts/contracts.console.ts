@@ -355,7 +355,7 @@ export class ContractConsole implements OnModuleInit {
       );
 
       if (eventEntity) {
-        if (eventEntity.pro) {
+        if (eventEntity.pro && eventEntity.pro != 5) {
           event.returnValues.index -= 1;
         }
 
