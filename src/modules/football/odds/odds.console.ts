@@ -6,7 +6,7 @@ import { OddsService } from './odds.service';
 import { SeasonsService } from '../seasons/seasons.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FixtureEntity } from '../fixtures/entities/fixture.entity';
-import { MoreThan, Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { CronJob } from 'cron';
 
@@ -63,16 +63,17 @@ export class OddsConsole implements OnModuleInit {
 
     const oddSchedule = async () => {
       const currentTime = moment.utc().unix();
+      const destTime = moment.utc().add(15, 'days').unix();
       const fixtures = await this.fixtureRepository.find({
         where: {
-          timestamp: MoreThan(currentTime),
+          timestamp: Between(currentTime, destTime),
           statusLong: 'Not Started',
           bcResult: false,
         },
         order: {
           lastUpdateOdd: 'ASC',
         },
-        take: 30,
+        take: 200,
       });
 
       if (fixtures.length > 0) {
