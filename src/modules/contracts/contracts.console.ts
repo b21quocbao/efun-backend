@@ -16,6 +16,7 @@ import { CronJob } from 'cron';
 import BigNumber from 'bignumber.js';
 import { predictionABI } from 'src/shares/contracts/abi/predictionABI';
 import { isNumber } from 'class-validator';
+import { eventABI } from 'src/shares/contracts/abi/eventABI';
 const { toWei } = Web3.utils;
 
 @Injectable()
@@ -23,6 +24,7 @@ export class ContractConsole implements OnModuleInit {
   private web3;
   private web3_2;
   private predictionContract;
+  private eventContract;
   private recalPoolAmount;
   private recalPredictionAmount;
   private recalEstimateReward;
@@ -50,6 +52,10 @@ export class ContractConsole implements OnModuleInit {
     this.predictionContract = new this.web3.eth.Contract(
       predictionABI,
       process.env.PREDICTION_PROXY,
+    );
+    this.eventContract = new this.web3.eth.Contract(
+      eventABI,
+      process.env.EVENT_PROXY,
     );
 
     this.recalEstimateReward = async (recalEstimateRewardDto: {
@@ -360,6 +366,14 @@ export class ContractConsole implements OnModuleInit {
       if (eventEntity) {
         if (eventEntity.pro && eventEntity.pro != 5) {
           event.returnValues.index -= 1;
+        }
+
+        if (eventEntity.pro == 5) {
+          await this.eventsService.update(eventEntity.id, {
+            finalResult: await this.eventContract.methods
+              .finalResult(eventEntity.id)
+              .call(),
+          });
         }
 
         if (!transactionEntity) {

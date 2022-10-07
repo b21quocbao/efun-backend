@@ -13,6 +13,7 @@ export class UpdateEventDto extends PartialType(CreateEventDto) {
   proofOfResult?: string;
   updateResultTransactionId?: number;
   playType?: string;
+  finalResult?: string;
   tokens?: string[];
   poolTokenAmounts?: Record<string, string>;
   poolTokenEstimateClaimAmounts?: Record<string, string>;

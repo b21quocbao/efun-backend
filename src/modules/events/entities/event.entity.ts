@@ -82,6 +82,9 @@ export class EventEntity {
   odds: string;
 
   @Column({ nullable: true })
+  finalResult: string;
+
+  @Column({ nullable: true })
   streamUrl?: string;
 
   @OneToMany(() => PredictionEntity, (prediction) => prediction.event)

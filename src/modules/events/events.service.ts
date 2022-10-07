@@ -568,6 +568,7 @@ export class EventsService implements OnModuleInit {
       if (event.pro == 6) {
         const options = JSON.parse(event.tokenOptions) as number[];
         const coin = await this.coinService.findOne(event.coinId);
+        await this.update(+eventId, { finalResult: coin.volume });
         for (let i = 0; i < options.length; i++) {
           if (
             (i != options.length - 1 && Number(coin.volume) < options[i]) ||
