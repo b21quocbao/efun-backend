@@ -117,6 +117,7 @@ export class EventsService implements OnModuleInit {
       biggestToken,
       outOfTimeBeforeEnd,
       outOfEndTime7day,
+      outOfEndTime30day,
       homeList,
       isFollowFirst,
       skip,
@@ -235,6 +236,13 @@ export class EventsService implements OnModuleInit {
         outOfEndTime7day
           ? `events."endTime" >= now()  - INTERVAL '7 DAY'`
           : `events."endTime" < now()  - INTERVAL '7 DAY'`,
+      );
+    }
+    if (outOfEndTime30day === true || outOfEndTime30day === false) {
+      qb.andWhere(
+        outOfEndTime30day
+          ? `events."endTime" >= now()  - INTERVAL '30 DAY'`
+          : `events."endTime" < now()  - INTERVAL '30 DAY'`,
       );
     }
     if (outOfTimeBeforeEnd === true) {
