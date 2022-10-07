@@ -561,17 +561,10 @@ export class EventsService implements OnModuleInit {
       arr.push(+eventId);
       const { data } = await this.findAll({ eventId: +eventId });
       const event = data[0];
-      if (!event || !event.goalsMeta || event.statusShort == 'PST') {
+      if (!event) {
         arr.push(0);
         continue;
       }
-      const goalsMeta = JSON.parse(event.goalsMeta);
-      await this.updateScores(
-        +eventId,
-        goalsMeta.home + goalsMeta.away,
-        goalsMeta.home,
-        goalsMeta.away,
-      );
       if (event.pro == 6) {
         const options = JSON.parse(event.tokenOptions) as number[];
         const coin = await this.coinService.findOne(event.coinId);
@@ -584,9 +577,20 @@ export class EventsService implements OnModuleInit {
             break;
           }
         }
-      } else {
-        arr.push(await getResult(event, goalsMeta.home, goalsMeta.away));
+        continue;
       }
+      if (!event.goalsMeta || event.statusShort == 'PST') {
+        arr.push(0);
+        continue;
+      }
+      const goalsMeta = JSON.parse(event.goalsMeta);
+      await this.updateScores(
+        +eventId,
+        goalsMeta.home + goalsMeta.away,
+        goalsMeta.home,
+        goalsMeta.away,
+      );
+      arr.push(await getResult(event, goalsMeta.home, goalsMeta.away));
     }
     return { data: arr.join(',') + ',' };
   }
