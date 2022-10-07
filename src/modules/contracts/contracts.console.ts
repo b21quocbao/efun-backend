@@ -264,7 +264,10 @@ export class ContractConsole implements OnModuleInit {
           let odds = JSON.stringify(event.returnValues.odds);
           let tokenOptions = '[]';
 
-          if (event.returnValues.numInfos[3] == 5) {
+          if (
+            event.returnValues.numInfos[3] == 5 ||
+            event.returnValues.numInfos[3] == 6
+          ) {
             odds = JSON.stringify(
               event.returnValues.odds.slice(
                 0,
