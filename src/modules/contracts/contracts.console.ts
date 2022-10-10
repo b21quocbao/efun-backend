@@ -150,6 +150,10 @@ export class ContractConsole implements OnModuleInit {
 
       const events = await this.eventsService.findAll({ eventId });
       const event = events.data[0];
+      console.log(
+        event.poolTokens.map((x: any) => x.token),
+        'Line #153 contracts.console.ts',
+      );
 
       const poolEstimateClaimAmounts = await this.predictionContract.methods
         .getRemainingLP(
