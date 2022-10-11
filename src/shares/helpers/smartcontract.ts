@@ -5,8 +5,6 @@ import {
   STEP_BLOCK,
 } from 'src/modules/latest-block/latest-block.const';
 import { LatestBlockService } from 'src/modules/latest-block/latest-block.service';
-import { eventABI } from '../contracts/abi/eventABI';
-import { predictionABI } from '../contracts/abi/predictionABI';
 import { AbiItem } from 'web3-utils';
 
 export async function crawlSmartcontractEventsBatch(
@@ -24,6 +22,12 @@ export async function crawlSmartcontractEventsBatch(
     'crawl-all',
   );
   if (latestBlock.block) cursor = Number(latestBlock.block);
+  const { predictionABI } = await import(
+    `../../shares/contracts/abi/${process.env.APP_ENV}/predictionABI`
+  );
+  const { eventABI } = await import(
+    `../../shares/contracts/abi/${process.env.APP_ENV}/eventABI`
+  );
 
   const eventContract = new web3.eth.Contract(
     eventABI as AbiItem[],

@@ -12,11 +12,8 @@ import { EventStatus } from '../events/enums/event-status.enum';
 import { PoolsService } from '../pools/pools.service';
 import axios from 'axios';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { CronJob } from 'cron';
 import BigNumber from 'bignumber.js';
-import { predictionABI } from 'src/shares/contracts/abi/predictionABI';
 import { isNumber } from 'class-validator';
-import { eventABI } from 'src/shares/contracts/abi/eventABI';
 const { toWei } = Web3.utils;
 
 @Injectable()
@@ -49,14 +46,6 @@ export class ContractConsole implements OnModuleInit {
     if (process.env.RPC_URL_2 && process.env.RPC_URL_2.length > 0) {
       this.web3_2 = new Web3(process.env.RPC_URL_2);
     }
-    this.predictionContract = new this.web3.eth.Contract(
-      predictionABI,
-      process.env.PREDICTION_PROXY,
-    );
-    this.eventContract = new this.web3.eth.Contract(
-      eventABI,
-      process.env.EVENT_PROXY,
-    );
 
     this.recalEstimateReward = async (recalEstimateRewardDto: {
       predictionId?: number;
@@ -151,14 +140,14 @@ export class ContractConsole implements OnModuleInit {
       const events = await this.eventsService.findAll({ eventId });
       const event = events.data[0];
       console.log(
-        event.poolTokens.map((x: any) => x.token).filter(x => !!x),
+        event.poolTokens.map((x: any) => x.token).filter((x) => !!x),
         'Line #153 contracts.console.ts',
       );
 
       const poolEstimateClaimAmounts = await this.predictionContract.methods
         .getRemainingLP(
           event.id,
-          event.poolTokens.map((x: any) => x.token).filter(x => !!x),
+          event.poolTokens.map((x: any) => x.token).filter((x) => !!x),
         )
         .call()
         .catch(() => '0');
@@ -692,5 +681,23 @@ export class ContractConsole implements OnModuleInit {
     if (process.env.CRONT_CONTRACT && process.env.CRONT_CONTRACT.length > 0) {
       contractSchedule();
     }
+
+    (async () => {
+      const { predictionABI } = await import(
+        `../../shares/contracts/abi/${process.env.APP_ENV}/predictionABI`
+      );
+      const { eventABI } = await import(
+        `../../shares/contracts/abi/${process.env.APP_ENV}/eventABI`
+      );
+
+      this.predictionContract = new this.web3.eth.Contract(
+        predictionABI,
+        process.env.PREDICTION_PROXY,
+      );
+      this.eventContract = new this.web3.eth.Contract(
+        eventABI,
+        process.env.EVENT_PROXY,
+      );
+    })();
   }
 }

@@ -12,7 +12,6 @@ import { EventStatus } from './enums/event-status.enum';
 import { ESortEvent } from './enums/event-type.enum';
 import BigNumber from 'bignumber.js';
 import { plainToClass } from 'class-transformer';
-import { eventABI } from 'src/shares/contracts/abi/eventABI';
 import { TxData } from 'ethereumjs-tx';
 import { KMSSigner } from 'helpers/kms';
 import { getResult } from 'helpers/get-result';
@@ -34,10 +33,6 @@ export class EventsService implements OnModuleInit {
   ) {
     this.web3 = new Web3();
     this.web3.setProvider(new Web3.providers.HttpProvider(process.env.RPC_URL));
-    this.eventContract = new this.web3.eth.Contract(
-      eventABI,
-      process.env.EVENT_PROXY,
-    );
     if (process.env.KMS_ID && process.env.KMS_ID.length) {
       this.signer = new KMSSigner(process.env.KMS_ID, process.env.RPC_URL);
     }
@@ -52,6 +47,16 @@ export class EventsService implements OnModuleInit {
     if (process.env.KMS_ID && process.env.KMS_ID.length) {
       await this.signer.setMetadata();
     }
+    (async () => {
+      const { eventABI } = await import(
+        `../../shares/contracts/abi/${process.env.APP_ENV}/eventABI`
+      );
+
+      this.eventContract = new this.web3.eth.Contract(
+        eventABI,
+        process.env.EVENT_PROXY,
+      );
+    })();
   }
 
   async create(
