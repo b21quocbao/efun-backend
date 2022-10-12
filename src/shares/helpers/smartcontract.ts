@@ -44,17 +44,23 @@ export async function crawlSmartcontractEventsBatch(
       process.env.ELP_TOKEN_PROXY,
     ),
   ];
-  const web3Contracts2 = [
-    new web3_2.eth.Contract(eventABI as AbiItem[], process.env.EVENT_PROXY),
-    new web3_2.eth.Contract(
-      predictionABI as AbiItem[],
-      process.env.PREDICTION_PROXY,
-    ),
-    new web3_2.eth.Contract(
-      elpTokenABI as AbiItem[],
-      process.env.ELP_TOKEN_PROXY,
-    ),
-  ];
+  const web3Contracts2 =
+    process.env.RPC_URL_2 && process.env.RPC_URL_2.length > 0
+      ? [
+          new web3_2.eth.Contract(
+            eventABI as AbiItem[],
+            process.env.EVENT_PROXY,
+          ),
+          new web3_2.eth.Contract(
+            predictionABI as AbiItem[],
+            process.env.PREDICTION_PROXY,
+          ),
+          new web3_2.eth.Contract(
+            elpTokenABI as AbiItem[],
+            process.env.ELP_TOKEN_PROXY,
+          ),
+        ]
+      : [];
 
   const to = Math.min(cursor + STEP_BLOCK, await web3.eth.getBlockNumber());
   const params = { fromBlock: cursor + 1, toBlock: to };
