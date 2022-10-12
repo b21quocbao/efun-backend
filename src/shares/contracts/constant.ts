@@ -6,4 +6,6 @@ export enum ContractEvent {
   RewardClaimed = 'RewardClaimed',
   LPClaimed = 'LPClaimed',
   CashBackClaimed = 'CashBackClaimed',
+  BuyToken = 'BuyToken',
+  SellToken = 'SellToken',
 }

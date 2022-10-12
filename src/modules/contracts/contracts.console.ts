@@ -14,6 +14,7 @@ import axios from 'axios';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import BigNumber from 'bignumber.js';
 import { isNumber } from 'class-validator';
+import { ElpsService } from '../elps/elps.service';
 const { toWei } = Web3.utils;
 
 @Injectable()
@@ -32,6 +33,8 @@ export class ContractConsole implements OnModuleInit {
   private eventHandler5;
   private eventHandler6;
   private eventHandler7;
+  private eventHandler8;
+  private eventHandler9;
 
   constructor(
     private readonly eventsService: EventsService,
@@ -40,6 +43,7 @@ export class ContractConsole implements OnModuleInit {
     private readonly usersService: UsersService,
     private readonly latestBlockService: LatestBlockService,
     private readonly poolsService: PoolsService,
+    private readonly elpsService: ElpsService,
     private schedulerRegistry: SchedulerRegistry,
   ) {
     this.web3 = new Web3(process.env.RPC_URL);
@@ -639,6 +643,74 @@ export class ContractConsole implements OnModuleInit {
         });
       }
     };
+
+    this.eventHandler8 = async (event): Promise<void> => {
+      console.log(`Processing event ${JSON.stringify(event.returnValues)}`);
+      const user = await this.usersService.findByAddress(
+        event.returnValues.user,
+      );
+      const receipt = await this.web3.eth.getTransactionReceipt(
+        event.transactionHash,
+      );
+      const transactionEntity = await this.transactionsService.findOneByHash(
+        event.transactionHash,
+      );
+
+      if (user && !transactionEntity) {
+        const transaction = await this.transactionsService.create({
+          contractAddress: event.address,
+          gas: receipt?.gasUsed,
+          receipt: JSON.stringify(receipt),
+          blockNumber: receipt?.blockNumber,
+          walletAddress: receipt?.from,
+          txId: event.transactionHash,
+        });
+
+        await this.elpsService.create({
+          transactionId: transaction.id,
+          userId: user.id,
+          nav: event.returnValues.nav,
+          amount: event.returnValues.amount,
+          timestamp: event.returnValues.timestamp,
+          fee: event.returnValues.fee || 0,
+          buy: true,
+        });
+      }
+    };
+
+    this.eventHandler9 = async (event): Promise<void> => {
+      console.log(`Processing event ${JSON.stringify(event.returnValues)}`);
+      const user = await this.usersService.findByAddress(
+        event.returnValues.user,
+      );
+      const receipt = await this.web3.eth.getTransactionReceipt(
+        event.transactionHash,
+      );
+      const transactionEntity = await this.transactionsService.findOneByHash(
+        event.transactionHash,
+      );
+
+      if (user && !transactionEntity) {
+        const transaction = await this.transactionsService.create({
+          contractAddress: event.address,
+          gas: receipt?.gasUsed,
+          receipt: JSON.stringify(receipt),
+          blockNumber: receipt?.blockNumber,
+          walletAddress: receipt?.from,
+          txId: event.transactionHash,
+        });
+
+        await this.elpsService.create({
+          transactionId: transaction.id,
+          userId: user.id,
+          nav: event.returnValues.nav,
+          amount: event.returnValues.amount,
+          timestamp: event.returnValues.timestamp,
+          fee: event.returnValues.fee || 0,
+          buy: false,
+        });
+      }
+    };
   }
 
   onModuleInit() {
@@ -649,7 +721,7 @@ export class ContractConsole implements OnModuleInit {
             this.web3,
             this.web3_2,
             this.latestBlockService,
-            [false, true, false, false, false, false, false],
+            [1, 0, 1, 1, 1, 1, 1, 2],
             [
               ContractEvent.EventCreated,
               ContractEvent.EventResultUpdated,
@@ -658,6 +730,8 @@ export class ContractConsole implements OnModuleInit {
               ContractEvent.LPDeposited,
               ContractEvent.LPClaimed,
               ContractEvent.CashBackClaimed,
+              ContractEvent.BuyToken,
+              ContractEvent.SellToken,
             ],
             [
               this.eventHandler1,
@@ -667,6 +741,8 @@ export class ContractConsole implements OnModuleInit {
               this.eventHandler5,
               this.eventHandler6,
               this.eventHandler7,
+              this.eventHandler8,
+              this.eventHandler9,
             ],
           );
         } catch (err) {

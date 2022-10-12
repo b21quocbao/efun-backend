@@ -6,6 +6,7 @@ import { ContractConsole } from './contracts.console';
 import { EventsModule } from '../events/events.module';
 import { PredictionsModule } from '../predictions/predictions.module';
 import { PoolsModule } from '../pools/pools.module';
+import { ElpsModule } from '../elps/elps.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { PoolsModule } from '../pools/pools.module';
     EventsModule,
     PredictionsModule,
     PoolsModule,
+    ElpsModule,
   ],
   providers: [ContractConsole],
 })

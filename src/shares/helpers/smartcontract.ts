@@ -22,39 +22,49 @@ export async function crawlSmartcontractEventsBatch(
     'crawl-all',
   );
   if (latestBlock.block) cursor = Number(latestBlock.block);
+
   const { predictionABI } = await import(
     `../../shares/contracts/abi/${process.env.APP_ENV}/predictionABI`
   );
   const { eventABI } = await import(
     `../../shares/contracts/abi/${process.env.APP_ENV}/eventABI`
   );
+  const { elpTokenABI } = await import(
+    `../../shares/contracts/abi/${process.env.APP_ENV}/elpTokenABI`
+  );
 
-  const eventContract = new web3.eth.Contract(
-    eventABI as AbiItem[],
-    process.env.EVENT_PROXY,
-  );
-  const predictionContract = new web3.eth.Contract(
-    predictionABI as AbiItem[],
-    process.env.PREDICTION_PROXY,
-  );
+  const web3Contracts = [
+    new web3.eth.Contract(eventABI as AbiItem[], process.env.EVENT_PROXY),
+    new web3.eth.Contract(
+      predictionABI as AbiItem[],
+      process.env.PREDICTION_PROXY,
+    ),
+    new web3.eth.Contract(
+      elpTokenABI as AbiItem[],
+      process.env.ELP_TOKEN_PROXY,
+    ),
+  ];
+  const web3Contracts2 = [
+    new web3_2.eth.Contract(eventABI as AbiItem[], process.env.EVENT_PROXY),
+    new web3_2.eth.Contract(
+      predictionABI as AbiItem[],
+      process.env.PREDICTION_PROXY,
+    ),
+    new web3_2.eth.Contract(
+      elpTokenABI as AbiItem[],
+      process.env.ELP_TOKEN_PROXY,
+    ),
+  ];
 
   const to = Math.min(cursor + STEP_BLOCK, await web3.eth.getBlockNumber());
   const params = { fromBlock: cursor + 1, toBlock: to };
   const eventsBatch = [];
   for (let idx = 0; idx < contracts.length; ++idx) {
-    const contract = contracts[idx] ? eventContract : predictionContract;
+    const contract = web3Contracts[contracts[idx]];
     let events = await contract.getPastEvents(eventNames[idx], params);
     let events2 = [];
     if (process.env.RPC_URL_2 && process.env.RPC_URL_2.length > 0) {
-      const eventContract = new web3_2.eth.Contract(
-        eventABI as AbiItem[],
-        process.env.EVENT_PROXY,
-      );
-      const predictionContract = new web3_2.eth.Contract(
-        predictionABI as AbiItem[],
-        process.env.PREDICTION_PROXY,
-      );
-      const contract = contracts[idx] ? eventContract : predictionContract;
+      const contract = web3Contracts2[contracts[idx]];
       events2 = await contract.getPastEvents(eventNames[idx], params);
     }
 

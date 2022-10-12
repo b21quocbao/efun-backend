@@ -38,6 +38,8 @@ import {
   BasketballModules,
 } from '../basketball/index.module';
 import { CoinEntity } from '../coins/entities/coin.entity';
+import { ElpsModule } from '../elps/elps.module';
+import { ElpEntity } from '../elps/entities/elp.entity';
 
 @Module({
   imports: [
@@ -67,6 +69,7 @@ import { CoinEntity } from '../coins/entities/coin.entity';
           UserEntity,
           AnalyticEntity,
           CoinEntity,
+          ElpEntity,
           ...FootballEntities,
           ...BasketballEntities,
         ],
@@ -98,6 +101,7 @@ import { CoinEntity } from '../coins/entities/coin.entity';
     CompetitionsModule,
     TokensModule,
     CoinsModule,
+    ElpsModule,
     ...FootballModules,
     ...BasketballModules,
   ],
