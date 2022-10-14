@@ -41,17 +41,17 @@ export class NftEntity {
   @Column({ nullable: true })
   buyTransactionId?: number;
 
-  @Column()
-  cashBackNav: string;
-
-  @Column()
-  cashBackAmount: string;
-
-  @Column()
-  cashBackTimestamp: string;
+  @Column({ nullable: true })
+  cashBackNav?: string;
 
   @Column({ nullable: true })
-  cashBackFee: string;
+  cashBackAmount?: string;
+
+  @Column({ nullable: true })
+  cashBackTimestamp?: string;
+
+  @Column({ nullable: true })
+  cashBackFee?: string;
 
   @OneToOne(() => TransactionEntity)
   @JoinColumn({ name: 'cashBackTransactionId' })
