@@ -166,6 +166,13 @@ export const elpTokenABI = [
     type: 'function',
   },
   {
+    inputs: [],
+    name: 'capacity',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [{ internalType: 'bytes', name: '', type: 'bytes' }],
     name: 'checkUpkeep',
     outputs: [
