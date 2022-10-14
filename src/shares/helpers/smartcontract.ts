@@ -32,6 +32,9 @@ export async function crawlSmartcontractEventsBatch(
   const { elpTokenABI } = await import(
     `../../shares/contracts/abi/${process.env.APP_ENV}/elpTokenABI`
   );
+  const { erc721TokenABI } = await import(
+    `../../shares/contracts/abi/${process.env.APP_ENV}/erc721TokenABI`
+  );
 
   const web3Contracts = [
     new web3.eth.Contract(eventABI as AbiItem[], process.env.EVENT_PROXY),
@@ -42,6 +45,10 @@ export async function crawlSmartcontractEventsBatch(
     new web3.eth.Contract(
       elpTokenABI as AbiItem[],
       process.env.ELP_TOKEN_PROXY,
+    ),
+    new web3.eth.Contract(
+      erc721TokenABI as AbiItem[],
+      process.env.ERC721_TOKEN_PROXY,
     ),
   ];
   const web3Contracts2 =
@@ -58,6 +65,10 @@ export async function crawlSmartcontractEventsBatch(
           new web3_2.eth.Contract(
             elpTokenABI as AbiItem[],
             process.env.ELP_TOKEN_PROXY,
+          ),
+          new web3.eth.Contract(
+            erc721TokenABI as AbiItem[],
+            process.env.ERC721_TOKEN_PROXY,
           ),
         ]
       : [];

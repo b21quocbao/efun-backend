@@ -40,6 +40,8 @@ import {
 import { CoinEntity } from '../coins/entities/coin.entity';
 import { ElpsModule } from '../elps/elps.module';
 import { ElpEntity } from '../elps/entities/elp.entity';
+import { NftEntity } from '../nfts/entities/nft.entity';
+import { NftsModule } from '../nfts/nfts.module';
 
 @Module({
   imports: [
@@ -70,6 +72,7 @@ import { ElpEntity } from '../elps/entities/elp.entity';
           AnalyticEntity,
           CoinEntity,
           ElpEntity,
+          NftEntity,
           ...FootballEntities,
           ...BasketballEntities,
         ],
@@ -102,6 +105,7 @@ import { ElpEntity } from '../elps/entities/elp.entity';
     TokensModule,
     CoinsModule,
     ElpsModule,
+    NftsModule,
     ...FootballModules,
     ...BasketballModules,
   ],

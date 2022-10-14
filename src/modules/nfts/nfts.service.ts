@@ -1,0 +1,59 @@
+import { Injectable } from '@nestjs/common';
+import { CreateNftDto } from './dto/create-nft.dto';
+import { UpdateNftDto } from './dto/update-nft.dto';
+import { Response } from 'src/shares/interceptors/response.interceptor';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { NftEntity } from './entities/nft.entity';
+import { SearchNftDto } from './dto/search-nft.dto';
+import { plainToClass } from 'class-transformer';
+
+@Injectable()
+export class NftsService {
+  constructor(
+    @InjectRepository(NftEntity)
+    private nftRepository: Repository<NftEntity>,
+  ) {}
+
+  async create(createNftDto: CreateNftDto): Promise<NftEntity> {
+    return this.nftRepository.save(createNftDto);
+  }
+
+  async findAll(
+    searchNftDto: SearchNftDto,
+    pageNumber?: number,
+    pageSize?: number,
+  ): Promise<Response<NftEntity[]>> {
+    searchNftDto = plainToClass(SearchNftDto, searchNftDto);
+    const qb = this.nftRepository.createQueryBuilder('nfts');
+
+    if (pageSize && pageNumber) {
+      qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
+    }
+
+    if (searchNftDto.name) {
+      qb.where({ name: searchNftDto.name });
+    }
+
+    const [rs, total] = await Promise.all([qb.getMany(), qb.getCount()]);
+    return {
+      data: rs,
+      pageNumber: Number(pageNumber),
+      pageSize: Number(pageSize),
+      total: total,
+    };
+  }
+
+  async findOne(id: number): Promise<NftEntity> {
+    return this.nftRepository.findOne(id);
+  }
+
+  async update(id: number, updateNftDto: UpdateNftDto): Promise<NftEntity> {
+    await this.nftRepository.update(id, updateNftDto);
+    return this.nftRepository.findOne(id);
+  }
+
+  async remove(id: number): Promise<void> {
+    await this.nftRepository.delete(id);
+  }
+}

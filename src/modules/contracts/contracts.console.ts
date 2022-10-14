@@ -15,6 +15,7 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import BigNumber from 'bignumber.js';
 import { isNumber } from 'class-validator';
 import { ElpsService } from '../elps/elps.service';
+import { NftsService } from '../nfts/nfts.service';
 const { toWei } = Web3.utils;
 
 @Injectable()
@@ -44,6 +45,7 @@ export class ContractConsole implements OnModuleInit {
     private readonly latestBlockService: LatestBlockService,
     private readonly poolsService: PoolsService,
     private readonly elpsService: ElpsService,
+    private readonly nftsService: NftsService,
     private schedulerRegistry: SchedulerRegistry,
   ) {
     this.web3 = new Web3(process.env.RPC_URL);
@@ -666,32 +668,53 @@ export class ContractConsole implements OnModuleInit {
           txId: event.transactionHash,
         });
 
-        await this.elpsService.create({
-          transactionId: transaction.id,
-          userId: user.id,
-          nav: event.returnValues.nav,
-          amount: event.returnValues.amount,
-          timestamp: event.returnValues.timestamp,
-          fee: event.returnValues.fee || 0,
-          buy: true,
-        });
+        if (event.returnValues.nftId > 0) {
+          if (event.returnValues.isBuy) {
+            await this.nftsService.create({
+              id: event.returnValues.nftId,
+              userId: user.id,
+              buyTransactionId: transaction.id,
+              buyNav: event.returnValues.nav,
+              buyAmount: event.returnValues.amount,
+              buyFee: event.returnValues.fee || 0,
+              buyTimestamp: event.returnValues.timestamp,
+            });
+          } else {
+            await this.nftsService.update(event.returnValues.nftId, {
+              cashBackTransactionId: transaction.id,
+              cashBackNav: event.returnValues.nav,
+              cashBackAmount: event.returnValues.amount,
+              cashBackFee: event.returnValues.fee || 0,
+              cashBackTimestamp: event.returnValues.timestamp,
+            });
+          }
+        } else {
+          await this.elpsService.create({
+            transactionId: transaction.id,
+            userId: user.id,
+            nav: event.returnValues.nav,
+            amount: event.returnValues.amount,
+            timestamp: event.returnValues.timestamp,
+            fee: event.returnValues.fee || 0,
+            buy: event.returnValues.isBuy,
+          });
+        }
       }
     };
 
     this.eventHandler9 = async (event): Promise<void> => {
       console.log(`Processing event ${JSON.stringify(event.returnValues)}`);
-      const user = await this.usersService.findByAddress(
-        event.returnValues.user,
-      );
+      const user = await this.usersService.findByAddress(event.returnValues.to);
       const receipt = await this.web3.eth.getTransactionReceipt(
         event.transactionHash,
       );
       const transactionEntity = await this.transactionsService.findOneByHash(
         event.transactionHash,
       );
+      const nft = await this.nftsService.findOne(event.returnValues.tokenId);
 
-      if (user && !transactionEntity) {
-        const transaction = await this.transactionsService.create({
+      if (user && nft && !transactionEntity) {
+        await this.transactionsService.create({
           contractAddress: event.address,
           gas: receipt?.gasUsed,
           receipt: JSON.stringify(receipt),
@@ -700,14 +723,8 @@ export class ContractConsole implements OnModuleInit {
           txId: event.transactionHash,
         });
 
-        await this.elpsService.create({
-          transactionId: transaction.id,
+        await this.nftsService.update(nft.id, {
           userId: user.id,
-          nav: event.returnValues.nav,
-          amount: event.returnValues.amount,
-          timestamp: event.returnValues.timestamp,
-          fee: event.returnValues.fee || 0,
-          buy: false,
         });
       }
     };
@@ -721,7 +738,7 @@ export class ContractConsole implements OnModuleInit {
             this.web3,
             this.web3_2,
             this.latestBlockService,
-            [1, 0, 1, 1, 1, 1, 1, 2],
+            [1, 0, 1, 1, 1, 1, 1, 2, 3],
             [
               ContractEvent.EventCreated,
               ContractEvent.EventResultUpdated,
@@ -730,8 +747,8 @@ export class ContractConsole implements OnModuleInit {
               ContractEvent.LPDeposited,
               ContractEvent.LPClaimed,
               ContractEvent.CashBackClaimed,
-              ContractEvent.BuyToken,
-              ContractEvent.SellToken,
+              ContractEvent.TokenAction,
+              ContractEvent.Transfer,
             ],
             [
               this.eventHandler1,

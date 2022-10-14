@@ -7,6 +7,7 @@ import { EventsModule } from '../events/events.module';
 import { PredictionsModule } from '../predictions/predictions.module';
 import { PoolsModule } from '../pools/pools.module';
 import { ElpsModule } from '../elps/elps.module';
+import { NftsModule } from '../nfts/nfts.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ElpsModule } from '../elps/elps.module';
     PredictionsModule,
     PoolsModule,
     ElpsModule,
+    NftsModule,
   ],
   providers: [ContractConsole],
 })
