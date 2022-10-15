@@ -222,6 +222,13 @@ export const predictionABI = [
     type: 'event',
   },
   {
+    inputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    name: 'allocations',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [
       { internalType: 'uint256', name: '_eventId', type: 'uint256' },
       { internalType: 'address', name: '_token', type: 'address' },
@@ -294,6 +301,7 @@ export const predictionABI = [
       { internalType: 'address[]', name: '_tokens', type: 'address[]' },
       { internalType: 'uint256[]', name: '_amounts', type: 'uint256[]' },
       { internalType: 'bool', name: '_affiliate', type: 'bool' },
+      { internalType: 'uint256', name: '_allocate', type: 'uint256' },
     ],
     name: 'createSingleEvent',
     outputs: [{ internalType: 'uint256', name: '_idx', type: 'uint256' }],
@@ -515,6 +523,13 @@ export const predictionABI = [
     type: 'function',
   },
   {
+    inputs: [{ internalType: 'address', name: '', type: 'address' }],
+    name: 'liquidityPoolAddress',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [
       { internalType: 'uint256', name: '', type: 'uint256' },
       { internalType: 'address', name: '', type: 'address' },
@@ -622,6 +637,16 @@ export const predictionABI = [
       { internalType: 'address', name: '_feeCollector', type: 'address' },
     ],
     name: 'setFeeCollector',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: '_token', type: 'address' },
+      { internalType: 'address', name: '_pool', type: 'address' },
+    ],
+    name: 'setLiquidityPoolAddress',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
