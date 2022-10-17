@@ -675,6 +675,7 @@ export class ContractConsole implements OnModuleInit {
               userId: user.id,
               buyTransactionId: transaction.id,
               buyNav: event.returnValues.nav,
+              classId: event.returnValues.classId,
               buyAmount: event.returnValues.amount,
               buyFee: event.returnValues.fee || 0,
               buyTimestamp: event.returnValues.timestamp,

@@ -3,6 +3,7 @@ export class CreateNftDto {
   userId: number;
   buyTransactionId: number;
   buyNav: string;
+  classId: string;
   buyAmount: string;
   buyTimestamp: string;
   buyFee: string;

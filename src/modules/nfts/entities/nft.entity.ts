@@ -22,6 +22,9 @@ export class NftEntity {
   @Column()
   userId: number;
 
+  @Column({ nullable: true })
+  classId: string;
+
   @Column()
   buyNav: string;
 
