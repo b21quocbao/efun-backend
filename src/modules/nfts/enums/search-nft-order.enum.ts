@@ -1,0 +1,6 @@
+export enum SearchNftOrder {
+  MOST_PROFIT = 'MOST_PROFIT',
+  LEAST_PROFIT = 'LEAST_PROFIT',
+  OLDEST = 'OLDEST',
+  LATEST = 'LATEST',
+}

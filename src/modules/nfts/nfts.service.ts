@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { NftEntity } from './entities/nft.entity';
 import { SearchNftDto } from './dto/search-nft.dto';
 import { plainToClass } from 'class-transformer';
+import { SearchNftOrder } from './enums/search-nft-order.enum';
 
 @Injectable()
 export class NftsService {
@@ -31,8 +32,20 @@ export class NftsService {
       qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
     }
 
-    if (searchNftDto.name) {
-      qb.where({ name: searchNftDto.name });
+    if (searchNftDto.userId) {
+      qb.where({ userId: searchNftDto.userId });
+    }
+    if (searchNftDto.orderBy == SearchNftOrder.MOST_PROFIT) {
+      qb.orderBy('"buyNav"::numeric', 'DESC');
+    }
+    if (searchNftDto.orderBy == SearchNftOrder.LEAST_PROFIT) {
+      qb.orderBy('"buyNav"::numeric', 'ASC');
+    }
+    if (searchNftDto.orderBy == SearchNftOrder.OLDEST) {
+      qb.orderBy('"createdAt"', 'ASC');
+    }
+    if (searchNftDto.orderBy == SearchNftOrder.LATEST) {
+      qb.orderBy('"createdAt"', 'DESC');
     }
 
     const [rs, total] = await Promise.all([qb.getMany(), qb.getCount()]);

@@ -1,9 +1,17 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { SearchNftOrder } from '../enums/search-nft-order.enum';
 
 export class SearchNftDto {
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  name?: string;
+  orderBy?: SearchNftOrder;
+
+  @ApiPropertyOptional()
+  @Transform(({ value }) => Number(value))
+  @IsOptional()
+  @IsNumber()
+  userId?: number;
 }
