@@ -4,6 +4,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { NavsService } from './navs.service';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { CronJob } from 'cron';
+import BigNumber from 'bignumber.js';
 
 @Injectable()
 export class NavsConsole implements OnModuleInit {
@@ -28,7 +29,11 @@ export class NavsConsole implements OnModuleInit {
       );
       try {
         const nav = await elpTokenContract.methods.currentNav().call();
-        await this.navsService.create({ value: nav });
+        const capacity = await elpTokenContract.methods.capacity().call();
+        await this.navsService.create({
+          value: nav,
+          capacity: new BigNumber(capacity).multipliedBy(nav).toString(),
+        });
       } catch (err) {
         console.log(err);
       }

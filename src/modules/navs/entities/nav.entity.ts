@@ -14,6 +14,9 @@ export class NavEntity {
   @Column()
   value: string;
 
+  @Column()
+  capacity: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
