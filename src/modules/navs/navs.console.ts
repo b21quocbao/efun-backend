@@ -7,26 +7,27 @@ import { CronJob } from 'cron';
 
 @Injectable()
 export class NavsConsole implements OnModuleInit {
+  private web3;
+
   constructor(
     private readonly navsService: NavsService,
     private schedulerRegistry: SchedulerRegistry,
-    private web3,
   ) {
     this.web3 = new Web3(process.env.RPC_URL);
   }
 
   onModuleInit() {
     const navSchedule = async () => {
-      const { elpABI } = await import(
-        `../../shares/contracts/abi/${process.env.APP_ENV}/elpABI`
+      const { elpTokenABI } = await import(
+        `../../shares/contracts/abi/${process.env.APP_ENV}/elpTokenABI`
       );
 
-      const elpContract = new this.web3.eth.Contract(
-        elpABI,
-        process.env.ELP_PROXY,
+      const elpTokenContract = new this.web3.eth.Contract(
+        elpTokenABI,
+        process.env.ELP_TOKEN_PROXY,
       );
       try {
-        const nav = await elpContract.methods.currentNav().call();
+        const nav = await elpTokenContract.methods.currentNav().call();
         await this.navsService.create({ value: nav });
       } catch (err) {
         console.log(err);
