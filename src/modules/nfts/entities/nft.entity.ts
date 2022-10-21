@@ -37,7 +37,7 @@ export class NftEntity {
   @Column({ nullable: true })
   buyFee: string;
 
-  @OneToOne(() => TransactionEntity)
+  @ManyToOne(() => TransactionEntity)
   @JoinColumn({ name: 'buyTransactionId' })
   buyTransaction?: TransactionEntity;
 
@@ -56,7 +56,7 @@ export class NftEntity {
   @Column({ nullable: true })
   cashBackFee?: string;
 
-  @OneToOne(() => TransactionEntity)
+  @ManyToOne(() => TransactionEntity)
   @JoinColumn({ name: 'cashBackTransactionId' })
   cashBackTransaction?: TransactionEntity;
 

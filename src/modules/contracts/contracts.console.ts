@@ -677,7 +677,9 @@ export class ContractConsole implements OnModuleInit {
                 buyTransactionId: transaction.id,
                 buyNav: event.returnValues.nav,
                 classId: event.returnValues.classId,
-                buyAmount: event.returnValues.amount,
+                buyAmount: new BigNumber(event.returnValues.amount)
+                  .div(event.returnValues.nftIds.length)
+                  .toString(),
                 buyFee: event.returnValues.fee || 0,
                 buyTimestamp: event.returnValues.timestamp,
               });
