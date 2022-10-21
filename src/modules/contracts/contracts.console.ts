@@ -668,26 +668,30 @@ export class ContractConsole implements OnModuleInit {
           txId: event.transactionHash,
         });
 
-        if (event.returnValues.nftId > 0) {
+        if (event.returnValues.nftIds.length > 0) {
           if (event.returnValues.isBuy) {
-            await this.nftsService.create({
-              id: event.returnValues.nftId,
-              userId: user.id,
-              buyTransactionId: transaction.id,
-              buyNav: event.returnValues.nav,
-              classId: event.returnValues.classId,
-              buyAmount: event.returnValues.amount,
-              buyFee: event.returnValues.fee || 0,
-              buyTimestamp: event.returnValues.timestamp,
-            });
+            for (const nftId of event.returnValues.nftIds) {
+              await this.nftsService.create({
+                id: nftId,
+                userId: user.id,
+                buyTransactionId: transaction.id,
+                buyNav: event.returnValues.nav,
+                classId: event.returnValues.classId,
+                buyAmount: event.returnValues.amount,
+                buyFee: event.returnValues.fee || 0,
+                buyTimestamp: event.returnValues.timestamp,
+              });
+            }
           } else {
-            await this.nftsService.update(event.returnValues.nftId, {
-              cashBackTransactionId: transaction.id,
-              cashBackNav: event.returnValues.nav,
-              cashBackAmount: event.returnValues.amount,
-              cashBackFee: event.returnValues.fee || 0,
-              cashBackTimestamp: event.returnValues.timestamp,
-            });
+            for (const nftId of event.returnValues.nftIds) {
+              await this.nftsService.update(nftId, {
+                cashBackTransactionId: transaction.id,
+                cashBackNav: event.returnValues.nav,
+                cashBackAmount: event.returnValues.amount,
+                cashBackFee: event.returnValues.fee || 0,
+                cashBackTimestamp: event.returnValues.timestamp,
+              });
+            }
           }
         } else {
           await this.elpsService.create({

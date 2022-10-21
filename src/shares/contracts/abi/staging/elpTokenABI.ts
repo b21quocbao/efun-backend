@@ -124,9 +124,9 @@ export const elpTokenABI = [
       },
       {
         indexed: false,
-        internalType: 'uint256',
-        name: 'nftId',
-        type: 'uint256',
+        internalType: 'uint256[]',
+        name: 'nftIds',
+        type: 'uint256[]',
       },
       {
         indexed: false,
@@ -249,13 +249,18 @@ export const elpTokenABI = [
         name: '_class',
         type: 'uint256',
       },
+      {
+        internalType: 'uint256',
+        name: '_quantity',
+        type: 'uint256',
+      },
     ],
     name: 'buyNFT',
     outputs: [
       {
-        internalType: 'uint256',
+        internalType: 'uint256[]',
         name: '',
-        type: 'uint256',
+        type: 'uint256[]',
       },
     ],
     stateMutability: 'nonpayable',
@@ -706,9 +711,9 @@ export const elpTokenABI = [
   {
     inputs: [
       {
-        internalType: 'uint256',
-        name: '_tokenId',
-        type: 'uint256',
+        internalType: 'uint256[]',
+        name: '_tokenIds',
+        type: 'uint256[]',
       },
     ],
     name: 'sellNft',
