@@ -150,6 +150,7 @@ export class EventsService implements OnModuleInit {
         } = ANY(array_agg(predictions.userId)) then true else false end as predicted`,
         'competition.name as competition',
         'category.name as category',
+        'transaction.txId as "txId"',
         'fixture.goalsMeta as "goalsMeta"',
         'fixture.statusShort as "statusShort"',
         '"subCategory".name as "subCategory"',
