@@ -141,6 +141,7 @@ export class EventsService implements OnModuleInit {
       .leftJoin('events.pools', 'pools')
       .leftJoin('events.fixture', 'fixture')
       .leftJoin('predictions.report', 'report')
+      .leftJoin('events.transaction', 'transaction')
       .select([
         'events.*',
         `json_agg(DISTINCT jsonb_build_object('token', pools.token, 'amount', pools.amount, 'claimAmount', pools."claimAmount")) as "poolTokens"`,
