@@ -165,6 +165,7 @@ export class EventsService implements OnModuleInit {
       .addGroupBy('competition.id')
       .addGroupBy('category.id')
       .addGroupBy('fixture.id')
+      .addGroupBy('transaction.id')
       .addGroupBy('"subCategory".id')
       .addGroupBy('user.id');
     if (status) {
