@@ -209,4 +209,26 @@ export class UsersService {
     user.follows = user.follows.filter((x) => x.id !== followId);
     await this.userRepository.save(user);
   }
+
+  async whitelistUser(addresses: string[]): Promise<void> {
+    for (const address of addresses) {
+      const user = await this.findByAddress(address);
+      if (!user) {
+        await this.userRepository.insert({ address, whitelisted: true });
+      } else {
+        await this.userRepository.update({ address }, { whitelisted: true });
+      }
+    }
+  }
+
+  async removeWhitelistUser(addresses: string[]): Promise<void> {
+    for (const address of addresses) {
+      const user = await this.findByAddress(address);
+      if (!user) {
+        await this.userRepository.insert({ address, whitelisted: false });
+      } else {
+        await this.userRepository.update({ address }, { whitelisted: false });
+      }
+    }
+  }
 }

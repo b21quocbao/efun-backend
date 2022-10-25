@@ -44,6 +44,7 @@ import { NftEntity } from '../nfts/entities/nft.entity';
 import { NftsModule } from '../nfts/nfts.module';
 import { NavsModule } from '../navs/navs.module';
 import { NavEntity } from '../navs/entities/nav.entity';
+import { AdminModule } from '../admin/admin.module';
 
 @Module({
   imports: [
@@ -110,6 +111,7 @@ import { NavEntity } from '../navs/entities/nav.entity';
     ElpsModule,
     NftsModule,
     NavsModule,
+    AdminModule,
     ...FootballModules,
     ...BasketballModules,
   ],

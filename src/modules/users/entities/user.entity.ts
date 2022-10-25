@@ -77,6 +77,9 @@ export class UserEntity {
   @Column({ nullable: true })
   bannerUrl?: string;
 
+  @Column({ default: false })
+  whitelisted?: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 
