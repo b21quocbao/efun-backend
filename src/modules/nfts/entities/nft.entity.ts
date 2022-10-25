@@ -7,7 +7,6 @@ import {
   UpdateDateColumn,
   Column,
   ManyToOne,
-  OneToOne,
   JoinColumn,
 } from 'typeorm';
 
@@ -62,6 +61,9 @@ export class NftEntity {
 
   @Column({ nullable: true })
   cashBackTransactionId?: number;
+
+  @Column({ nullable: true })
+  actions?: string;
 
   @CreateDateColumn()
   createdAt: Date;

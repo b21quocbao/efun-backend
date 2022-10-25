@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateNftDto } from './dto/create-nft.dto';
 import { UpdateNftDto } from './dto/update-nft.dto';
 import { Response } from 'src/shares/interceptors/response.interceptor';
@@ -68,5 +68,22 @@ export class NftsService {
 
   async remove(id: number): Promise<void> {
     await this.nftRepository.delete(id);
+  }
+
+  async action(id: number, userId: number, action: string): Promise<NftEntity> {
+    const nft = await this.nftRepository.findOne(id);
+    if (!nft) {
+      throw new HttpException({ key: 'NOT_EXISTS' }, HttpStatus.NOT_FOUND);
+    }
+    if (nft.userId != userId) {
+      throw new HttpException(
+        { key: 'USER_NOT_OWN_THIS_NFT' },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    const actions = nft.actions ? JSON.parse(nft.actions) : [];
+    actions.push(action);
+    await this.nftRepository.update(id, { actions: JSON.stringify(actions) });
+    return this.nftRepository.findOne(id);
   }
 }
