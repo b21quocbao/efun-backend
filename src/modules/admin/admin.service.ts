@@ -34,8 +34,8 @@ export class AdminService implements OnModuleInit {
       const { eventABI } = await import(
         `../../shares/contracts/abi/${process.env.APP_ENV}/eventABI`
       );
-      const { erc721ABI } = await import(
-        `../../shares/contracts/abi/${process.env.APP_ENV}/erc721ABI`
+      const { erc721TokenABI } = await import(
+        `../../shares/contracts/abi/${process.env.APP_ENV}/erc721TokenABI`
       );
 
       this.eventContract = new this.web3.eth.Contract(
@@ -43,7 +43,7 @@ export class AdminService implements OnModuleInit {
         process.env.EVENT_PROXY,
       );
       this.erc721Contract = new this.web3.eth.Contract(
-        erc721ABI,
+        erc721TokenABI,
         process.env.ERC721_TOKEN_PROXY,
       );
     })();
