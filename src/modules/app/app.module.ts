@@ -80,7 +80,7 @@ import { AdminModule } from '../admin/admin.module';
           ...FootballEntities,
           ...BasketballEntities,
         ],
-        synchronize: true,
+        synchronize: process.env.APP_ENV === 'local',
         schema: configService.get<string>('DB_SCHEMA'),
         logging: process.env.APP_ENV === 'local',
         extra: {
