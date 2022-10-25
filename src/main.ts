@@ -7,7 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
   app.enableCors({
-    origin: [...process.env.ORIGIN.split(','), /efun-app-v2.*\.vercel\.app/],
+    origin: [...process.env.ORIGIN.split(','), /efun-app-v2.*/],
   });
   app.setGlobalPrefix(process.env.PREFIX);
 
