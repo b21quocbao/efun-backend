@@ -27,13 +27,10 @@ export class NavsService {
     const { startTime, endTime } = plainToClass(SearchNavDto, searchNavDto);
     const qb = this.navRepository
       .createQueryBuilder('navs')
-      .where(
-        'events."createdAt" >= :startTime AND events."createdAt" < :endTime',
-        {
-          startTime: startTime,
-          endTime: endTime,
-        },
-      );
+      .where('navs."createdAt" >= :startTime AND navs."createdAt" < :endTime', {
+        startTime: startTime,
+        endTime: endTime,
+      });
 
     if (pageSize && pageNumber) {
       qb.limit(pageSize).offset((pageNumber - 1) * pageSize);
