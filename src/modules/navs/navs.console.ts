@@ -30,6 +30,14 @@ export class NavsConsole implements OnModuleInit {
       try {
         const nav = await elpTokenContract.methods.currentNav().call();
         const capacity = await elpTokenContract.methods.capacity().call();
+        // TODO: ADD Nft price users
+        // for (nft of user.nfts) {
+        // elp = capacity / nav
+        // FOR (user)
+        //   getAssetValue(nft)
+        //   getNftCount(nft)
+        //   getELP(user)
+        // }
         await this.navsService.create({
           value: nav,
           capacity: new BigNumber(capacity).multipliedBy(nav).toString(),

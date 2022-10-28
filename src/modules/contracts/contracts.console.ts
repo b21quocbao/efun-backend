@@ -670,19 +670,21 @@ export class ContractConsole implements OnModuleInit {
 
         if (event.returnValues.nftIds.length > 0) {
           if (event.returnValues.isBuy) {
+            let classId = event.returnValues.classId;
             for (const nftId of event.returnValues.nftIds) {
               await this.nftsService.create({
                 id: nftId,
                 userId: user.id,
                 buyTransactionId: transaction.id,
                 buyNav: event.returnValues.nav,
-                classId: event.returnValues.classId,
+                classId: classId,
                 buyAmount: new BigNumber(event.returnValues.amount)
                   .div(event.returnValues.nftIds.length)
                   .toString(),
                 buyFee: event.returnValues.fee || 0,
                 buyTimestamp: event.returnValues.timestamp,
               });
+              ++classId;
             }
           } else {
             for (const nftId of event.returnValues.nftIds) {
