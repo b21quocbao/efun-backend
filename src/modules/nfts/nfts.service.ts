@@ -36,10 +36,10 @@ export class NftsService {
       qb.where({ userId: searchNftDto.userId });
     }
     if (searchNftDto.orderBy == SearchNftOrder.MOST_PROFIT) {
-      qb.orderBy('"buyNav"::numeric', 'DESC');
+      qb.orderBy('"buyNav"::numeric', 'DESC').addOrderBy('"createdAt"', 'ASC');
     }
     if (searchNftDto.orderBy == SearchNftOrder.LEAST_PROFIT) {
-      qb.orderBy('"buyNav"::numeric', 'ASC');
+      qb.orderBy('"buyNav"::numeric', 'ASC').addOrderBy('"createdAt"', 'ASC');
     }
     if (searchNftDto.orderBy == SearchNftOrder.OLDEST) {
       qb.orderBy('"createdAt"', 'ASC');
